@@ -1,0 +1,17 @@
+<div class="card mt-3">
+    <div class="card-header">
+        <h5 class="float-left">{{doc.title}}</h5>
+        <a data-toggle="collapse" href="#collapse{{doc.slug}}">
+            <i class="ml-3 align-text-bottom far fa-file-alt"></i>
+        </a>
+    </div>
+
+    <div class="card-header collapse bg-{{doc.card_bg_color}} border rounded shadow-sm m-3 p-3" id="collapse{{doc.slug}}">
+        <div>
+            {{doc.summary|safe}}<br>
+            <a href="{% url 'docs-detail' doc.slug %}">See the docs.</a>
+        </div>
+    </div>
+
+    <div class="card-body">
+        <p class="card-text">

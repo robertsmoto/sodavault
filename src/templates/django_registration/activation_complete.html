@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% comment %}
+django_registration/activation_complete.html
+Used after successful account activation. This template has no context variables of its own, and should inform the user that their account is now active.
+{% endcomment %}
+{% block content %}
+<div  class="card mt-3" style="max-width: 20rem;">
+    <div class="card-header bg-light ">Success</div>
+    <div class="card-body">  
+        Your account activation is complete. Click <a href="{% url login %}">here to login</a>.
+    </div>
+</div>
+{% endblock %}

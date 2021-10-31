@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% comment %}
+django_registration/registration_disallowed.html
+Used when registration of new user accounts is disabled. This template has no context variables of its own, and should inform the user that an email containing account-activation information has been sent.
+{% endcomment %}
+
+{% block content %}
+<div  class="card mt-3" style="max-width: 20rem;">
+    <div class="card-header bg-light ">New Users Disallowed</div>
+    <div class="card-body">  
+        We are not accepting new account registrations at this time.<br>
+        Please contact us if you have questions.
+    </div>
+</div>
+{% endblock %}

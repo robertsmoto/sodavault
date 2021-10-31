@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}SODAvault Inventory Hub for entrepreneurs{% endblock %}
+{% load static %}
+
+{% block content %}
+<h1 class='mt-3'>Inventory hub for e-ntrepreneurs.</h1>
+<h3 class='mt-3'><u>S</u>ource <u>O</u>f <u>DA</u>ta</h3>
+<p>A truthful, single source of data for purchasing, parts, products, inventory, customers, and orders.</p>
+<p>Use SODAvault to store and serve data to your own endpoints.</p>
+<p>We have a lightning-fast graphQL api that makes it easy to do so.</p>
+
+
+{{ navigation }}<br>
+{{ navigation.pages }}<br>
+{{ navigation.pages.title }}<br>
+{% for x in navigation.pages %}
+{{x}} {{x.title}}{{x.post_type}}{{x.slug}}
+{% endfor %}
+<h3>Why SODAvault?</h3>
+<p>A truthful, single source of data for purchasing, parts, products, inventory, customers, and orders. We also have other cool capabilities like creating and serving advertising campaigns. Truthful <u>S</u>ource <u>O</u>f <u>DA</u>ta is in our name. As your business grows, so will your bricks-and-mortar stores, e-shops, sales channels, and advertising campaigns. We make managing all of this data a snap.</p>
+<h3>Free Trial</h3>
+<p>6 month free trial. Pretty generous, huh? If you like that, you'll love our picing model.</p>
+<h3>Price</h3>
+<p>Our picing model is this: Pay what you've budgeted. We suggest 5 cents per product per year, or a minimum of $20 per year. If you would like to pay more, feel free to do so. You'll be supporting our project. If you can't afford it right now, you may pay what you've budgeted. You do have to pay something, but what you pay is up to you. (Yes you read that correctly.)</p>
+<h3>Open Source</h3>
+<p>SODA Vault is an open source project. You can <a href="https://github.com/robertsmoto/sodavault" target="_blank">read about it here.</a> If you are a developer, you can fork our project and use the code for free. We only ask that you read our license and give credit where credit is due. If you write an incredible code contribution, please do share.</p>
+<h3>Easy-to-use API</h3>
+<p>We have an easy-to-use API.</p>
+<h3>We eat our own dogfood.</h3>
+<p>We are e-ntrepreneurs. We are manufacturers and e-tailers. We use SODAvault to manage our back office and serve our public endpoints. We are solving problems that we face every day and have decided to share our SaaS.</p>
+<h3>Respect your data.</h3>
+<p>Don't you just hate it when you use a web service, load a bunch of data, and then discover that it is being held hostage? Us too. We don't do that. Your data is your data. We make it simple to download it and quit us if you like.</p>
+<h3>We're not a frontend.</h3>
+<p>We're a backend host for your data and provide easy-to-use endpoints. You will need to connect SODAvault to your frontend services.</p>
+<h3>What's the Catch?</h3>
+<p>This project is in development. It's awesome, and you can help make it more so, but it's not perfect. If you're looking for perfect, it's probably best for you to go somewhere else.</p>
+
+{% if user.is_authenticated %}
+<nav>
+  Welcome, {{user.username}}
+  <a
+    href="{% url 'user_settings' user.id %}"
+    >USER Settings
+  </a>
+</nav>
+{% endif %}
+
+{% endblock %}

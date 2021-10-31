@@ -1,0 +1,38 @@
+<div class="bg-light border rounded mt-3 p-3 d-none d-xl-block">
+
+  {% if metadata.og_sitename == "Blog From Prague" %}
+    <div class="sidebar-section">search</div>
+    Find an article.<br>
+    <form class="form-inline"  action="{% url 'post-search' %}" >
+      <input 
+        class="form-control ml-1 mt-1" 
+        id="search_box" 
+        type="text" 
+        name="search_box"  
+        placeholder="Search">
+      <button 
+        class="btn btn-outline-success ml-1 mt-1" 
+        id="search_submit" 
+        type="submit">Submit</button>
+    </form>
+  {% endif %}
+
+  {% if sidebar.posts_list %}
+    <div class="sidebar-section mt-3">latest posts</div>
+    {% for post in sidebar.posts_list %}
+      {% if post.status == 'PUBLI' %}
+        <a 
+          href="{% url 'blogapp-post-detail' year=post.date_published.year month=post.date_published.month day=post.date_published.day slug=post.slug post_type='article' %}" 
+          title="{{post.title}}">{{post.title}}
+        </a><br>
+      {% endif %}
+    {% endfor %}
+  {% endif %}
+
+  {% comment %}{% include 'advertisingapp/ad_banners.html' with layout="portrait" titlebar="sidebar_header" %}{% endcomment %}
+
+  {% if other %}
+    <div class="sidebar-section mt-3">other</div>
+  {% endif %}
+
+</div>

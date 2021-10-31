@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block head %}
+{% include 'searchapp/google_structured_data.html' %}
+{% endblock %}
+
+{% block content %}
+{% load static %}
+
+<div class='row'>
+    <article class='col-12 col-xl-8'>
+        <figure>
+            {% if post.featured_image %}
+                <img src="{{ post.featured_image.url }}" title="{{post.title}}" class="bfp-photofeatured" style="width: 100%;">
+            {% else %}
+                <img src="{% static 'default_images/blogfromprague/Default_Featured_Image.jpeg' %}" title="Blog From Prague" class="bfp-photofeatured" style="width: 100%;">
+            {% endif %}
+            {% if post.image_caption %}
+                <figcaption class="border bg-light py-1 px-3 mt-2 text-center">
+                    <i>{{post.image_caption}}</i>
+                </figcaption>
+            {% endif %}
+        </figure>
+
+
+        <h1 class="mt-3">
+            {{ post.title }}
+        </h1>
+
+        <p class="w-100 mt-3" style="font-size: .6em;">
+            <strong>
+            BY:&nbsp;<a href="{% url 'author' pk=post.author_id %}?year={{ post.date_published|date:'Y' }}&month={{ post.date_published|date:'m' }}&slug={{ post.slug }}">{{ post.author.profile.pen_name|upper }}</a><br>
+            {{ post.date_published|date:'M d, Y'|upper }}&nbsp;&bull;&nbsp;{{ post.reading_time }}&nbsp;MIN READ
+            </strong>
+        </p>
+            
+        {# RECIPIES, REVIEWS #}
+        {% if post.review %}{% include 'blogapp/review.html' %}{% endif %}
+        {% if post.recipie %}{% include 'blogapp/recipie.html' %}{% endif %}
+
+        <p class="w-100 mt-3">
+        {{ post.body|safe }}
+            {% if post.topics.exists or post.interests.exists %}
+                <hr>
+                {% for cat in post.topics.all %}
+                <a href="{% url 'topic-list' topic_name=cat.name topic_id=cat.id %}" class="badge badge-secondary">{{cat}}</a>&nbsp;
+                {% endfor %}
+                {% for tag in post.interests.all %}
+                <a href="{% url 'interest-list' interest_name=tag.name interest_id=tag.id %}" class="badge badge-light">{{tag}}</a>&nbsp;
+                {% endfor %}
+                <hr>
+            {% endif %}
+        </p>
+        {% if object.footer %}
+        <footer class="w-100 border my-3 p-3 bg-light">
+        <!--footer-->
+        {{ object.footer|safe }}
+        </footer>
+        {% endif %}
+        {# DISQUS #}
+
+        {% include '0350b_disqus.html' %}
+
+    </article>
+
+    <div class="col-none col-xl-4 d-none d-xl-block" >
+        {% include "homeapp/sidebar.html" %}
+    </div>
+
+</div>
+{% endblock %}

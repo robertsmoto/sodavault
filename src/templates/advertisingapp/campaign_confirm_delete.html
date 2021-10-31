@@ -1,0 +1,27 @@
+{% extends 'homeapp/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Delete Campaign</h1>
+
+
+<form method="post">
+    {% csrf_token %}
+    <div class="p-3 m-3 rounded bg-warning">
+      <table class="table">
+        <tr>
+          <td width="20%">Campaign Name:</td><td><strong>{{object.name}}</strong></td>
+        </tr>
+         <tr>
+          <td>Campaign Expires:</td><td><strong>{{object.date_expires}}</strong></td>
+        </tr>
+       <tr>
+          <td>Campaign Notes:</td><td><strong>{{object.notes}}</strong></td>
+        </tr>
+      </table>
+
+       <input class="mt-3" type="submit" value="Delete Campaign" />
+    </div>
+</form>
+
+{% endblock %}

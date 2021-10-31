@@ -1,0 +1,30 @@
+<meta name="language" content="EN">
+<meta name="owner" content="McLaren and Young LLC">
+<meta name="designer" content="McLaren and Young LLC">
+<meta name="copyright" content="McLaren and Young LLC">
+<title>{{metadata.title}}</title>
+<meta name="description" content="{{metadata.description|striptags }}">
+<meta name="robots" content="{{metadata.robots}}" />
+<meta name="author" content="{{metadata.author}}">
+<meta name="subject" content="{{metadata.subject}}">
+<meta name="topic" content="{{metadata.topic}}">
+<meta name="published" content="{{metadata.published}}">
+<meta name="revised" content="{{metadata.revised}}">
+<meta name="keywords" content="{{metadata.keywords}}">
+{# OPENGRAPH #}
+<meta name="og:title" content="{{metadata.og_title}}"/>
+<meta name="og:type" content="{{metadata.og_type}}"/>
+<meta name="og:url" content="{{metadata.og_url}}"/>
+<meta name="og:site_name" content="{{metadata.og_sitename}}"/>
+<meta name="og:description" content="{{metadata.og_description|striptags}}"/>
+<meta name="og:image" content="{{metadata.og_image}}"/>
+{# TWITTER #}
+<meta name="twitter:card" content="{{metadata.tw_card}}"/>
+<meta name="twitter:site" content="{{metadata.tw_site}}"/>
+<meta name="twitter:title" content="{{metadata.tw_title}}"/>
+<meta name="twitter:description" content="{{metadata.tw_description|striptags}}"/>
+<meta name="twitter:creator" content="{{metadata.tw_creator}}"/>
+<meta name="twitter:image" content="{{metadata.tw_image}}"/>
+{# OTHER #}
+{% if metadata.canonical %}<link rel="canonical" href="{{metadata.canonical}}"/>{% endif %}
+{% if metadata.abstract %}<meta name="abstract" content="{{metadata.abstract|striptags}}">{% endif %}

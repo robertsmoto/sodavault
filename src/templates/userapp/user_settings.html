@@ -1,0 +1,20 @@
+{% extends "homeapp/base.html" %}
+
+{% block content %}
+<h1>User Settings</h1>
+
+{% if user.is_authenticated %}
+
+Hello {{ object.first_name }}, here are your settings.<br>
+
+Secret Token
+<div class='alert-warning' role='alert'>
+token -- {{ token }}
+<br>{{token.key}}
+<br>{{token.user_id}}
+<br>{{token.created}}
+</div>
+
+{% endif %}
+
+{% endblock %}

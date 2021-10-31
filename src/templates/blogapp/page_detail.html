@@ -1,0 +1,62 @@
+{% extends 'homeapp/base.html' %}
+{% block title %}{{post.title}}{% endblock %}
+{% block content %}
+{% load static %}
+
+<div class='row'>
+  <article class='col-12 col-xl-8'>
+    {% if post.featured_image %}
+      <figure>
+        <img 
+          src="{{ post.featured_image.url }}" 
+          title="{{post.title}}" 
+          class="bfp-photofeatured" 
+          style="width: 100%;">
+      {% endif %}
+      {% if post.image_caption %}
+        <figcaption class="border bg-light py-1 px-3 mt-2 text-center">
+          <i>{{post.image_caption}}</i>
+        </figcaption>
+      </figure>
+    {% endif %}
+
+
+    <h1>{{ post.title }}</h1>
+
+    <p class="w-100 mt-3">
+      {{ post.body|safe }}
+    </p>
+
+    {% if post.categories.exists or post.tags.exists %}
+      <hr>
+      {% for cat in post.categories.all %}
+        <a 
+          class="btn btn-secondary btn-sm"
+          href="{% url 'blogapp-category-list' category_name=cat.name category_id=cat.id %}">
+          {{cat}}
+        </a>&nbsp;
+      {% endfor %}
+      {% for tag in post.tags.all %}
+        <a 
+          class="btn btn-outline-secondary btn-sm"
+          href="{% url 'blogapp-tag-list' tag_name=tag.name tag_id=tag.id %}">
+          {{tag}}
+        </a>&nbsp;
+      {% endfor %}
+      <hr>
+    {% endif %}
+
+    {% if object.footer.exists %}
+      <footer class="w-100 border py-3 p-3 bg-light">
+        {{ object.footer|safe }}
+      </footer>
+    {% endif %}
+
+  </article>
+
+  <div class="col-none col-xl-4 d-none d-xl-block" >
+    {% include "homeapp/sidebar.html" %}
+  </div>
+
+</div>
+{% endblock %}

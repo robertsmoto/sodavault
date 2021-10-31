@@ -1,0 +1,80 @@
+{% load static %}{% load space_to_dash %}
+
+<nav class="pt-2"> {# COL #}
+
+	{% if nav.people %} {# PERSON #}
+	<div class="btn-group"> {# GROUP #}
+		<button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+			<i class="fas fa-chart-line"></i>&nbsp;&nbsp;People
+		</button>
+		<div class="dropdown-menu">
+
+			{% for per in nav.people %}
+			{% if forloop.counter < 12 %}
+			<a class='dropdown-item' href="{% url 'headlines-person-detail' person_id=per.id firstname=per.firstname lastname=per.lastname %}" title="{{ per.firstname }} {{ per.lastname }}" class="btn btn-outline-dark btn-sm btn-inline" role="button" aria-disabled="true">{{ per.firstname }} {{ per.lastname }}</a>
+			{% endif %}
+			{% endfor %}
+
+		</div>
+	</div> {# END GROUP #}
+	{% endif %} {# END PERSON #}
+
+
+	{% if nav.meet_list %} {# MEETS #}
+	<div class="btn-group float-right"> {# GROUP #}
+		<button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+			Meets
+		</button>
+		<div class="dropdown-menu dropdown-menu-right">
+			{% for meet in nav.meet_list %}
+			{% if forloop.counter < 6 and meet.meet_status == 'MS01' or meet.meet_status == 'MS03' %}
+			<a class="dropdown-item" href="{% url 'headlines-meet-detail' meet.pk meet.meet_name %}" title="{{ meet.meet_year }}&nbsp;{{ meet.meet_name }}" rel="nofollow">
+				{% if meet.meet_status == 'MS09'%}<i class="fas fa-medal" style="width:25px; color: grey;"></i>
+				{% elif meet.meet_status == 'MS07'%}<i class="fas fa-exclamation-circle" style="width:25px; color: red;"></i>
+				{% elif meet.meet_status == 'MS05'%}<i class="fas fa-exclamation-triangle" style="width:25px; color: orange;"></i>
+				{% elif meet.meet_status == 'MS03'%}<i class="fas fa-swimmer" style="width:25px; color: green;"></i>
+				{% else %}<i class="far fa-calendar-alt" style="width:25px; color: grey;"></i>{% endif %}
+				&nbsp;{{ meet.meet_year }}&nbsp;{{ meet.meet_name}}
+			</a>
+			{% endif %}
+			{% endfor %}
+			<div class="dropdown-divider"></div>
+
+			{% for meet in nav.meet_list_status %}
+			{% if forloop.counter < 6 and meet.meet_status != 'MS01' and meet.meet_status != 'MS03' %}
+			<a class="dropdown-item" href="{% url 'headlines-meet-detail' meet.pk meet.meet_name %}" title="{{ meet.meet_year }}&nbsp;{{ meet.meet_name }}" rel="nofollow">
+				{% if meet.meet_status == 'MS09'%}<i class="fas fa-medal" style="width:25px; color: grey;"></i>
+				{% elif meet.meet_status == 'MS07'%}<i class="fas fa-exclamation-circle" style="width:25px; color: red;"></i>
+				{% elif meet.meet_status == 'MS05'%}<i class="fas fa-exclamation-triangle" style="width:25px; color: orange;"></i>
+				{% elif meet.meet_status == 'MS03'%}<i class="fas fa-swimmer" style="width:25px; color: green;"></i>
+				{% else %}<i class="far fa-calendar-alt" style="width:25px; color: grey;"></i>{% endif %}
+				&nbsp;{{ meet.meet_year }}&nbsp;{{ meet.meet_name}}
+			</a>
+			{% endif %}
+			{% endfor %}
+			<div class="dropdown-divider"></div>
+
+			<a class="dropdown-item" href="{% url 'headlines-meets-list' %}">All Meets List</a>
+
+		</div>
+	</div> {# END GROUP #}
+	{% endif %} {# END MEETS #}
+
+	{% if nav.categories %} {# CATEGORY #}
+	<div class="btn-group float-right mr-2"> {# GROUP #}
+		<button class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown">
+			Topics
+		</button>
+		<div class="dropdown-menu dropdown-menu-right">
+
+			{% for cat in nav.categories %}
+			{% if forloop.counter < 12 %}
+			<a class='dropdown-item' href="{% url 'headlines-category-detail' hl_category_id=cat.id %}" title="{{ cat.name }}" class="btn btn-outline-dark btn-sm btn-inline" role="button" aria-disabled="true">{{ cat.name }}</a>
+			{% endif %}
+			{% endfor %}
+
+		</div>
+	</div> {# END GROUP #}
+	{% endif %} {# END CATEGORY #}
+
+</nav> {# END COL #}

@@ -1,0 +1,393 @@
+{% extends 'homeapp/base.html' %}
+
+{% block content %}
+<h1>Products</h1>
+
+<table class="mt-3 table">
+  <thead class="table-light">
+    <tr>
+      <th scope="col" style="width: 35px;">
+        <a 
+          href="{% url 'campaign-create' %}"
+          title="create new campaign">
+          <i class="far fa-plus-square" style="color: green;"></i>
+        </a>
+      </th>
+      <th width="25%" scope="col">Product</th>
+      <th width="15%" scope="col">SKU</th>
+      <th width="15%" scope="col">Price</th>
+      <th width="15%" scope="col">Categories</th>
+      <th scope="col">Tags</th>
+      <th scope="col" style="width: 35px;"></th>
+    </tr>
+  </thead>
+  <tbody>
+
+    {% for obj in object_list %}
+
+    <tr>
+      <td style="width: 35px;">
+        <a 
+          href="{% url 'product-update' obj.pk %}"
+          title="edit product">
+            <i class="fas fa-edit" style="color: orange;"></i>
+        </a>
+      </td>
+      <td>
+        <a 
+          data-toggle="collapse" 
+          title="click to expand ..."
+          href="#collapse{{obj.pk}}">
+          {{obj.name}}
+        </a>
+      </td>
+      <td>{{obj.sku}}</td>
+      <td>{{obj.price}}</td>
+      <td>{% for cat in object.category.alll %}{{cat.name}}{% endfor %}</td>
+      <td>{% for tag in object.tag.alll %}{{tag.name}}{% endfor %}</td>
+      <td style="width: 35px;">
+        <a href="{% url 'campaign-delete' obj.pk %}">
+          <i class="far fa-trash-alt" style="color: red;"></i>
+        </a>
+      </td>
+    </tr>
+
+    <tr class="bg-white collapse" id="collapse{{obj.pk}}">
+      <td colspan="7" style="border-bottom: none;"></td>
+    </tr>
+
+    {# identifier table #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td class="px-3" style="border-bottom: none;" colspan="7">
+        <h5 style="margin-left: 35px">Identifiers</h5>
+        <table class="table">
+          <thead  class="table-dark">
+            <tr class="collapse" roll="alert" id="collapse{{obj.pk}}">
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                {% if obj.identifiers %}
+                  <i class="fas fa-edit" style="color: orange;"></i>
+                {% else %}
+                  <i class="far fa-plus-square" style="color: green;">
+                {% endif %}
+              </th>
+              <th width="25%">PID (int)</th>
+              <th width="25%">PID (char)</th>
+              <th width="25%">GTIN</th>
+              <th width="25%" colspan="2">ISBN</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                {% if obj.identifiers %}
+                  <i class="far fa-trash-alt" style="color: red;">
+                {% else %}
+                  <i class="far fa-trash-alt" style="color: grey;">
+                {% endif %}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% with obj.identifiers as ident %}
+              <tr class="collapse" id="collapse{{obj.pk}}">
+                <td style="width: 35px;"></td>
+                <td>{{ident.pid_i}}</td>
+                <td>{{ident.pid_c}}</td>
+                <td>{{ident.gitn}}</td>
+                <td colspan="2">{{ident.isbn}}</td>
+                <td style="width: 35px;"></td>
+              </tr>
+            {% endwith %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    {# measurements #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td  colspan="7" class="px-3" style="border-bottom: none;">
+        <h5 style="margin-left: 35px">Measurements</h5>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                {% if obj.measurements %}
+                  <i class="fas fa-edit" style="color: orange;"></i>
+                {% else %}
+                  <i class="far fa-plus-square" style="color: green;">
+                {% endif %}
+              </th>
+              <th width="25%">Weight</th>
+              <th width="25%">Length</th>
+              <th width="25%">Width</th>
+              <th width="25%" colspan="2">Height</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                {% if obj.measurements %}
+                  <i class="far fa-trash-alt" style="color: red;">
+                {% else %}
+                  <i class="far fa-trash-alt" style="color: grey;">
+                {% endif %}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% with obj.measurements as meas %}
+              <tr>
+                <td style="width: 35px;"></td>
+                <td>{{meas.weight}}</td>
+                <td>{{meas.length}}</td>
+                <td>{{meas.width}}</td>
+                <td colspan="2">{{meas.height}}</td>
+                <td style="width: 35px;"></td>
+              </tr>
+            {% endwith %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    {# attributes #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td colspan="7" class="px-3" style="border-bottom: none;">
+        <h5 style="margin-left: 35px">Attributes</h5>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                  <i class="far fa-plus-square" style="color: green;">
+              </th>
+              <th width="25%">Name</th>
+              <th width="25%">Slug</th>
+              <th width="25%">Terms</th>
+              <th colspan="2">Images</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                <i class="far fa-trash-alt" style="color: white;">
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for att in obj.product_att_join.all %}
+              <tr>
+                <td style="width: 35px;"><i class="fas fa-edit" style="color: orange;"></i></td>
+                <td>{{att.attribute.name}} {{attr}}</td>
+                <td>{{att.attribute.slug}}</td>
+                <td>
+
+                  {% for term in att.term.all %}
+                    {{term.name}}&nbsp;&nbsp;
+                  {% endfor %}
+
+                </td>
+                <td colspan="2">
+
+                  {% for term in att.term.all %}
+                    {{term.img}}&nbsp;&nbsp;
+                  {% endfor %}
+
+                </td>
+                <td style="width: 35px;"><i class="far fa-trash-alt" style="color: red;"></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    {# marketing table #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td colspan="7" class="px-3" style="border-bottom: none;">
+        <h5 style="margin-left: 35px">Marketing</h5>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                {% if obj.marketing_options %}
+                  <i class="fas fa-edit" style="color: orange;"></i>
+                {% else %}
+                  <i class="far fa-plus-square" style="color: green;">
+                {% endif %}
+              </th>
+              <th width="25%">Field</th>
+              <th colspan="4">Value</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                {% if obj.marketing_options %}
+                  <i class="far fa-trash-alt" style="color: red;">
+                {% else %}
+                  <i class="far fa-trash-alt" style="color: grey;">
+                {% endif %}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% with obj.marketing_options as mktg %}
+              <tr>
+                <td style="width: 35px;"></td>
+                <td>SM Description</td>
+                <td colspan="4">{{mktg.description_sm}}</td>
+                <td style="width: 35px;"></td>
+              </tr>
+              <tr>
+                <td style="width: 35px;"></td>
+                <td>MD Description</td>
+                <td colspan="4">{{mktg.description_md}}</td>
+                <td style="width: 35px;"></td>
+              </tr>
+              <tr>
+                <td style="width: 35px;"></td>
+                <td>LG Description</td>
+                <td colspan="4">{{mktg.description_lg}}</td>
+                <td style="width: 35px;"></td>
+              </tr>
+              <tr>
+                <td style="width: 35px;"></td>
+                <td>Images</td>
+                <td colspan="4">
+                  {% if mktg.img_1x1_lg %}img_1x1_lg &nbsp;&nbsp;{% endif %}
+                  {% if mktg.img_1x1_md %}img_1x1_md &nbsp;&nbsp;{% endif %}
+                  {% if mktg.img_1x1_sm %}img_1x1_sm &nbsp;&nbsp;{% endif %}
+                </td>
+                <td style="width: 35px;"></td>
+              </tr>
+            {% endwith %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    {# digital options #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td colspan="7" class="px-3" style="border-bottom: none;">
+        <h5 style="margin-left: 35px">Digital Options</h5>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                  <i class="far fa-plus-square" style="color: green;">
+              </th>
+              <th width="25%">Name</th>
+              <th width="25%">Other</th>
+              <th width="25%">Other</th>
+              <th colspan="2">Other</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                <i class="far fa-trash-alt" style="color: white;">
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for digi in obj.digital_options.all %}
+              <tr>
+                <td style="width: 35px;"><i class="fas fa-edit" style="color: orange;"></i></td>
+                <td>{{digi.name}}</td>
+                <td></td>
+                <td></td>
+                <td colspan="2"></td>
+                <td style="width: 35px;"><i class="far fa-trash-alt" style="color: red;"></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+
+
+    {# bundle options #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td colspan="7" class="px-3" style="border-bottom: none;">
+        <h5 style="margin-left: 35px">Bundle Options</h5>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                  <i class="far fa-plus-square" style="color: green;">
+              </th>
+              <th width="55%">Product</th>
+              <th width="15%">Min</th>
+              <th width="15%">Max</th>
+              <th colspan="2">is_optional</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                <i class="far fa-trash-alt" style="color: white;">
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for bund in obj.subproduct_bundleoptions.all %}
+              <tr>
+                <td style="width: 35px;"><i class="fas fa-edit" style="color: orange;"></i></td>
+                <td>{{bund.product.sku}} : {{bund.product.name}}</td>
+                <td>{{bund.quantity_min}}</td>
+                <td>{{bund.quantity_max}}</td>
+                <td colspan="2">{{bund.is_optional}}</td>
+                <td style="width: 35px;"><i class="far fa-trash-alt" style="color: red;"></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    {# variations #}
+    <tr class="collapse" id="collapse{{obj.pk}}">
+      <td colspan="7" class="px-3" style="border-bottom: none;">
+        <h5 style="margin-left: 35px">Variations</h5>
+        <table class="table">
+          <thead class="table-dark">
+            <tr>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                  <i class="far fa-plus-square" style="color: green;">
+              </th>
+              <th width="25%">Name</th>
+              <th width="25%">Other</th>
+              <th width="25%">Other</th>
+              <th colspan="2">Other</th>
+              <th 
+                class="bg-white" 
+                style="width: 35px;">
+                <i class="far fa-trash-alt" style="color: white;">
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for digi in obj.digital_options.all %}
+              <tr>
+                <td style="width: 35px;"><i class="fas fa-edit" style="color: orange;"></i></td>
+                <td>{{digi.name}}</td>
+                <td></td>
+                <td></td>
+                <td colspan="2"></td>
+                <td style="width: 35px;"><i class="far fa-trash-alt" style="color: red;"></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+
+    {% endfor %}
+
+  </tbody>
+</table>
+
+{% endblock %}

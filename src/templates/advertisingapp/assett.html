@@ -1,0 +1,9 @@
+{% extends 'coreapp/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h1>Assett Form</h1>
+<form method="post" class="uniForm">
+    {{ form|crispy }}
+</form>
+{% endblock %}

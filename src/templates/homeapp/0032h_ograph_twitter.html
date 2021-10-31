@@ -1,0 +1,15 @@
+
+{# OPENGRAPH #}
+<meta name="og:title" content="{{metadata.og_title}}"/>
+<meta name="og:type" content="{{metadata.og_type}}"/>
+<meta name="og:url" content="{{metadata.og_url}}"/>
+<meta name="og:site_name" content="{{metadata.og_sitename}}"/>
+<meta name="og:description" content="{{metadata.og_description}}"/>
+<meta name="og:image" content="{{request.scheme}}://{{request.site.domain}}{{metadata.og_image}}"/>
+{# TWITTER #}
+<meta name="twitter:card" content="{{metadata.tw_card}}"/>
+<meta name="twitter:site" content="{{metadata.tw_site}}"/>
+<meta name="twitter:title" content="{{metadata.tw_title}}"/>
+<meta name="twitter:description" content="{{metadata.tw_description}}"/>
+<meta name="twitter:creator" content="{{metadata.tw_creator}}"/>
+<meta name="twitter:image" content="{{request.scheme}}://{{request.site.domain}}{{metadata.tw_image}}"/>

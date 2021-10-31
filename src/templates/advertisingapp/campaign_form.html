@@ -1,0 +1,22 @@
+{% extends 'homeapp/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+{% if object %}
+  <h1>Edit Campaign</h1>
+{% else %}
+  <h1>Create Campaign</h1>
+{% endif %}
+
+
+<form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    {% if object %}
+      <input type="submit" value="Update Campaign" />
+    {% else %}
+      <input type="submit" value="Create Campaign" />
+    {% endif %}
+</form>
+
+{% endblock %}
