@@ -3,6 +3,8 @@
 {% block content %}
 {% load static %}
 
+{% if not post %}<p>Create a home page with 'home' slug</p>{% endif %} 
+
 <div class='row'>
   <article class='col-12 col-xl-8'>
     {% if post.featured_image %}
