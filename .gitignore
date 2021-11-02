@@ -1,3 +1,4 @@
 .*
+collectstatic/
 ignore/
 __pycache__/

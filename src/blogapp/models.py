@@ -322,5 +322,5 @@ class Page(Post):
         # add the transaction_type if missing
         if self.post_type == '':
             self.post_type='PAGE'
-        super(Article, self).save(*args, **kwargs)
+        super(Page, self).save(*args, **kwargs)
 

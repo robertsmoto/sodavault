@@ -13,42 +13,33 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include, path
-import debug_toolbar
+from blogapp.models import Post
 from django.conf import settings
 from django.conf.urls.static import static
+from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
-from homeapp.mixins import Navigation # , MetaData
-from blogapp.models import Post
+from django.urls import include, path
 from django_registration.backends.one_step.views import RegistrationView
+from homeapp.mixins import Navigation # , MetaData
+import debug_toolbar
 
 
 class CustomRegistrationView(Navigation, RegistrationView):
      def get_context_data(self, **kwargs):
         context = super(CustomRegistrationView, self).get_context_data(**kwargs)
         context["context"] = context
-        slug = 'home'
-        post_q = Post.objects.get(slug=slug)        
-        context["post"] = post_q
         return context
 
 class CustomLoginView(Navigation, LoginView):
      def get_context_data(self, **kwargs):
         context = super(CustomLoginView, self).get_context_data(**kwargs)
         context["context"] = context
-        slug = 'home'
-        post_q = Post.objects.get(slug=slug)        
-        context["post"] = post_q
         return context
 
 class CustomLogoutView(Navigation, LogoutView):
      def get_context_data(self, **kwargs):
         context = super(CustomLogoutView, self).get_context_data(**kwargs)
         context["context"] = context
-        slug = 'home'
-        post_q = Post.objects.get(slug=slug)        
-        context["post"] = post_q
         return context
 
 
@@ -60,6 +51,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('_nested_admin/', include('nested_admin.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
+    path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/', include('django_registration.backends.one_step.urls')),
     path('accounts/login/',
         CustomLoginView.as_view(),
         name='django-registration-login'),
@@ -69,8 +62,6 @@ urlpatterns = [
     path('accounts/register/',
         CustomRegistrationView.as_view(success_url='/core/'),
         name='django-registration-register'),
-    path('accounts/', include('django_registration.backends.one_step.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
     path('advertising/', include('advertisingapp.urls')),
     path('content/', include('blogapp.urls')),
     path('core/', include('coreapp.urls')),

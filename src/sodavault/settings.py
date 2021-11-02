@@ -1,12 +1,10 @@
 from decouple import config, Csv
 from pathlib import Path
-from storages.backends.s3boto3 import S3Boto3Storage
-
 
 ##### ENVIRONMENT
 DEBUG = config('ENV_DEBUG', default=False, cast=bool)
 SECRET_KEY = config('ENV_SECRET_KEY')
-INTERNAL_IPS = config('ENV_INTERNAL_IPS', cast=Csv())
+INTERNAL_IPS = config('ENV_INTERNAL_IPS', default='', cast=Csv())
 ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
 
 ##### COMMON SETTINGS
@@ -21,8 +19,8 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
     'django.contrib.messages',
+    'django.contrib.sessions',
     'django.contrib.staticfiles',
     # third party packages
     'ckeditor',
@@ -31,7 +29,7 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_filters',
     'django_hosts',
-    # 'django_registration',
+    'django_registration',
     'graphene_django',
     'imagekit',
     'nested_admin',
@@ -72,8 +70,6 @@ ROOT_URLCONF = 'sodavault.urls'
 # django_hosts settings
 ROOT_HOSTCONF = 'sodavault.hosts' 
 DEFAULT_HOST = 'default-host'
-
-# APPEND_SLASH = False
 
 TEMPLATES = [
     {
@@ -149,79 +145,27 @@ USE_L10N = config('ENV_USE_L10N')
 
 GRAPHENE = { 'SCHEMA': 'graphqlapp.schema.schema', }
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/3.2/howto/static-files/
-
-STATIC_ROOT = config('ENV_STATIC_ROOT')
-STATIC_URL = config('ENV_STATIC_URL')
-STATICFILES_DIRS = config('ENV_STATICFILES_DIRS', cast=Csv())
-MEDIA_ROOT = config('ENV_MEDIA_ROOT')
-MEDIA_URL = config('ENV_MEDIA_URL')
-
-
-
-
-
-
-
 ##### STORAGE
-class MediaStorage(S3Boto3Storage):
-    bucket_name = config('ENV_BUCKET_NAME')
-    location = 'media'
+STATIC_URL = config('ENV_STATIC_URL')
+MEDIA_URL = config('ENV_MEDIA_URL')
+STATICFILES_DIRS = config('ENV_STATICFILES_DIRS', cast=Csv())
 
-class StaticStorage(S3Boto3Storage):
-    bucket_name = config('ENV_BUCKET_NAME')
-    location = 'static'
-
-
-
-AWS_ACCESS_KEY_ID = 'YDI52ZS4AW2NDEABYWBS'
-AWS_SECRET_ACCESS_KEY = '0vGYAUN5uKmga8d4kjXGsMNoCeyPEi3NW6nf0IS8YeE'
-AWS_STORAGE_BUCKET_NAME = 'sodavault'
-AWS_S3_CUSTOM_DOMAIN = 'cdn.sodavault.com'
-AWS_S3_REGION_NAME = 'nyc3'
-AWS_S3_ENDPOINT_URL = 'https://nyc3.digitaloceanspaces.com'
-AWS_S3_OBJECT_PARAMETERS = {
-    'CacheControl': 'max-age=86400',
-    'ACL': 'public-read',
-}
-
-STATICFILES_STORAGE = 'sodavault.components.custom_storage.StaticStorage'
-DEFAULT_FILE_STORAGE = 'sodavault.components.custom_storage.MediaStorage'
-
-
-"""
-Default: None
-The absolute path to the directory where collectstatic will collect static files for deployment."""
-ENV_STATIC_ROOT = "static/"
-"""
-Default: None
-URL to use when referring to static files located in STATIC_ROOT.
-"""
-ENV_STATIC_URL = "https://cdn.sodavault.com/static/"
-"""
-This setting defines the additional locations the staticfiles app will traverse if the FileSystemFinder finder is enabled, e.g. if you use the collectstatic or findstatic management command or use the static file serving view.
-"""
-ENV_STATICFILES_DIRS = [
-    '/home/robertsmoto/sodavault/src/templates/',
-    '/home/robertsmoto/sodavault/src/static_dir/',
-]
-
-"""
-Default: '' (Empty string)
-Absolute filesystem path to the directory that will hold user-uploaded files.
-Example: "/var/www/example.com/media/"
-"""
-ENV_MEDIA_ROOT = "media/"
-"""
-Default: '' (Empty string)
-URL that handles the media served from MEDIA_ROOT, used for managing stored files. It must end in a slash if set to a non-empty value. You will need to configure these files to be served in both development and production environments.
-If you want to use {{ MEDIA_URL }} in your templates, add 'django.template.context_processors.media' in the 'context_processors' option of TEMPLATES.
-Example: "http://media.example.com/"
-"""
-ENV_MEDIA_URL = "https://cdn.sodavault.com/src/media/"
-
-
+if config('ENV_USE_SPCES', cast=bool):
+    AWS_ACCESS_KEY_ID = config('ENV_AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = config('ENV_AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = config('ENV_AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_CUSTOM_DOMAIN = config('ENV_AWS_S3_CUSTOM_DOMAIN')
+    AWS_S3_REGION_NAME = config('ENV_AWS_S3_REGION_NAME')
+    AWS_S3_ENDPOINT_URL = config('ENV_AWS_S3_ENDPOINT_URL')
+    AWS_S3_OBJECT_PARAMETERS = {
+        'CacheControl': 'max-age=86400',
+        'ACL': 'public-read',
+    }
+    STATICFILES_STORAGE = 'sodavault.custom_storage.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'sodavault.custom_storage.MediaStorage'
+else:
+    STATIC_ROOT = config('ENV_STATIC_ROOT')
+    MEDIA_ROOT = config('ENV_MEDIA_ROOT')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
