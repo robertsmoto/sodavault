@@ -11,6 +11,12 @@ ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+# Admins
+ADMINS = [
+    ('Scott', 'roberts.moto@gmail.com'),
+]
+
 # Application definition
 INSTALLED_APPS = [
     # django autocomplete light
@@ -166,6 +172,19 @@ if config('ENV_USE_SPCES', cast=bool):
 else:
     STATIC_ROOT = config('ENV_STATIC_ROOT')
     MEDIA_ROOT = config('ENV_MEDIA_ROOT')
+<<<<<<< HEAD
+=======
+
+
+##### EMAIL
+SERVER_EMAIL = config('ENV_SERVER_EMAIL')
+EMAIL_BACKEND = config('ENV_EMAIL_BACKEND') 
+EMAIL_HOST = config('ENV_EMAIL_HOST')
+EMAIL_USE_TLS = config('ENV_EMAIL_USE_TLS', cast=bool) 
+EMAIL_PORT = config('ENV_EMAIL_PORT', cast=int)
+EMAIL_HOST_USER = config('ENV_EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('ENV_EMAIL_HOST_PASSWORD')
+>>>>>>> main
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
