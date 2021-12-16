@@ -82,6 +82,7 @@ class Tag(models.Model):
     def __str__(self):
         return '%s' % (self.name)
 
+
 class Post(models.Model):
 
     POST_TYPE_CHOICES = [
@@ -220,7 +221,8 @@ class Post(models.Model):
     footer = RichTextUploadingField(
         null=True,
         blank=True,
-        help_text="Use for footnotes, redactions and notes of changes or updates.",
+        help_text=(
+            "Use for footnotes, redactions and notes of changes or updates."),
         config_name='blog',
     )
 
@@ -272,9 +274,11 @@ Using proxy models for:
     3. Pages
 """
 
+
 class ArticleManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(post_type='ARTI')
+
 
 class Article(Post):
     objects = ArticleManager()
@@ -283,16 +287,17 @@ class Article(Post):
         proxy = True
         verbose_name_plural = "01. Articles"
 
-
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type == '':
-            self.post_type='ARTI'
+            self.post_type = 'ARTI'
         super(Article, self).save(*args, **kwargs)
+
 
 class DocManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(post_type='DOCS')
+
 
 class Doc(Post):
     objects = DocManager()
@@ -304,12 +309,14 @@ class Doc(Post):
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type == '':
-            self.post_type='DOCS'
+            self.post_type = 'DOCS'
         super(Article, self).save(*args, **kwargs)
+
 
 class PageManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(post_type='PAGE')
+
 
 class Page(Post):
     objects = PageManager()
@@ -321,6 +328,5 @@ class Page(Post):
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type == '':
-            self.post_type='PAGE'
+            self.post_type = 'PAGE'
         super(Page, self).save(*args, **kwargs)
-
