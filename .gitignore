@@ -1,4 +1,5 @@
 .*
-collectstatic/
-ignore/
+!/.gitignore
 __pycache__/
+env/
+ignore/
