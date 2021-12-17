@@ -1,13 +1,9 @@
 from django.contrib import admin
-from .models import *
+from .models import Assett, Banner, Campaign
 
 
 class AssettsInline(admin.StackedInline):
     model = Assett
-#     fields = [
-        # 'attribute',
-        # 'term',
-    # ]
     extra = 0
     verbose_name = "asset"
     verbose_name_plural = "assetts"
@@ -15,10 +11,6 @@ class AssettsInline(admin.StackedInline):
 
 class BannersInline(admin.StackedInline):
     model = Banner
-#     fields = [
-        # 'attribute',
-        # 'term',
-    # ]
     extra = 0
     verbose_name = "bannner"
     verbose_name_plural = "banner"
@@ -49,4 +41,3 @@ class CampaignAdmin(admin.ModelAdmin):
     # filter_horizontal = ['products']
     verbose_name = 'campaign'
     verbose_name_plural = 'campaigns'
-
