@@ -114,6 +114,12 @@ class BlogPostNode(DjangoObjectType):
 
         interfaces = (relay.Node, )
 
+    def resolve_featured_image(self, info):
+        return self.featured_image.url
+
+    def resolve_thumbnail_image(self, info):
+        return self.thumbnail_image.url
+
 
 class ProductNode(DjangoObjectType):
     class Meta:
