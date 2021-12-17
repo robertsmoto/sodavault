@@ -4,18 +4,16 @@ import graphene
 from graphene import relay
 from graphene_django.filter import DjangoFilterConnectionField
 from graphene_django import DjangoObjectType
-from itemsapp.models import Measurement, Promotion, Marketing
 import blogapp.models
-from itemsapp.models import DigitalOption, Bundle, ProductAttributeJoin
-from itemsapp.models import Product, Identifier, Category, Tag 
-from advertisingapp.models import Campaign, Assett, Banner
+import itemsapp.models
+import advertisingapp.models
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Products
 class CategoryNode(DjangoObjectType):
     class Meta:
-        model = Category
+        model = itemsapp.models.Category
         fields = ["product", "name", "slug", "parent"]
         filter_fields = []
         interfaces = (relay.Node, )
@@ -23,7 +21,7 @@ class CategoryNode(DjangoObjectType):
 
 class TagNode(DjangoObjectType):
     class Meta:
-        model = Category
+        model = itemsapp.models.Category
         fields = ["product", "name", "slug"]
         filter_fields = []
         interfaces = (relay.Node, )
@@ -31,14 +29,14 @@ class TagNode(DjangoObjectType):
 
 class IdentifierNode(DjangoObjectType):
     class Meta:
-        model = Identifier
+        model = itemsapp.models.Identifier
         fields = ["product", "pid_i", "pid_c", "gtin", "isbn"]
         interfaces = (relay.Node, )
 
 
 class MeasurementNode(DjangoObjectType):
     class Meta:
-        model = Measurement
+        model = itemsapp.models.Measurement
         fields = ["product", "weight", "length", "width", "height"]
         filter_fields = []
         interfaces = (relay.Node, )
@@ -46,7 +44,7 @@ class MeasurementNode(DjangoObjectType):
 
 class BundleOptionNode(DjangoObjectType):
     class Meta:
-        model = Bundle
+        model = itemsapp.models.Bundle
         fields = [
                 "product", "subproduct", "quantity_min", "quantity_max",
                 "is_optional"]
@@ -56,7 +54,7 @@ class BundleOptionNode(DjangoObjectType):
 
 class DigitalOptionNode(DjangoObjectType):
     class Meta:
-        model = DigitalOption
+        model = itemsapp.models.DigitalOption
         fields = ["product", "name"]
         filter_fields = []
         interfaces = (relay.Node, )
@@ -64,7 +62,7 @@ class DigitalOptionNode(DjangoObjectType):
 
 class PromotionNode(DjangoObjectType):
     class Meta:
-        model = Promotion
+        model = itemsapp.models.Promotion
         fields = [
                 "product", "promotion_override", "name", "slug", "begins",
                 "ends", "percentage", "fixed", "price", "is_free_shipping",
@@ -119,7 +117,7 @@ class BlogPostNode(DjangoObjectType):
 
 class MarketingNode(DjangoObjectType):
     class Meta:
-        model = Marketing
+        model = advertisingapp.models.Marketing
         fields = [
                 "product", "description_sm", "description_md",
                 "description_lg", "img_1x1_lg", "img_1x1_md", "img_1x1_sm",
@@ -165,7 +163,7 @@ class MarketingNode(DjangoObjectType):
 
 class ProductNode(DjangoObjectType):
     class Meta:
-        model = Product
+        model = advertisingapp.models.Product
         fields = [
                 "name", "sku", "cost", "price", "categories", "tags",
                 "identifiers", "measurements", "digital_options", "promotions",
@@ -177,7 +175,7 @@ class ProductNode(DjangoObjectType):
 class CampaignNode(DjangoObjectType):
 
     class Meta:
-        model = Campaign
+        model = advertisingapp.models.Campaign
 
         fields = [
                 "name", "date_added", "date_expires", "site_name", "site_url",
@@ -190,7 +188,7 @@ class CampaignNode(DjangoObjectType):
 
 class AssettNode(DjangoObjectType):
     class Meta:
-        model = Assett
+        model = advertisingapp.models.Assett
         fields = [
                 "campaign", "product", "name", "excerpt", "url_name",
                 "url_link", "img_1x1"]
@@ -203,7 +201,7 @@ class AssettNode(DjangoObjectType):
 
 class BannerNode(DjangoObjectType):
     class Meta:
-        model = Banner
+        model = advertisingapp.models.Banner
         fields = [
                 "campaign", "image_xl", "image_lg", "image_md", "image_sm",
                 "image_skyscraper"]
