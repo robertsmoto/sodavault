@@ -115,52 +115,6 @@ class BlogPostNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-# class MarketingNode(DjangoObjectType):
-    # class Meta:
-        # model = advertisingapp.models.Marketing
-        # fields = [
-                # "product", "description_sm", "description_md",
-                # "description_lg", "img_1x1_lg", "img_1x1_md", "img_1x1_sm",
-                # "img_2x1_lg", "img_2x1_md", "img_2x1_sm", "img_1x2_lg",
-                # "img_1x2_md", "img_1x2_sm", "img_16x9", "img_191x1"]
-
-        # filter_fields = []
-        # interfaces = (relay.Node, )
-
-    # def resolve_img_1x1_lg(self, info):
-        # return self.img_1x1_lg.url
-
-    # def resolve_img_1x1_md(self, info):
-        # return self.image_xl.url
-
-    # def resolve_img_1x1_sm(self, info):
-        # return self.img_1x1_sm.url
-
-    # def resolve_img_2x1_lg(self, info):
-        # return self.img_2x1_lg.url
-
-    # def resolve_img_2x1_md(self, info):
-        # return self.img_2x1_md.url
-
-    # def resolve_img_2x1_sm(self, info):
-        # return self.img_2x1_sm.url
-
-    # def resolve_img_1x2_lg(self, info):
-        # return self.img_1x2_lg.url
-
-    # def resolve_img_1x2_md(self, info):
-        # return self.img_1x2_md.url
-
-    # def resolve_img_1x2_sm(self, info):
-        # return self.img_1x2_sm.url
-
-    # def resolve_img_16x9(self, info):
-        # return self.img_16x9.url
-
-    # def resolve_img_191x1(self, info):
-#         return self.img_191x1.url
-
-
 class ProductNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Product
@@ -223,10 +177,6 @@ class BannerNode(DjangoObjectType):
     def resolve_image_skyscraper(self, info):
         return self.image_skyscraper.url
 
-#     # blog and pages
-    # posts_and_pages = relay.Node.Field(BlogPostNode)
-#     all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
-
 
 class Query(graphene.ObjectType):
     # products
@@ -238,6 +188,10 @@ class Query(graphene.ObjectType):
 
     tag = relay.Node.Field(TagNode)
     all_tags = DjangoFilterConnectionField(TagNode)
+
+    # blog and pages
+    posts_and_pages = relay.Node.Field(BlogPostNode)
+    all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
 
     # ads
     campaign = relay.Node.Field(CampaignNode)
