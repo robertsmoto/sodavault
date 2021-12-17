@@ -54,7 +54,8 @@ class Assett(models.Model):
         null=True,
         on_delete=models.CASCADE)
     name = models.CharField('Asset Name', max_length=200, blank=True)
-    excerpt = RichTextField('Excerpt', max_length=400, blank=True, null=True,
+    excerpt = RichTextField(
+            'Excerpt', max_length=400, blank=True, null=True, 
             help_text="400 characters max")
     img_1x1 = ProcessedImageField(
         upload_to='advertisingapp/assetts/%Y/%m/%d',

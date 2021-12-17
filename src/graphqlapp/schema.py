@@ -237,9 +237,9 @@ class Query(graphene.ObjectType):
     tag = relay.Node.Field(TagNode)
     all_tags = DjangoFilterConnectionField(TagNode)
 
-    # blog and pages
-    posts_and_pages = relay.Node.Field(BlogPostNode)
-    all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
+#     # blog and pages
+    # posts_and_pages = relay.Node.Field(BlogPostNode)
+#     all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
 
     # ads
     campaign = relay.Node.Field(CampaignNode)
