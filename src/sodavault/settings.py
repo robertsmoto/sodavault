@@ -1,13 +1,13 @@
 from decouple import config, Csv
 from pathlib import Path
 
-##### ENVIRONMENT
+# ENVIRONMENT
 DEBUG = config('ENV_DEBUG', default=False, cast=bool)
 SECRET_KEY = config('ENV_SECRET_KEY')
 INTERNAL_IPS = config('ENV_INTERNAL_IPS', default='', cast=Csv())
 ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
 
-##### COMMON SETTINGS
+# COMMON SETTINGS
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.sessions',
     'django.contrib.staticfiles',
+
     # third party packages
     'ckeditor',
     'ckeditor_uploader',
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
+
+    # my apps
     'advertisingapp',
     'blogapp',
     'configapp',
@@ -74,7 +77,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'sodavault.urls'
 
 # django_hosts settings
-ROOT_HOSTCONF = 'sodavault.hosts' 
+ROOT_HOSTCONF = 'sodavault.hosts'
 DEFAULT_HOST = 'default-host'
 
 TEMPLATES = [
@@ -129,7 +132,7 @@ REST_FRAMEWORK = {
     )
 }
 
-##### DATABASE
+# DATABASE
 DATABASES = {
     'default': {
         'ENGINE': config('ENV_DB_ENGINE'),
@@ -141,7 +144,7 @@ DATABASES = {
     }
 }
 
-##### TIMEZONE, LANGUAGE, ENCODING
+# TIMEZONE, LANGUAGE, ENCODING
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 LANGUAGE_CODE = config('ENV_LANGUAGE_CODE')
 USE_TZ = config('ENV_USE_TZ')
@@ -149,9 +152,9 @@ TIME_ZONE = config('ENV_TIME_ZONE')
 USE_I18N = config('ENV_USE_I18N')
 USE_L10N = config('ENV_USE_L10N')
 
-GRAPHENE = { 'SCHEMA': 'graphqlapp.schema.schema', }
+GRAPHENE = {'SCHEMA': 'graphqlapp.schema.schema', }
 
-##### STORAGE
+# STORAGE
 STATIC_URL = config('ENV_STATIC_URL')
 MEDIA_URL = config('ENV_MEDIA_URL')
 STATICFILES_DIRS = config('ENV_STATICFILES_DIRS', cast=Csv())
@@ -172,19 +175,15 @@ if config('ENV_USE_SPCES', cast=bool):
 else:
     STATIC_ROOT = config('ENV_STATIC_ROOT')
     MEDIA_ROOT = config('ENV_MEDIA_ROOT')
-<<<<<<< HEAD
-=======
 
-
-##### EMAIL
+# EMAIL
 SERVER_EMAIL = config('ENV_SERVER_EMAIL')
-EMAIL_BACKEND = config('ENV_EMAIL_BACKEND') 
+EMAIL_BACKEND = config('ENV_EMAIL_BACKEND')
 EMAIL_HOST = config('ENV_EMAIL_HOST')
-EMAIL_USE_TLS = config('ENV_EMAIL_USE_TLS', cast=bool) 
+EMAIL_USE_TLS = config('ENV_EMAIL_USE_TLS', cast=bool)
 EMAIL_PORT = config('ENV_EMAIL_PORT', cast=int)
 EMAIL_HOST_USER = config('ENV_EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('ENV_EMAIL_HOST_PASSWORD')
->>>>>>> main
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -192,7 +191,7 @@ EMAIL_HOST_PASSWORD = config('ENV_EMAIL_HOST_PASSWORD')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # registration settings
-ACCOUNT_ACTIVATION_DAYS = 7 # One-week activation window
+ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
 LOGIN_REDIRECT_URL = '/core/'
 
 # crispy forms
@@ -251,60 +250,60 @@ CKEDITOR_CONFIGS = {
     'blog': {
         'skin': 'moonocolor',
         'toolbar_Basic': [
-            ['Source',],
+            ['Source', ],
             {
-                'name': 'styles', 
+                'name': 'styles',
                 'items': [
-                    'Format',] # 'Styles', 'Font', 'FontSize']
+                    'Format', ]  # 'Styles', 'Font', 'FontSize']
             },
 
             # ['-', 'Bold', 'Italic',],
             {
-                'name': 'basicstyles', 
+                'name': 'basicstyles',
                 'items': [
-                    'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 
+                    'Bold', 'Italic', 'Underline', 'Strike', 'Subscript',
                     'Superscript', '-', 'RemoveFormat']
             },
-            {'name': 'styles', 'items': ['Styles',]},
+            {'name': 'styles', 'items': ['Styles', ]},
             ['CodeSnippet', 'Code'],
             {
-                'name': 'links', 
+                'name': 'links',
                 'items': ['Link', 'Unlink', 'Anchor']
             },
             {
                 'name': 'insert',
-                 'items': [
-                     'Image', 'Table', 'HorizontalRule', 'SpecialChar', 
-                     'PageBreak', 'Iframe', 'UploadImage',]
+                'items': [
+                     'Image', 'Table', 'HorizontalRule', 'SpecialChar',
+                     'PageBreak', 'Iframe', 'UploadImage', ]
             },
             {
                 'name': 'codesnippet',
-                'items': ['code', 'codeblock',]
+                'items': ['code', 'codeblock', ]
             },
             '/',
             {
                 'name': 'paragraph',
                 'items': [
-                    'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', 
-                    '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 
-                    'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 
+                    'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent',
+                    '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft',
+                    'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
                     'BidiLtr', 'BidiRtl', 'Language']
             },
             {
-                'name': 'clipboard', 
+                'name': 'clipboard',
                 'items': [
-                    'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 
+                    'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-',
                     'Undo', 'Redo']
             },
 
         ],
-        'toolbar': 'Basic', # <-- use custom config
+        'toolbar': 'Basic',  # <-- use custom config
         'codeSnippet_theme': 'groovebox',
         'height': 300,
         'tabSpaces': 4,
         # "removePlugins": "stylesheetparser",
         'extraPlugins': ','.join([
-            'uploadimage', # the upload image feature
+            'uploadimage',  # the upload image feature
             # your extra plugins here
             'codesnippet',
             'wordcount',
@@ -323,7 +322,4 @@ CKEDITOR_CONFIGS = {
             'elementspath'
         ]),
     },
-} 
-
-
-
+}

@@ -15,66 +15,71 @@ Including another URLconf
 """
 from django.urls import path
 from .views import CampaignAutocomplete
-from .views import CampaignListView, CampaignCreateView, CampaignUpdateView, CampaignDeleteView
+from .views import CampaignListView, CampaignCreateView
+from .views import CampaignUpdateView, CampaignDeleteView
 from .views import AdvertisingView, AssettView, BannerView
 
 urlpatterns = [
     # using the blogapp to serve the homepage
     path(
-        '', 
+        '',
         AdvertisingView.as_view(
             extra_context={
                 'doc_slug': 'ad-home',
             }
-        ), 
+        ),
         name='ad-home',
     ),
     path(
-        'assett/', 
+        'assett/',
         AssettView.as_view(
             extra_context={
                 'doc_slug': 'ad-assett',
             }
-        ), 
+        ),
         name='ad-assett',
     ),
     path(
-        'banner/', 
+        'banner/',
         BannerView.as_view(
             extra_context={
                 'doc_slug': 'ad-banner',
             }
-        ), 
+        ),
         name='ad-banner',
     ),
     path(
-        'assett/', 
-        AssettView.as_view(extra_context={'doc_slug': 'ad-assett',}), 
+        'assett/',
+        AssettView.as_view(extra_context={'doc_slug': 'ad-assett', }),
         name='ad-assett',
     ),
     path(
-        'campaign-autocomplete/', 
-        CampaignAutocomplete.as_view(), 
+        'campaign-autocomplete/',
+        CampaignAutocomplete.as_view(),
         name='campaign-autocomplete',
     ),
     path(
-        'campaign-list/', 
-        CampaignListView.as_view(extra_context={'doc_slug': 'campaign-list',}), 
+        'campaign-list/',
+        CampaignListView.as_view(
+            extra_context={'doc_slug': 'campaign-list', }),
         name='campaign-list',
     ),
     path(
-        'campaign-create/', 
-        CampaignCreateView.as_view(extra_context={'doc_slug': 'campaign-create',}), 
+        'campaign-create/',
+        CampaignCreateView.as_view(
+            extra_context={'doc_slug': 'campaign-create', }),
         name='campaign-create',
     ),
     path(
-        '<pk>/campaign-update/', 
-        CampaignUpdateView.as_view(extra_context={'doc_slug': 'campaign-update',}), 
+        '<pk>/campaign-update/',
+        CampaignUpdateView.as_view(
+            extra_context={'doc_slug': 'campaign-update', }),
         name='campaign-update',
     ),
     path(
-        '<pk>/campaign-delete/', 
-        CampaignDeleteView.as_view(extra_context={'doc_slug': 'campaign-delete',}), 
+        '<pk>/campaign-delete/',
+        CampaignDeleteView.as_view(
+            extra_context={'doc_slug': 'campaign-delete', }),
         name='campaign-delete',
     ),
 
