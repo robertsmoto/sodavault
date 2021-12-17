@@ -108,9 +108,7 @@ class BlogPostNode(DjangoObjectType):
         filter_fields = [
                 "locations", "categories", "tags", "author", "menu_order",
                 "parent", "primary_menu", "post_type", "title", "excerpt",
-                "body", "slug", "status", "featured", "date_published",
-                "date_modified", "keyword_list", "image_title" "image_caption",
-                "footer"]
+                "body", "slug", "status", "featured", "date_published"]
 
         interfaces = (relay.Node, )
 
