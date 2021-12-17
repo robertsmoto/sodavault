@@ -155,11 +155,11 @@ USE_L10N = config('ENV_USE_L10N')
 GRAPHENE = {'SCHEMA': 'graphqlapp.schema.schema', }
 
 # STORAGE
+STATICFILES_DIRS = config('ENV_STATICFILES_DIRS', cast=Csv())
 STATIC_URL = config('ENV_STATIC_URL')
 MEDIA_URL = config('ENV_MEDIA_URL')
-STATICFILES_DIRS = config('ENV_STATICFILES_DIRS', cast=Csv())
 
-if config('ENV_USE_SPCES', cast=bool):
+if config('ENV_USE_SPACES', cast=bool):
     AWS_ACCESS_KEY_ID = config('ENV_AWS_ACCESS_KEY_ID')
     AWS_SECRET_ACCESS_KEY = config('ENV_AWS_SECRET_ACCESS_KEY')
     AWS_STORAGE_BUCKET_NAME = config('ENV_AWS_STORAGE_BUCKET_NAME')
@@ -170,6 +170,7 @@ if config('ENV_USE_SPCES', cast=bool):
         'CacheControl': 'max-age=86400',
         'ACL': 'public-read',
     }
+
     STATICFILES_STORAGE = 'sodavault.custom_storage.StaticStorage'
     DEFAULT_FILE_STORAGE = 'sodavault.custom_storage.MediaStorage'
 else:
