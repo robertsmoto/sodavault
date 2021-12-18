@@ -162,7 +162,7 @@ class BannerNode(DjangoObjectType):
         model = advertisingapp.models.Banner
         fields = [
                 "campaign", "name", "image_xl", "image_lg", "image_md",
-                "image_sm", "image_skyscraper"]
+                "image_sm", "image_skyscraper", "image_lg_url"]
         filter_fields = ["campaign"]
         interfaces = (relay.Node, )
 
