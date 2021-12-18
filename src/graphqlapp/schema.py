@@ -162,8 +162,7 @@ class BannerNode(DjangoObjectType):
         model = advertisingapp.models.Banner
         fields = [
                 "campaign", "name", "image_xl", "image_lg", "image_md",
-                "image_sm", "image_skyscraper", "image_lg_url"
-                ]
+                "image_sm", "image_skyscraper"]
         interfaces = (relay.Node, )
 
 #     def resolve_image_xl(self, info):
