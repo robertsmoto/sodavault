@@ -160,27 +160,26 @@ class AssettNode(DjangoObjectType):
 class BannerNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Banner
-        exclude = ["image_md"]
-        # fields = [
-                # "campaign", "name", "image_xl", "image_lg", "image_md",
-        #         "image_sm", "image_skyscraper", "image_lg_url"]
+        fields = [
+                "campaign", "name", "image_xl", "image_lg", "image_md",
+                "image_sm", "image_skyscraper", "image_lg_url"]
         filter_fields = ["campaign"]
         interfaces = (relay.Node, )
 
+    def resolve_image_lg(self, info):
+        return self.image_lg.url
+
+    def resolve_image_md(self, info):
+        return self.image_md.url
+
+    def resolve_image_sm(self, info):
+        return self.image_sm.url
+
+    def resolve_image_skyscraper(self, info):
+        return self.image_skyscraper.url
+
     def resolve_image_lg_url(self, info):
         return self.image_lg_url
-
-    # def resolve_image_lg(self, info):
-        # return self.image_lg.url
-
-    # def resolve_image_md(self, info):
-        # return self.image_md.url
-
-    # def resolve_image_sm(self, info):
-        # return self.image_sm.url
-
-    # def resolve_image_skyscraper(self, info):
-#         return self.image_skyscraper.url
 
 
 class Query(graphene.ObjectType):
