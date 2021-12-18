@@ -160,7 +160,7 @@ class AssettNode(DjangoObjectType):
 class BannerNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Banner
-        # fields = ["__all__"]
+        exlude = ['image_md']
         interfaces = (relay.Node, )
 
 #     def resolve_image_xl(self, info):
