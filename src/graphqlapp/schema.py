@@ -163,6 +163,7 @@ class BannerNode(DjangoObjectType):
         fields = [
                 "campaign", "name", "image_xl", "image_lg", "image_md",
                 "image_sm", "image_skyscraper"]
+        filter_fields = ["campaign"]
         interfaces = (relay.Node, )
 
 #     def resolve_image_xl(self, info):
