@@ -114,6 +114,11 @@ class Banner(models.Model):
         null=True,
         help_text="recommended size: 160px x 600px")
 
+    @property
+    def image_lg_url(self):
+        """Returns the image_lg url."""
+        return self.image_lg.url
+
     def __str__(self):
         return self.name
 
