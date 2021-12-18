@@ -117,7 +117,7 @@ class Banner(models.Model):
     @property
     def image_lg_url(self):
         """Returns the image_lg url."""
-        return self.image_lg.url
+        return f"{self.image_lg.url}"
 
     def __str__(self):
         return self.name
