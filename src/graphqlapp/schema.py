@@ -160,7 +160,7 @@ class AssettNode(DjangoObjectType):
 class BannerNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Banner
-        exclude = [
+        fields = [
                 "campaign", "name", "image_xl", "image_lg", "image_md",
                 "image_sm", "image_skyscraper", "image_lg_url"
                 ]
