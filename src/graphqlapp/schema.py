@@ -1,5 +1,3 @@
-from django.db.models import Q
-from datetime import datetime
 import graphene
 from graphene import relay
 from graphene_django.filter import DjangoFilterConnectionField
@@ -7,7 +5,6 @@ from graphene_django import DjangoObjectType
 import blogapp.models
 import itemsapp.models
 import advertisingapp.models
-from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 # Products
@@ -152,9 +149,6 @@ class AssettNode(DjangoObjectType):
                 "url_link", "img_1x1"]
         filter_fields = []
         interfaces = (relay.Node, )
-
-#     def resolve_img_1x1(self, info):
-        # return self.img_1x1.url
 
 
 class BannerNode(DjangoObjectType):
