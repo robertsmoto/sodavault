@@ -6,9 +6,7 @@ from io import BytesIO
 from itemsapp.models import Product
 from pathlib import Path
 import PIL
-import imghdr
 from decouple import config
-import os
 
 
 class Campaign(models.Model):
