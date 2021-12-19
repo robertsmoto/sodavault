@@ -1,5 +1,6 @@
 from decouple import config, Csv
 from pathlib import Path
+import logging
 
 # ENVIRONMENT
 DEBUG = config('ENV_DEBUG', default=False, cast=bool)
@@ -11,6 +12,12 @@ ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# LOGGING
+LOGGING_CONFIG = None  # disables django standard logging
+logging.basicConfig(
+        format="%(asctime)s - %(message)s",
+        level=logging.INFO,
+        filename=config('ENV_LOG_FILE'))
 
 # Admins
 ADMINS = [

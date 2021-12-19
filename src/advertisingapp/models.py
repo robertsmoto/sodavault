@@ -7,6 +7,7 @@ from itemsapp.models import Product
 from pathlib import Path
 import PIL
 from decouple import config
+import sodavault.utils_logging as log
 
 
 class Campaign(models.Model):
@@ -150,41 +151,44 @@ class Banner(models.Model):
                     content=File(blob),
                     save=False)
 
-        for img in ORIG_IMGS:
+        try:
+            for img in ORIG_IMGS:
 
-            field = getattr(self, img)
+                field = getattr(self, img)
 
-            basefn = ""
-            if field:
-                basefn = Path(field.url).stem
+                basefn = ""
+                if field:
+                    basefn = Path(field.url).stem
 
-            orig_img = None
-            image_type = ""
+                orig_img = None
+                image_type = ""
 
-            # check and convert orig imgs to webp format
-            if field:
+                # check and convert orig imgs to webp format
+                if field:
 
-                img_path = field.url
-                if config('ENV_DEBUG', cast=bool):
-                    img_path = config('ENV_DEV_ROOT') + field.url
+                    img_path = field.url
+                    if config('ENV_DEBUG', cast=bool):
+                        img_path = config('ENV_DEV_ROOT') + field.url
 
-                orig_img = PIL.Image.open(img_path)
+                    orig_img = PIL.Image.open(img_path)
 
-                image_type = orig_img.mode
+                    image_type = orig_img.mode
 
-                if image_type != "WEBP":
-                    orig_img = orig_img.convert('RGB')
+                    if image_type != "WEBP":
+                        orig_img = orig_img.convert('RGB')
 
-            # create and save variations if img == 'image_xl'
-            if orig_img and img == 'image_xl':
-                for k, v in IMAGE_SIZES.items():
-                    varfield = getattr(self, k)
-                    var_image = orig_img.copy()
-                    create_webp_image(
-                            field=varfield,
-                            new_image=var_image,
-                            sizes=v,
-                            basefn=basefn)
+                # create and save variations if img == 'image_xl'
+                if orig_img and img == 'image_xl':
+                    for k, v in IMAGE_SIZES.items():
+                        varfield = getattr(self, k)
+                        var_image = orig_img.copy()
+                        create_webp_image(
+                                field=varfield,
+                                new_image=var_image,
+                                sizes=v,
+                                basefn=basefn)
+        except Exception as e:
+            log.svlog_info(f"Error saving banner {e}")
 
     def __str__(self):
         return self.name
