@@ -1,13 +1,11 @@
 from ckeditor.fields import RichTextField
-from django.core.files import File
 from django.db import models
 from django.utils import timezone
-from io import BytesIO
+from imagekit import ImageSpec
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
 from itemsapp.models import Product
-from pathlib import Path
-import PIL
-from decouple import config
-import sodavault.utils_logging as log
+import os
 
 
 class Campaign(models.Model):
@@ -82,6 +80,44 @@ class Assett(models.Model):
         verbose_name_plural = "Ad Assetts"
 
 
+class BannerXl(ImageSpec):
+    processors = [ResizeToFill(1140, 380)]
+    format = 'WEBP'
+    options = {'quality': 80}
+
+
+class BannerImgSpec(ImageSpec):
+    def __init__(self, format, options, processors):
+        self.format = 'WEBP'
+        self.options = {'quality': 80}
+        self.processors = self.resize
+
+    def resize(self, processors, sizes: tuple):
+        processors = [ResizeToFill(sizes[0], sizes[1])]
+        return processors
+
+
+class BannerLg(ImageSpec):
+    processors = [ResizeToFill(960, 320)]
+    format = 'WEBP'
+    options = {'quality': 80}
+
+class BannerMd(ImageSpec):
+    processors = [ResizeToFill(720, 240)]
+    format = 'WEBP'
+    options = {'quality': 80}
+
+class BannerSm(ImageSpec):
+    processors = [ResizeToFill(540, 180)]
+    format = 'WEBP'
+    options = {'quality': 80}
+
+class BannerSkyScraper(ImageSpec):
+    processors = [ResizeToFill(160, 600)]
+    format = 'WEBP'
+    options = {'quality': 80}
+
+
 class Banner(models.Model):
     campaign = models.ForeignKey(
             Campaign,
@@ -92,19 +128,25 @@ class Banner(models.Model):
     name = models.CharField(
             'Name', max_length=200, blank=True,
             help_text='Name of the Banner')
-    image_xl = models.ImageField(
+    image_xl = ProcessedImageField(
             upload_to='advertisingapp/banners/%Y/%m/%d/',
+            processors=[ResizeToFill(1140, 380)],
+            format='WEBP',
+            options={'quality': 80},
             blank=True,
             null=True,
             help_text="recommended size: 1140px x 380px")
-    image_skyscraper = models.ImageField(
+    image_skyscraper = ProcessedImageField(
             upload_to='advertisingapp/banners/%Y/%m/%d/',
+            processors=[ResizeToFill(160, 600)],
+            format='WEBP',
+            options={'quality': 80},
             blank=True,
             null=True,
             help_text="recommended size: 160px x 600px")
 
     """The following images are automatically generated using
-    the model's save method and Pillow."""
+    the model's save method."""
 
     image_lg = models.ImageField(
             upload_to='advertisingapp/banners/%Y/%m/%d/',
@@ -122,73 +164,40 @@ class Banner(models.Model):
             null=True,
             help_text="automatic size: 540px x 180px")
 
+    def __init__(self, *args, **kwargs):
+        super(Banner, self).__init__(*args, **kwargs)
+        self._orig_image_xl = self.image_xl
+        self._orig_image_skyscraper = self.image_skyscraper
+
     def save(self, *args, **kwargs):
+        """Creates new banner sizes."""
+
+        if self._orig_image_xl != self.image_xl and self.image_xl:
+
+            base_fn = os.path.basename(self.image_xl.url)
+            fn = os.path.splitext(base_fn)[0]
+            fn = ''.join(x for x in fn if x.isalnum())
+
+            banlg = BannerLg(
+                    source=self.image_xl).generate()
+            pathlg = f'/home/robertsmoto/dev/temp/{fn}-960x320.webp'
+            destlg = open(pathlg, 'wb')
+            destlg.write(banlg.read())
+
+            banmd = BannerMd(
+                    source=self.image_xl).generate()
+            destmd = f'/home/robertsmoto/dev/temp/{fn}-720x240.webp'
+            dest = open(destmd, 'wb')
+            dest.write(banmd.read())
+
+            bansm = BannerSm(
+                    source=self.image_xl).generate()
+            destsm = f'/home/robertsmoto/dev/temp/{fn}-540x180.webp'
+            dest = open(destsm, 'wb')
+            dest.write(bansm.read())
+
         super(Banner, self).save(*args, **kwargs)
 
-        # Original photos
-
-        ORIG_IMGS = ['image_xl', 'image_skyscraper']
-
-        IMAGE_SIZES = {
-                'image_lg': (960, 320),
-                'image_md': (720, 240),
-                'image_sm': (540, 180)}
-
-        def create_webp_image(
-                field: str,
-                new_image: object,
-                sizes: tuple,
-                basefn: str) -> None:
-            """Creates a webp image of specified size."""
-
-            new_image.thumbnail(sizes, PIL.Image.ANTIALIAS)
-
-            blob = BytesIO()
-            new_image.save(blob, "webp", quality=80)
-            new_file_name = f"{basefn}-{sizes[0]}x{sizes[1]}.webp"
-            field.save(
-                    name=new_file_name,
-                    content=File(blob),
-                    save=False)
-
-        try:
-            for img in ORIG_IMGS:
-
-                field = getattr(self, img)
-
-                basefn = ""
-                if field:
-                    basefn = Path(field.url).stem
-
-                orig_img = None
-                image_type = ""
-
-                # check and convert orig imgs to webp format
-                if field:
-
-                    img_path = field.url
-                    if config('ENV_DEBUG', cast=bool):
-                        img_path = config('ENV_DEV_ROOT') + field.url
-
-                    orig_img = PIL.Image.open(img_path)
-
-                    image_type = orig_img.mode
-
-                    if image_type != "WEBP":
-                        orig_img = orig_img.convert('RGB')
-
-                # create and save variations if img == 'image_xl'
-                if orig_img and img == 'image_xl':
-                    for k, v in IMAGE_SIZES.items():
-                        varfield = getattr(self, k)
-                        var_image = orig_img.copy()
-                        create_webp_image(
-                                field=varfield,
-                                new_image=var_image,
-                                sizes=v,
-                                basefn=basefn)
-        except Exception as e:
-            log.svlog_info(f"Error saving banner {e}")
 
     def __str__(self):
         return self.name
