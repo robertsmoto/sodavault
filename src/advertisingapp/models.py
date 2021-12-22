@@ -222,15 +222,19 @@ class Banner(models.Model):
                             aws_secret_access_key=config(
                                 'ENV_AWS_SECRET_ACCESS_KEY'))
 
-                    with open(ban, 'rb') as file_contents:
-                        client.put_object(
-                            Bucket=config('ENV_AWS_BNAME'),
-                            Key=file_path,
-                            Body=file_contents,
-                            ContentEncoding='webp',
-                            ContentType='image/webp',
-                            CacheControl='max-age=86400',
-                            ACL='public-read')
+                    try:
+                        with open(ban, 'rb') as file_contents:
+                            svlog_info("Open for s3.", field=file_contents)
+                            client.put_object(
+                                Bucket=config('ENV_AWS_BNAME'),
+                                Key=file_path,
+                                Body=file_contents,
+                                ContentEncoding='webp',
+                                ContentType='image/webp',
+                                CacheControl='max-age=86400',
+                                ACL='public-read')
+                    except Exception as e:
+                        svlog_info("S3 open exception", field=e)
 
                 else:
                     media_root = config('ENV_MEDIA_ROOT')
