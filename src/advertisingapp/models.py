@@ -6,6 +6,9 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from itemsapp.models import Product
 import os
+from decouple import config
+import boto3
+from sodavault.utils_logging import svlog_info
 
 
 class Campaign(models.Model):
@@ -80,42 +83,42 @@ class Assett(models.Model):
         verbose_name_plural = "Ad Assetts"
 
 
-class BannerXl(ImageSpec):
-    processors = [ResizeToFill(1140, 380)]
-    format = 'WEBP'
-    options = {'quality': 80}
-
-
-class BannerImgSpec(ImageSpec):
-    def __init__(self, format, options, processors):
-        self.format = 'WEBP'
-        self.options = {'quality': 80}
-        self.processors = self.resize
-
-    def resize(self, processors, sizes: tuple):
-        processors = [ResizeToFill(sizes[0], sizes[1])]
-        return processors
-
-
 class BannerLg(ImageSpec):
     processors = [ResizeToFill(960, 320)]
     format = 'WEBP'
     options = {'quality': 80}
+
 
 class BannerMd(ImageSpec):
     processors = [ResizeToFill(720, 240)]
     format = 'WEBP'
     options = {'quality': 80}
 
+
 class BannerSm(ImageSpec):
     processors = [ResizeToFill(540, 180)]
     format = 'WEBP'
     options = {'quality': 80}
 
+
 class BannerSkyScraper(ImageSpec):
     processors = [ResizeToFill(160, 600)]
     format = 'WEBP'
     options = {'quality': 80}
+
+
+def new_filename(instance, filename):
+
+    # build the date dir
+    now = timezone.now()
+    date_dir = now.strftime('%Y/%m/%d/')
+    # build the filename
+    base_fn = os.path.basename(filename)
+    fn = os.path.splitext(base_fn)[0]
+    fn = "".join(x for x in fn if x.isalnum())
+    fn = f"{fn}.webp"
+
+    return os.path.join('advertisingapp/banners/', date_dir, fn)
 
 
 class Banner(models.Model):
@@ -129,7 +132,7 @@ class Banner(models.Model):
             'Name', max_length=200, blank=True,
             help_text='Name of the Banner')
     image_xl = ProcessedImageField(
-            upload_to='advertisingapp/banners/%Y/%m/%d/',
+            upload_to=new_filename,
             processors=[ResizeToFill(1140, 380)],
             format='WEBP',
             options={'quality': 80},
@@ -137,7 +140,7 @@ class Banner(models.Model):
             null=True,
             help_text="recommended size: 1140px x 380px")
     image_skyscraper = ProcessedImageField(
-            upload_to='advertisingapp/banners/%Y/%m/%d/',
+            upload_to=new_filename,
             processors=[ResizeToFill(160, 600)],
             format='WEBP',
             options={'quality': 80},
@@ -148,20 +151,17 @@ class Banner(models.Model):
     """The following images are automatically generated using
     the model's save method."""
 
-    image_lg = models.ImageField(
-            upload_to='advertisingapp/banners/%Y/%m/%d/',
+    image_lg = models.CharField(
+            max_length=200,
             blank=True,
-            null=True,
             help_text="automatic size: 960px x 320px")
-    image_md = models.ImageField(
-            upload_to='advertisingapp/banners/%Y/%m/%d/',
+    image_md = models.CharField(
+            max_length=200,
             blank=True,
-            null=True,
             help_text="automatic size: 720px x 240px")
-    image_sm = models.ImageField(
-            upload_to='advertisingapp/banners/%Y/%m/%d/',
+    image_sm = models.CharField(
+            max_length=200,
             blank=True,
-            null=True,
             help_text="automatic size: 540px x 180px")
 
     def __init__(self, *args, **kwargs):
@@ -170,34 +170,83 @@ class Banner(models.Model):
         self._orig_image_skyscraper = self.image_skyscraper
 
     def save(self, *args, **kwargs):
-        """Creates new banner sizes."""
+        """Creates new banner sizes. Save new images directly to media server
+        and save the url in a char field."""
 
         if self._orig_image_xl != self.image_xl and self.image_xl:
 
-            base_fn = os.path.basename(self.image_xl.url)
-            fn = os.path.splitext(base_fn)[0]
-            fn = ''.join(x for x in fn if x.isalnum())
+            img_index = {
+                    'image_lg': [
+                        BannerLg, self.image_xl, (960, 320)],
+                    'image_md': [
+                        BannerMd, self.image_xl, (720, 240)],
+                    'image_sm': [
+                        BannerSm, self.image_xl, (540, 180)]}
 
-            banlg = BannerLg(
-                    source=self.image_xl).generate()
-            pathlg = f'/home/robertsmoto/dev/temp/{fn}-960x320.webp'
-            destlg = open(pathlg, 'wb')
-            destlg.write(banlg.read())
+            for k, v in img_index.items():
 
-            banmd = BannerMd(
-                    source=self.image_xl).generate()
-            destmd = f'/home/robertsmoto/dev/temp/{fn}-720x240.webp'
-            dest = open(destmd, 'wb')
-            dest.write(banmd.read())
+                processor = v[0]
+                source = v[1]
+                size = v[2]
 
-            bansm = BannerSm(
-                    source=self.image_xl).generate()
-            destsm = f'/home/robertsmoto/dev/temp/{fn}-540x180.webp'
-            dest = open(destsm, 'wb')
-            dest.write(bansm.read())
+                base_fn = os.path.basename(source.url)
+                fn = os.path.splitext(base_fn)[0]
+                fn = ''.join(x for x in fn if x.isalnum())
+
+                # Generate new image
+                ban = processor(source=source).generate()
+
+                # Create dirs
+                now = timezone.now()
+                banner_dir = "advertisingapp/banners/"
+                date_dir = now.strftime("%Y/%m/%d/")
+                fn = f'{fn}-{size[0]}x{size[1]}.webp'
+
+                # use django api to read processed image
+                banner_read = ban.read()
+
+                # upload image
+                if config('ENV_USE_SPACES', cast=bool):
+                    svlog_info("Creating images on DO spaces.")
+                    base_dir = config('ENV_MEDIA_URL')
+                    file_path = os.path.join(
+                            base_dir, banner_dir, date_dir, fn)
+
+                    session = boto3.session.Session()
+
+                    client = session.client(
+                            's3',
+                            region_name=config('ENV_AWS_S3_REGION_NAME'),
+                            endpoint_url=config('ENV_AWS_S3_ENDPOINT_URL'),
+                            aws_access_key_id=config('ENV_AWS_ACCESS_KEY_ID'),
+                            aws_secret_access_key=config(
+                                'ENV_AWS_SECRET_ACCESS_KEY'))
+
+                    client.put_object(
+                        Bucket=config('ENV_AWS_BNAME'),
+                        Key=file_path,
+                        Body=banner_read,
+                        ContentEncoding='webp',
+                        ContentType='image/webp',
+                        CacheControl='max-age=86400',
+                        ACL='public-read')
+
+                else:
+                    media_root = config('ENV_MEDIA_ROOT')
+                    base_dir = os.path.join(
+                            media_root, banner_dir, date_dir)
+                    # create the dir if it doesn't exist
+                    # write only creates the file, not the dir
+                    if not os.path.exists(base_dir):
+                        os.makedirs(base_dir)
+                    file_path = os.path.join(base_dir, fn)
+                    dest = open(file_path, 'wb')
+                    dest.write(banner_read)
+
+                # assign the file path to the correct field
+                self.k = file_path
 
         super(Banner, self).save(*args, **kwargs)
-
 
     def __str__(self):
         return self.name
