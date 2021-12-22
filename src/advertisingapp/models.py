@@ -218,6 +218,12 @@ class Banner(models.Model):
                     svlog_info("", field=fn)
                     svlog_info("", field=file_path)
 
+                    # when using s3 the ban image does need to be
+                    # downloaded first or can I access the img.path
+                    # or img.url api?
+                    svlog_info("ban.url", field=ban.url)
+                    svlog_info("ban.path", field=ban.path)
+
                     session = boto3.session.Session()
 
                     client = session.client(
