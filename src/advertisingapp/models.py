@@ -222,14 +222,15 @@ class Banner(models.Model):
                             aws_secret_access_key=config(
                                 'ENV_AWS_SECRET_ACCESS_KEY'))
 
-                    client.put_object(
-                        Bucket=config('ENV_AWS_BNAME'),
-                        Key=file_path,
-                        Body=banner_read,
-                        ContentEncoding='webp',
-                        ContentType='image/webp',
-                        CacheControl='max-age=86400',
-                        ACL='public-read')
+                    with open(ban, 'rb') as file_contents:
+                        client.put_object(
+                            Bucket=config('ENV_AWS_BNAME'),
+                            Key=file_path,
+                            Body=file_contents,
+                            ContentEncoding='webp',
+                            ContentType='image/webp',
+                            CacheControl='max-age=86400',
+                            ACL='public-read')
 
                 else:
                     media_root = config('ENV_MEDIA_ROOT')
