@@ -212,6 +212,12 @@ class Banner(models.Model):
                     file_path = os.path.join(
                             base_dir, banner_dir, date_dir, fn)
 
+                    svlog_info("", field=base_dir)
+                    svlog_info("", field=banner_dir)
+                    svlog_info("", field=date_dir)
+                    svlog_info("", field=fn)
+                    svlog_info("", field=file_path)
+
                     session = boto3.session.Session()
 
                     client = session.client(
