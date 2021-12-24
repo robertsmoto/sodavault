@@ -5,6 +5,8 @@ from graphene_django import DjangoObjectType
 import blogapp.models
 import itemsapp.models
 import advertisingapp.models
+from decouple import config
+import os
 
 
 # Products
@@ -163,14 +165,14 @@ class BannerNode(DjangoObjectType):
     def resolve_image_xl(self, info):
         return self.image_xl.url
 
-    # def resolve_image_lg(self, info):
-        # return self.image_lg
+    def resolve_image_lg(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.image_lg)
 
-    # def resolve_image_md(self, info):
-        # return self.image_md
+    def resolve_image_md(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.image_md)
 
-    # def resolve_image_sm(self, info):
-    #     return self.image_sm
+    def resolve_image_sm(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.image_sm)
 
     def resolve_image_skyscraper(self, info):
         return self.image_skyscraper.url
