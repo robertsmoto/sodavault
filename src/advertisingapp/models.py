@@ -189,17 +189,18 @@ class Banner(models.Model):
 
             img_index = {
                     'image_lg': [
-                        BannerLg, self.image_xl, (960, 320)],
+                        BannerLg, self.image_xl, (960, 320), self.image_lg],
                     'image_md': [
-                        BannerMd, self.image_xl, (720, 240)],
+                        BannerMd, self.image_xl, (720, 240), self.image_md],
                     'image_sm': [
-                        BannerSm, self.image_xl, (540, 180)]}
+                        BannerSm, self.image_xl, (540, 180), self.image_sm]}
 
             for k, v in img_index.items():
 
                 processor = v[0]
                 source = v[1]
                 size = v[2]
+                image_field = v[3]
 
                 base_fn = os.path.basename(source.url)
                 fn = os.path.splitext(base_fn)[0]
@@ -270,8 +271,8 @@ class Banner(models.Model):
 
                 # assign the file path to the correct field
                 svlog_info(f"Assign file_path {k}.", field=file_path)
-                # self.k = file_path
-                self.image_lg = file_path
+
+                image_field = file_path
 
         super(Banner, self).save(*args, **kwargs)
 
