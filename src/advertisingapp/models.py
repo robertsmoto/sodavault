@@ -11,6 +11,19 @@ import boto3
 from sodavault.utils_logging import svlog_info
 import botocore
 
+def new_filename(instance, filename):
+
+    # build the date dir
+    now = timezone.now()
+    date_dir = now.strftime('%Y/%m/%d/')
+    # build the filename
+    base_fn = os.path.basename(filename)
+    fn = os.path.splitext(base_fn)[0]
+    fn = "".join(x for x in fn if x.isalnum())
+    fn = f"{fn}.webp"
+
+    return os.path.join('advertisingapp/banners/', date_dir, fn)
+
 
 def new_filename_banner(instance, filename):
 
