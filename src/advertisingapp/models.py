@@ -9,6 +9,7 @@ import os
 from decouple import config
 import boto3
 from sodavault.utils_logging import svlog_info
+import botocore
 
 
 class Campaign(models.Model):
@@ -121,12 +122,26 @@ def new_filename(instance, filename):
     return os.path.join('advertisingapp/banners/', date_dir, fn)
 
 
+def check_and_remove_file(file_path: str) -> None:
+    """Checks if file exists and removes it."""
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    else:
+        svlog_info(
+                "The file does not exist.",
+                field=file_path)
+    return
+
+
 def write_image_to_local(django_read: object, fn: str, loc_dir: str) -> str:
     # create the dir if it doesn't exist
     # write only creates the file, not the dir
     if not os.path.exists(loc_dir):
         os.makedirs(loc_dir)
     file_path = os.path.join(loc_dir, fn)
+
+    check_and_remove_file(file_path=file_path)
+
     dest = open(file_path, 'wb')
     dest.write(django_read)
     return file_path
@@ -229,7 +244,18 @@ class Banner(models.Model):
                     # now upload the local file to CDN
                     session = boto3.session.Session()
 
-                    client = session.client(
+                    s3client = session.client(
+                            's3',
+                            region_name=config('ENV_AWS_S3_REGION_NAME'),
+                            endpoint_url=config('ENV_AWS_S3_ENDPOINT_URL'),
+                            aws_access_key_id=config('ENV_AWS_ACCESS_KEY_ID'),
+                            aws_secret_access_key=config(
+                                'ENV_AWS_SECRET_ACCESS_KEY'))
+
+                    # should check if s3 file exists and if so delete it
+                    # before uploading image with same name
+
+                    s3resource = boto3.resource(
                             's3',
                             region_name=config('ENV_AWS_S3_REGION_NAME'),
                             endpoint_url=config('ENV_AWS_S3_ENDPOINT_URL'),
@@ -238,8 +264,31 @@ class Banner(models.Model):
                                 'ENV_AWS_SECRET_ACCESS_KEY'))
 
                     try:
+                        s3resource.Object(
+                                config('ENV_AWS_STORAGE_BUCKET_NAME'),
+                                file_path).load()
+                    except botocore.exceptions.ClientError as e:
+                        if e.response['Error']['Code'] == "404":
+                            svlog_info("The s3 object does not exist.")
+                            # The object does not exist.
+                            ...
+                        else:
+                            # Something else has gone wrong.
+                            svlog_info(f"Something went wrong with s3: {e}")
+                            raise
+                    else:
+                        # The object does exist.
+                        s3resource.Object(
+                                config('ENV_AWS_STORAGE_BUCKET_NAME'),
+                                file_path).delete()
+                        svlog_info(
+                                "s3 object exists, deleted it before "
+                                "uploading.")
+                        ...
+
+                    try:
                         with open(local_filepath, 'rb') as file_contents:
-                            client.put_object(
+                            s3client.put_object(
                                 Bucket=config('ENV_AWS_STORAGE_BUCKET_NAME'),
                                 Key=file_path,
                                 Body=file_contents,
@@ -250,19 +299,15 @@ class Banner(models.Model):
                     except Exception as e:
                         svlog_info("S3 open exception", field=e)
 
-                    # then delete the local file (local_fileppath)
-                    if os.path.exists(local_filepath):
-                        os.remove(local_filepath)
-                    else:
-                        svlog_info(
-                                "The file does not exist.",
-                                field=local_filepath)
+                    # then delete the local file (local_filepath)
+                    check_and_remove_file(file_path=local_filepath)
 
                 else:
                     media_root = config('ENV_MEDIA_ROOT')
                     base_dir = os.path.join(
                         media_root, banner_dir, date_dir)
 
+                    # first check if file exists and remove it
                     # for the development server, write file directly
                     # to final location
                     _ = write_image_to_local(
