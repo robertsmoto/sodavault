@@ -164,9 +164,9 @@ class Item(models.Model):
     )
     sku = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=100, blank=True)
-    description = models.TextField(
-        blank=True,
-        help_text="For internal and purchasing use.")
+#     description = models.TextField(
+        # blank=True,
+        # help_text="For internal and purchasing use.")
     ecpu = models.DecimalField(
         max_digits=14, decimal_places=4, blank=True, null=True)
     ecpu_override = models.DecimalField(
