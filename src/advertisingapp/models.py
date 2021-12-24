@@ -11,6 +11,7 @@ import boto3
 from sodavault.utils_logging import svlog_info
 import botocore
 
+
 def new_filename(instance, filename):
 
     # build the date dir
@@ -127,7 +128,7 @@ class Assett(models.Model):
     excerpt = RichTextField(
             'Excerpt', max_length=400, blank=True, null=True,
             help_text="400 characters max")
-    img_1xl = ProcessedImageField(
+    img_1x1 = ProcessedImageField(
             upload_to=new_filename_assett,
             processors=[ResizeToFill(1140, 380)],
             format='WEBP',
