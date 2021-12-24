@@ -269,23 +269,19 @@ class Banner(models.Model):
                                 file_path).load()
                     except botocore.exceptions.ClientError as e:
                         if e.response['Error']['Code'] == "404":
-                            svlog_info("The s3 object does not exist.")
                             # The object does not exist.
-                            ...
+                            svlog_info("The s3 object does not exist.")
                         else:
                             # Something else has gone wrong.
                             svlog_info(f"Something went wrong with s3: {e}")
-                            raise
                     else:
                         # The object does exist.
-                        s3resource.Object(
-                                config('ENV_AWS_STORAGE_BUCKET_NAME'),
-                                file_path).delete()
                         svlog_info(
                                 "s3 object exists, deleted it before "
                                 "uploading.")
-                        ...
-
+                        s3resource.Object(
+                                config('ENV_AWS_STORAGE_BUCKET_NAME'),
+                                file_path).delete()
                     try:
                         with open(local_filepath, 'rb') as file_contents:
                             s3client.put_object(
