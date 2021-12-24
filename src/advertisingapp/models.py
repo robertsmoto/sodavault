@@ -248,7 +248,7 @@ class Banner(models.Model):
                         with open(local_filepath, 'rb') as file_contents:
                             svlog_info("Open for s3.", field=file_contents)
                             client.put_object(
-                                Bucket=config('ENV_AWS_BNAME'),
+                                Bucket=config('ENV_AWS_STORAGE_BUCKET_NAME'),
                                 Key=file_path,
                                 Body=file_contents,
                                 ContentEncoding='webp',
