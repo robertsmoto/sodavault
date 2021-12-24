@@ -234,6 +234,7 @@ class Banner(models.Model):
                 # upload image
                 if config('ENV_USE_SPACES', cast=bool):
                     file_path = os.path.join(banner_dir, date_dir, fn)
+                    s3_upload_path = os.path.join('media', file_path)
 
                     # need to save image to temp dir before uploading to s3
                     temp_dir = config('ENV_TEMP_DIR')
@@ -265,7 +266,7 @@ class Banner(models.Model):
                     try:
                         s3resource.Object(
                                 config('ENV_AWS_STORAGE_BUCKET_NAME'),
-                                file_path).load()
+                                s3_upload_path).load()
                     except botocore.exceptions.ClientError as e:
                         if e.response['Error']['Code'] == "404":
                             # The object does not exist.
@@ -285,7 +286,7 @@ class Banner(models.Model):
                         with open(local_filepath, 'rb') as file_contents:
                             s3client.put_object(
                                 Bucket=config('ENV_AWS_STORAGE_BUCKET_NAME'),
-                                Key=file_path,
+                                Key=s3_upload_path,
                                 Body=file_contents,
                                 ContentEncoding='webp',
                                 ContentType='image/webp',
