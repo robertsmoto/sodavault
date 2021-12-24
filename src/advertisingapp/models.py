@@ -12,6 +12,59 @@ from sodavault.utils_logging import svlog_info
 import botocore
 
 
+def new_filename_banner(instance, filename):
+
+    # build the date dir
+    now = timezone.now()
+    date_dir = now.strftime('%Y/%m/%d/')
+    # build the filename
+    base_fn = os.path.basename(filename)
+    fn = os.path.splitext(base_fn)[0]
+    fn = "".join(x for x in fn if x.isalnum())
+    fn = f"{fn}.webp"
+
+    return os.path.join('advertisingapp/banners/', date_dir, fn)
+
+
+def new_filename_assett(instance, filename):
+
+    # build the date dir
+    now = timezone.now()
+    date_dir = now.strftime('%Y/%m/%d/')
+    # build the filename
+    base_fn = os.path.basename(filename)
+    fn = os.path.splitext(base_fn)[0]
+    fn = "".join(x for x in fn if x.isalnum())
+    fn = f"{fn}.webp"
+
+    return os.path.join('advertisingapp/assetts/', date_dir, fn)
+
+
+def check_and_remove_file(file_path: str) -> None:
+    """Checks if file exists and removes it."""
+    if os.path.exists(file_path):
+        os.remove(file_path)
+    else:
+        svlog_info(
+                "The file does not exist.",
+                field=file_path)
+    return
+
+
+def write_image_to_local(django_read: object, fn: str, loc_dir: str) -> str:
+    # create the dir if it doesn't exist
+    # write only creates the file, not the dir
+    if not os.path.exists(loc_dir):
+        os.makedirs(loc_dir)
+    file_path = os.path.join(loc_dir, fn)
+
+    check_and_remove_file(file_path=file_path)
+
+    dest = open(file_path, 'wb')
+    dest.write(django_read)
+    return file_path
+
+
 class Campaign(models.Model):
     name = models.CharField(
         max_length=200, blank=True,
@@ -61,11 +114,14 @@ class Assett(models.Model):
     excerpt = RichTextField(
             'Excerpt', max_length=400, blank=True, null=True,
             help_text="400 characters max")
-    img_1x1 = models.ImageField(
-        upload_to='advertisingapp/assetts/%Y/%m/%d',
-        blank=True,
-        null=True,
-        help_text="recommended size: 250px x 250px")
+    img_1xl = ProcessedImageField(
+            upload_to=new_filename_assett,
+            processors=[ResizeToFill(1140, 380)],
+            format='WEBP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="recommended size: 250px x 250px")
     url_name = models.CharField(
         'URL Name',
         max_length=70,
@@ -108,45 +164,6 @@ class BannerSkyScraper(ImageSpec):
     options = {'quality': 80}
 
 
-def new_filename(instance, filename):
-
-    # build the date dir
-    now = timezone.now()
-    date_dir = now.strftime('%Y/%m/%d/')
-    # build the filename
-    base_fn = os.path.basename(filename)
-    fn = os.path.splitext(base_fn)[0]
-    fn = "".join(x for x in fn if x.isalnum())
-    fn = f"{fn}.webp"
-
-    return os.path.join('advertisingapp/banners/', date_dir, fn)
-
-
-def check_and_remove_file(file_path: str) -> None:
-    """Checks if file exists and removes it."""
-    if os.path.exists(file_path):
-        os.remove(file_path)
-    else:
-        svlog_info(
-                "The file does not exist.",
-                field=file_path)
-    return
-
-
-def write_image_to_local(django_read: object, fn: str, loc_dir: str) -> str:
-    # create the dir if it doesn't exist
-    # write only creates the file, not the dir
-    if not os.path.exists(loc_dir):
-        os.makedirs(loc_dir)
-    file_path = os.path.join(loc_dir, fn)
-
-    check_and_remove_file(file_path=file_path)
-
-    dest = open(file_path, 'wb')
-    dest.write(django_read)
-    return file_path
-
-
 class Banner(models.Model):
     campaign = models.ForeignKey(
             Campaign,
@@ -158,7 +175,7 @@ class Banner(models.Model):
             'Name', max_length=200, blank=True,
             help_text='Name of the Banner')
     image_xl = ProcessedImageField(
-            upload_to=new_filename,
+            upload_to=new_filename_banner,
             processors=[ResizeToFill(1140, 380)],
             format='WEBP',
             options={'quality': 80},
@@ -166,7 +183,7 @@ class Banner(models.Model):
             null=True,
             help_text="recommended size: 1140px x 380px")
     image_skyscraper = ProcessedImageField(
-            upload_to=new_filename,
+            upload_to=new_filename_banner,
             processors=[ResizeToFill(160, 600)],
             format='WEBP',
             options={'quality': 80},
