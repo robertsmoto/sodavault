@@ -152,6 +152,9 @@ class AssettNode(DjangoObjectType):
         filter_fields = []
         interfaces = (relay.Node, )
 
+    def resolve_image_1x1(self, info):
+        return self.image_1x1.url
+
 
 class BannerNode(DjangoObjectType):
     class Meta:
