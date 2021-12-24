@@ -221,11 +221,6 @@ class Banner(models.Model):
                     file_path = os.path.join(
                             "media", banner_dir, date_dir, fn)
 
-                    svlog_info("", field=banner_dir)
-                    svlog_info("", field=date_dir)
-                    svlog_info("", field=fn)
-                    svlog_info("", field=file_path)
-
                     # need to save image to temp dir before uploading to s3
                     temp_dir = config('ENV_TEMP_DIR')
                     local_filepath = write_image_to_local(
@@ -274,6 +269,7 @@ class Banner(models.Model):
                             django_read=banner_read, fn=fn, loc_dir=base_dir)
 
                 # assign the file path to the correct field
+                svlog_info(f"Assign file_path {k}.", field=file_path)
                 self.k = file_path
 
         super(Banner, self).save(*args, **kwargs)
