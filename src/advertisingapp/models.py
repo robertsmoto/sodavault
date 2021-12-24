@@ -185,6 +185,7 @@ class Banner(models.Model):
         and save the url in a char field."""
 
         if self._orig_image_xl != self.image_xl and self.image_xl:
+            svlog_info("Creating image variations.")
 
             img_index = {
                     'image_lg': [
@@ -217,7 +218,6 @@ class Banner(models.Model):
 
                 # upload image
                 if config('ENV_USE_SPACES', cast=bool):
-                    svlog_info("Creating images on DO spaces.")
                     file_path = os.path.join(
                             "media", banner_dir, date_dir, fn)
 
@@ -244,7 +244,6 @@ class Banner(models.Model):
 
                     try:
                         with open(local_filepath, 'rb') as file_contents:
-                            svlog_info("Open for s3.", field=file_contents)
                             client.put_object(
                                 Bucket=config('ENV_AWS_STORAGE_BUCKET_NAME'),
                                 Key=file_path,
@@ -256,12 +255,18 @@ class Banner(models.Model):
                     except Exception as e:
                         svlog_info("S3 open exception", field=e)
 
-                    # then delete the local file (local_fileppath)
+                        # then delete the local file (local_fileppath)
+                        if os.path.exists(local_filepath):
+                            os.remove(local_filepath)
+                        else:
+                            svlog_info(
+                                    "The file does not exist.",
+                                    field=local_filepath)
 
                 else:
                     media_root = config('ENV_MEDIA_ROOT')
                     base_dir = os.path.join(
-                            media_root, banner_dir, date_dir)
+                        media_root, banner_dir, date_dir)
 
                     # for the development server, write file directly
                     # to final location
