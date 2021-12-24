@@ -152,8 +152,8 @@ class AssettNode(DjangoObjectType):
         filter_fields = []
         interfaces = (relay.Node, )
 
-    def resolve_image_1x1(self, info):
-        return self.image_1x1.url
+    def resolve_img_1x1(self, info):
+        return self.img_1x1.url
 
 
 class BannerNode(DjangoObjectType):
@@ -179,8 +179,6 @@ class BannerNode(DjangoObjectType):
 
     def resolve_image_skyscraper(self, info):
         return self.image_skyscraper.url
-
-
 
 
 class Query(graphene.ObjectType):
