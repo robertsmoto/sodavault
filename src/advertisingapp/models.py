@@ -255,13 +255,13 @@ class Banner(models.Model):
                     except Exception as e:
                         svlog_info("S3 open exception", field=e)
 
-                        # then delete the local file (local_fileppath)
-                        if os.path.exists(local_filepath):
-                            os.remove(local_filepath)
-                        else:
-                            svlog_info(
-                                    "The file does not exist.",
-                                    field=local_filepath)
+                    # then delete the local file (local_fileppath)
+                    if os.path.exists(local_filepath):
+                        os.remove(local_filepath)
+                    else:
+                        svlog_info(
+                                "The file does not exist.",
+                                field=local_filepath)
 
                 else:
                     media_root = config('ENV_MEDIA_ROOT')
