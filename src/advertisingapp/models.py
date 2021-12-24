@@ -277,6 +277,7 @@ class Banner(models.Model):
                     self.image_md = file_path
                 if k == "image_sm":
                     self.image_sm = file_path
+                self.save()
 
         super(Banner, self).save(*args, **kwargs)
 
