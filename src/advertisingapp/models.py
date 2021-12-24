@@ -270,8 +270,8 @@ class Banner(models.Model):
 
                 # assign the file path to the correct field
                 svlog_info(f"Assign file_path {k}.", field=file_path)
-                self.k = file_path
-                self.save()
+                # self.k = file_path
+                self.k = "hello"
 
         super(Banner, self).save(*args, **kwargs)
 
