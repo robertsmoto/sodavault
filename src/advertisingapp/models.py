@@ -233,8 +233,7 @@ class Banner(models.Model):
 
                 # upload image
                 if config('ENV_USE_SPACES', cast=bool):
-                    file_path = os.path.join(
-                            "media", banner_dir, date_dir, fn)
+                    file_path = os.path.join(banner_dir, date_dir, fn)
 
                     # need to save image to temp dir before uploading to s3
                     temp_dir = config('ENV_TEMP_DIR')
