@@ -12,7 +12,7 @@ class AssettsInline(admin.StackedInline):
 class BannersInline(admin.StackedInline):
     model = Banner
     extra = 0
-    exclude = ['image_lg', 'image_md', 'image_sm']
+    # exclude = ['image_lg', 'image_md', 'image_sm']
     verbose_name = "bannner"
     verbose_name_plural = "banner"
 
