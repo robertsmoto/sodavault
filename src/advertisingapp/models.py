@@ -218,11 +218,9 @@ class Banner(models.Model):
                 # upload image
                 if config('ENV_USE_SPACES', cast=bool):
                     svlog_info("Creating images on DO spaces.")
-                    base_dir = config('ENV_MEDIA_URL')
                     file_path = os.path.join(
-                            base_dir, banner_dir, date_dir, fn)
+                            "media", banner_dir, date_dir, fn)
 
-                    svlog_info("", field=base_dir)
                     svlog_info("", field=banner_dir)
                     svlog_info("", field=date_dir)
                     svlog_info("", field=fn)
