@@ -121,6 +121,17 @@ def new_filename(instance, filename):
     return os.path.join('advertisingapp/banners/', date_dir, fn)
 
 
+def write_image_to_local(django_read: object, fn: str, loc_dir: str) -> str:
+    # create the dir if it doesn't exist
+    # write only creates the file, not the dir
+    if not os.path.exists(loc_dir):
+        os.makedirs(loc_dir)
+    file_path = os.path.join(loc_dir, fn)
+    dest = open(file_path, 'wb')
+    dest.write(django_read)
+    return file_path
+
+
 class Banner(models.Model):
     campaign = models.ForeignKey(
             Campaign,
@@ -195,15 +206,14 @@ class Banner(models.Model):
 
                 # Generate new image
                 ban = processor(source=source).generate()
+                # use django api to read processed image
+                banner_read = ban.read()
 
                 # Create dirs
                 now = timezone.now()
                 banner_dir = "advertisingapp/banners/"
                 date_dir = now.strftime("%Y/%m/%d/")
                 fn = f'{fn}-{size[0]}x{size[1]}.webp'
-
-                # use django api to read processed image
-                banner_read = ban.read()
 
                 # upload image
                 if config('ENV_USE_SPACES', cast=bool):
@@ -218,12 +228,12 @@ class Banner(models.Model):
                     svlog_info("", field=fn)
                     svlog_info("", field=file_path)
 
-                    # when using s3 the ban image does need to be
-                    # downloaded first or can I access the img.path
-                    # or img.url api?
-                    svlog_info("ban.url", field=ban.url)
-                    svlog_info("ban.path", field=ban.path)
+                    # need to save image to temp dir before uploading to s3
+                    temp_dir = config('ENV_TEMP_DIR')
+                    local_filepath = write_image_to_local(
+                            django_read=banner_read, fn=fn, loc_dir=temp_dir)
 
+                    # now upload the local file to CDN
                     session = boto3.session.Session()
 
                     client = session.client(
@@ -235,7 +245,7 @@ class Banner(models.Model):
                                 'ENV_AWS_SECRET_ACCESS_KEY'))
 
                     try:
-                        with open(ban, 'rb') as file_contents:
+                        with open(local_filepath, 'rb') as file_contents:
                             svlog_info("Open for s3.", field=file_contents)
                             client.put_object(
                                 Bucket=config('ENV_AWS_BNAME'),
@@ -248,17 +258,17 @@ class Banner(models.Model):
                     except Exception as e:
                         svlog_info("S3 open exception", field=e)
 
+                    # then delete the local file (local_fileppath)
+
                 else:
                     media_root = config('ENV_MEDIA_ROOT')
                     base_dir = os.path.join(
                             media_root, banner_dir, date_dir)
-                    # create the dir if it doesn't exist
-                    # write only creates the file, not the dir
-                    if not os.path.exists(base_dir):
-                        os.makedirs(base_dir)
-                    file_path = os.path.join(base_dir, fn)
-                    dest = open(file_path, 'wb')
-                    dest.write(banner_read)
+
+                    # for the development server, write file directly
+                    # to final location
+                    _ = write_image_to_local(
+                            django_read=banner_read, fn=fn, loc_dir=base_dir)
 
                 # assign the file path to the correct field
                 self.k = file_path
