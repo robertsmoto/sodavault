@@ -130,7 +130,7 @@ class Assett(models.Model):
             help_text="400 characters max")
     img_1x1 = ProcessedImageField(
             upload_to=new_filename_assett,
-            processors=[ResizeToFill(1140, 380)],
+            processors=[ResizeToFill(250, 250)],
             format='WEBP',
             options={'quality': 80},
             blank=True,
