@@ -156,24 +156,26 @@ class BannerNode(DjangoObjectType):
         model = advertisingapp.models.Banner
         fields = [
                 "campaign", "name", "image_xl", "image_lg", "image_md",
-                "image_sm", "image_skyscraper", "image_lg_url"]
+                "image_sm", "image_skyscraper"]
         filter_fields = ["campaign"]
         interfaces = (relay.Node, )
 
-    def resolve_image_lg(self, info):
-        return self.image_lg.url
+    def resolve_image_xl(self, info):
+        return self.image_xl.url
 
-    def resolve_image_md(self, info):
-        return self.image_md.url
+    # def resolve_image_lg(self, info):
+        # return self.image_lg
 
-    def resolve_image_sm(self, info):
-        return self.image_sm.url
+    # def resolve_image_md(self, info):
+        # return self.image_md
+
+    # def resolve_image_sm(self, info):
+    #     return self.image_sm
 
     def resolve_image_skyscraper(self, info):
         return self.image_skyscraper.url
 
-    def resolve_image_lg_url(self, info):
-        return self.image_lg_url
+
 
 
 class Query(graphene.ObjectType):
