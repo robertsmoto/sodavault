@@ -6,6 +6,8 @@ from configapp.models import Price
 from django.db.models import Sum
 from django.db.models import Prefetch
 import math
+from sodavault.utils_logging import svlog_info
+
 
 class Group(models.Model):
 
@@ -17,86 +19,109 @@ class Group(models.Model):
     cat_type = models.CharField(
         max_length=3,
         blank=True,
-        choices=CAT_TYPE_CHOICES,  
+        choices=CAT_TYPE_CHOICES,
     )
 
     name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=50, null=True, blank=True)
 
     class Meta:
-        ordering = ['name',]
-    
+        ordering = ['name', ]
+
     def __str__(self):
         return '{}'.format(self.name)
+
 
 class DepartmentManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(cat_type='DEP')
 
+
 class Department(Group):
     objects = DepartmentManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "04. Departments"
 
     def save(self, *args, **kwargs):
         if self.cat_type == '':
-            self.cat_type='DEP'
+            self.cat_type = 'DEP'
         super(Department, self).save(*args, **kwargs)
+
 
 class CategoryManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(cat_type='CAT')
 
+
 class Category(Group):
     objects = CategoryManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "05. Categories"
 
     def save(self, *args, **kwargs):
         if self.cat_type == '':
-            self.cat_type='CAT'
+            self.cat_type = 'CAT'
         super(Category, self).save(*args, **kwargs)
 
+
 class TagManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(cat_type='TAG')
 
+
 class Tag(Group):
     objects = TagManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "06. Tags"
 
     def save(self, *args, **kwargs):
         if self.cat_type == '':
-            self.cat_type='TAG'
+            self.cat_type = 'TAG'
         super(Tag, self).save(*args, **kwargs)
 
+
 class PartManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(item_type='PART')
 
+
 class AllProductManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(item_type='PROD')
 
+
 class SimpleProductManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(item_type="PROD", product_type="SIMP")
 
+
 class DigitalProductManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(item_type="PROD", product_type="DIGI")
 
+
 class BundleProductManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(item_type="PROD", product_type="BUND")
 
+
 class VariableProductManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(item_type="PROD", product_type="VARI")
+
 
 class Item(models.Model):
     price_class = models.ForeignKey(
@@ -124,7 +149,7 @@ class Item(models.Model):
     item_type = models.CharField(
         max_length=4,
         blank=True,
-        choices=ITEM_TYPE_CHOICES,  
+        choices=ITEM_TYPE_CHOICES,
     )
     PRODUCT_TYPE_CHOICES = [
         ('SIMP', 'Simple'),
@@ -135,10 +160,10 @@ class Item(models.Model):
     product_type = models.CharField(
         max_length=4,
         blank=True,
-        choices=PRODUCT_TYPE_CHOICES,  
+        choices=PRODUCT_TYPE_CHOICES,
     )
     sku = models.CharField(max_length=100, blank=True)
-    name = models.CharField(max_length=100, blank=True) 
+    name = models.CharField(max_length=100, blank=True)
     description = models.TextField(
         blank=True,
         help_text="For internal and purchasing use.")
@@ -146,18 +171,26 @@ class Item(models.Model):
         max_digits=14, decimal_places=4, blank=True, null=True)
     ecpu_override = models.DecimalField(
         max_digits=14, decimal_places=4, blank=True, null=True)
-    ecpu_calc_from = models.CharField(max_length=100, blank=True,
-        help_text="how ecpu has been calculated")
-    unit = models.CharField(max_length=100, blank=True,
-        help_text="singlular unit")
-    unit_override = models.CharField(max_length=100, blank=True,
-        help_text="singlular unit")
+    ecpu_calc_from = models.CharField(
+            max_length=100,
+            blank=True,
+            help_text="how ecpu has been calculated")
+    unit = models.CharField(
+            max_length=100,
+            blank=True,
+            help_text="singlular unit")
+    unit_override = models.CharField(
+            max_length=100,
+            blank=True,
+            help_text="singlular unit")
     price = models.DecimalField(
         max_digits=14, decimal_places=2, blank=True, null=True)
     price_override = models.DecimalField(
         max_digits=14, decimal_places=2, blank=True, null=True)
-    price_calc_from = models.CharField(max_length=100, blank=True,
-        help_text="how price has been calculated")
+    price_calc_from = models.CharField(
+            max_length=100,
+            blank=True,
+            help_text="how price has been calculated")
 
     objects = models.Manager()
     parts = PartManager()
@@ -173,11 +206,11 @@ class Item(models.Model):
     @property
     def is_digital(self):
         # raising an exception is the default behavior for one-to-one relationships
-        
         try:
             self.digital_options
             return True
-        except:
+        except Exception as e:
+            svlog_info(f"Digital options doe not exist: {e}")
             return False
 
     @property
@@ -194,26 +227,25 @@ class Item(models.Model):
         _le_q = None
         if self.item_type == 'PART':
             _le_q = self.le_parts.filter(account='IRAW').aggregate(
-            Sum('debit_amount'),
-            Sum('credit_amount'),
-            Sum('debit_quantity'),
-            Sum('credit_quantity')
-        )
+                    Sum('debit_amount'),
+                Sum('credit_amount'),
+                Sum('debit_quantity'),
+                Sum('credit_quantity'))
 
         if self.item_type == 'PROD':
             _le_q = self.le_products.filter(account='IMER').aggregate(
-            Sum('debit_amount'),
-            Sum('credit_amount'),
-            Sum('debit_quantity'),
-            Sum('credit_quantity')
-        )
+                Sum('debit_amount'),
+                Sum('credit_amount'),
+                Sum('debit_quantity'),
+                Sum('credit_quantity'))
 
         """
-        'debit_amount__sum': Decimal('3363.66'), 
-        'credit_amount__sum': None, 
-        'debit_quantity__sum': Decimal('10000.00'), 
+        'debit_amount__sum': Decimal('3363.66'),
+        'credit_amount__sum': None,
+        'debit_quantity__sum': Decimal('10000.00'),
         'credit_quantity__sum': None
         """
+
         def check_for_zero(self, myvariable):
             return 0 if myvariable is None else myvariable
 
@@ -235,7 +267,9 @@ class Item(models.Model):
         inv_stats_dict = {}
 
         if _quantity == 0:
-            _cost = 0; _quantity = 0; _avg_cpu = 0
+            _cost = 0
+            _quantity = 0
+            _avg_cpu = 0
 
         else:
             inv_stats_dict['cost'] = _cost
@@ -274,7 +308,8 @@ class Item(models.Model):
         _ppj_q = None
         _part_inv = []
         _part_dict = {}
-        # query is_unlimted = False, because an unlimited Part does not limit the creation of a Product
+        # query is_unlimted = False,
+        # because an unlimited Part does not limit the creation of a Product
         if self.item_type == "PROD":
             _pid = self.id
             print("self.id, self.name", self.id, self.name)
@@ -289,8 +324,10 @@ class Item(models.Model):
                 if ppj.parts.inv_stats:
                     _part_dict['id'] = ppj.parts.id
                     _part_dict['name'] = ppj.parts.name
-                    _part_dict['total_quantity'] = math.floor(ppj.parts.inv_stats['quantity'])
-                    _part_dict['max_quantity'] = math.floor(ppj.parts.inv_stats['quantity'] / ppj.quantity)
+                    _part_dict['total_quantity'] = math.floor(
+                            ppj.parts.inv_stats['quantity'])
+                    _part_dict['max_quantity'] = math.floor(
+                            ppj.parts.inv_stats['quantity'] / ppj.quantity)
                 else:
                     _part_dict['id'] = ppj.parts.id
                     _part_dict['name'] = ppj.parts.name
@@ -298,7 +335,6 @@ class Item(models.Model):
                     _part_dict['max_quantity'] = 0 
 
                 _part_inv.append(_part_dict)
-
 
             def by_max_quantity(p_list):
                 return p_list['max_quantity']
@@ -314,15 +350,15 @@ class Item(models.Model):
                     number of {} new pcs into inventory. New inventory is currently 
                     limted by {} which currently has {} pcs in stock.
                     """.format(
-                        _part_inv[0]['max_quantity'], 
-                        _part_inv[0]['name'], 
+                        _part_inv[0]['max_quantity'],
+                        _part_inv[0]['name'],
                         _part_inv[0]['total_quantity']
                     ), _part_inv[0]
             else:
                 _part_inv.append(_part_dict)
                 _part_inv[0]['is_limited'] = False
                 _part_inv[0]['max_quantity'] = None
-                return """This product is assembled from parts, however, 
+                return """This product is assembled from parts, however,
                     it is not limited by the inventory of those parts.""", _part_inv[0]
 
         # may create unlimited inventory
@@ -333,11 +369,11 @@ class Item(models.Model):
             return "You may create unlimited new inventory for this item.", _part_inv[0]
 
     @property
-    def max_new_inventory(self): 
+    def max_new_inventory(self):
         return self.calc_max_new_inventory[0]
 
     @property
-    def calc_ecpu(self): 
+    def calc_ecpu(self):
         _ecpu = 0
         _unit = ""
         _designator = ""
@@ -395,7 +431,7 @@ class Item(models.Model):
         calc_ecpu['ecpu'] = _ecpu
         calc_ecpu['unit'] = _unit
         calc_ecpu['designator'] = _designator
-        
+
         print("calc_ecpu", calc_ecpu)
 
         return calc_ecpu
@@ -408,25 +444,24 @@ class Item(models.Model):
         from avg cost of inventory 
         from ecpu override
         """
-        
         # find amount, and assign designator
         _cost = 0 
         _designator = ""
         _price = 0
-        
+
         # find cost
-        ## based on cost override
+        # based on cost override
         # print("### self.inv_stats -->", self.inv_stats)
         if self.ecpu_override is not None:
             _cost = self.ecpu_override
             _designator = "ecpu override"
 
-        ## based on existing inventory
+        # based on existing inventory
         elif self.inv_stats:
-            _cost = self.inv_stats['avg_cpu'] 
+            _cost = self.inv_stats['avg_cpu']
             _designator = "avg cpu of available inventory"
 
-        ## based on estimated cost per unit
+        # based on estimated cost per unit
         elif self.ecpu is not None:
             _cost = self.ecpu
             _designator = "estimated cost per unit (ecpu)"
@@ -447,7 +482,7 @@ class Item(models.Model):
         else:
             _price = 0
             _designator = "please assign a price class"
-        
+
         if self.price_override is not None:
             _price = self.price_override
             _designator = "price override"
@@ -472,6 +507,7 @@ class Item(models.Model):
 
 class Part(Item):
     objects = PartManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "01. Parts"
@@ -480,62 +516,72 @@ class Part(Item):
         self.item_type="PART"
         super(Part, self).save(*args, **kwargs)
 
+
 class Product(Item):
     objects = AllProductManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "02a. All Products"
-    
+
     def save(self, *args, **kwargs):
-        self.item_type="PROD"
+        self.item_type = "PROD"
         super(Product, self).save(*args, **kwargs)
+
 
 class SimpleProduct(Item):
     objects = SimpleProductManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "02b. Simple Products"
-    
+
     def save(self, *args, **kwargs):
-        self.item_type="PROD"
+        self.item_type = "PROD"
         if self.product_type == "":
-            self.product_type="SIMP"
+            self.product_type = "SIMP"
         super(Product, self).save(*args, **kwargs)
+
 
 class DigitalProduct(Item):
     objects = DigitalProductManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "02c. Digital Products"
-    
+
     def save(self, *args, **kwargs):
-        self.item_type="PROD"
+        self.item_type = "PROD"
         if self.product_type == "":
-            self.product_type="DIGI"
+            self.product_type = "DIGI"
         super(Product, self).save(*args, **kwargs)
+
 
 class BundleProduct(Item):
     objects = BundleProductManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "02d. Bundle Products"
-    
+
     def save(self, *args, **kwargs):
-        self.item_type="PROD"
+        self.item_type = "PROD"
         if self.product_type == "":
-            self.product_type="BUND"
+            self.product_type = "BUND"
         super(Product, self).save(*args, **kwargs)
+
 
 class VariableProduct(Item):
     objects = VariableProductManager()
+
     class Meta:
         proxy = True
         verbose_name_plural = "02e. Varialbe Products"
-    
+
     def save(self, *args, **kwargs):
-        self.item_type="PROD"
+        self.item_type = "PROD"
         if self.product_type == "":
-            self.product_type="VARI"
+            self.product_type = "VARI"
         super(Product, self).save(*args, **kwargs)
 
 
@@ -553,6 +599,7 @@ class Identifier(models.Model):
     def __str__(self):
         return '{}'.format(self.item.name)
 
+
 class Measurement(models.Model):
     item = models.OneToOneField(
         Item,
@@ -567,15 +614,17 @@ class Measurement(models.Model):
     def __str__(self):
         return '{}'.format(self.item.name)
 
+
 class Attribute(models.Model):
     name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=50)
 
     class Meta:
         verbose_name_plural = "03. Attributes"
- 
+
     def __str__(self):
         return '{}'.format(self.name)
+
 
 class Term(models.Model):
     attribute = models.ForeignKey(
@@ -583,7 +632,7 @@ class Term(models.Model):
         related_name='terms',
         null=True,
         blank=True,
-        on_delete=models.CASCADE) 
+        on_delete=models.CASCADE)
     name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=50)
     img = ProcessedImageField(
@@ -598,8 +647,9 @@ class Term(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
-# used for product-attributes
+
 class ProductAttributeJoin(models.Model):
+    """Used for product attributes."""
     items = models.ForeignKey(
         Item,
         related_name='product_att_join',
@@ -619,6 +669,7 @@ class ProductAttributeJoin(models.Model):
     def __str__(self):
         return '{}'.format(self.attribute.name)
 
+
 class Variation(models.Model):
     parent = models.ForeignKey(
         Item,
@@ -634,6 +685,7 @@ class Variation(models.Model):
 
     def __str__(self):
         return '{} : {}'.format(self.parent.sku, self.parent.name)
+
 
 class VariationAttribute(models.Model):
     items = models.ForeignKey(
@@ -661,6 +713,7 @@ class VariationAttribute(models.Model):
     def __str__(self):
         return '{}'.format(self.variations.product.sku)
 
+
 class Bundle(models.Model):
     parent = models.ForeignKey(
         Item,
@@ -678,6 +731,7 @@ class Bundle(models.Model):
     def __str__(self):
         return '{} : {}'.format(self.parent.sku, self.parent.name)
 
+
 class DigitalOption(models.Model):
     item = models.OneToOneField(
         Item,
@@ -689,6 +743,7 @@ class DigitalOption(models.Model):
 
     def __str__(self):
         return '{}'.format(self.item.name)
+
 
 class Promotion(models.Model):
     items = models.ManyToManyField(
@@ -720,20 +775,29 @@ class Promotion(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
+
 class Marketing(models.Model):
     item = models.OneToOneField(
         Item,
         related_name='marketing_options',
         null=True,
         on_delete=models.CASCADE)
-    description_sm = RichTextField(blank=True, null=True,
-        max_length=500, help_text="500 characters max.")
-    description_md = RichTextField(blank=True, null=True,
-        max_length=1000, help_text="1000 characters max.")
-    description_lg = RichTextField(blank=True, null=True,
-        max_length=1000, help_text="1000 characters max.")
+    description_sm = RichTextField(
+            blank=True,
+            null=True,
+            max_length=500, help_text="500 characters max.")
+    description_md = RichTextField(
+            blank=True,
+            null=True,
+            max_length=1000, help_text="1000 characters max.")
+    description_lg = RichTextField(
+            blank=True,
+            null=True,
+            max_length=1000, help_text="1000 characters max.")
+
     def __str__(self):
         return '{}'.format(self.item.name)
+
 
 class Image(models.Model):
     item = models.ForeignKey(
@@ -749,119 +813,119 @@ class Image(models.Model):
         help_text='integer used to order images')
     # images client-determined size
     img_lg = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="converts to WebP format")
+            upload_to='product_images/%Y/%m/%d',
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="converts to WebP format")
     img_md = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="converts to WebP format")
+            upload_to='product_images/%Y/%m/%d',
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="converts to WebP format")
     img_sm = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="converts to WebP format")
+            upload_to='product_images/%Y/%m/%d',
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="converts to WebP format")
     # images square 1:1
     img_1x1_lg = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(1000, 1000)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="1000px x 1000px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(1000, 1000)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="1000px x 1000px")
     img_1x1_md = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(500, 500)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="500px x 500px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(500, 500)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="500px x 500px")
     img_1x1_sm = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(250, 250)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="250px x 250px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(250, 250)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="250px x 250px")
     # images 2:1
     img_2x1_lg = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(1000, 500)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="1000px x 500px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(1000, 500)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="1000px x 500px")
     img_2x1_md = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(500, 250)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="500px x 250px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(500, 250)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="500px x 250px")
     img_2x1_sm = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(250, 125)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="250px x 125px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(250, 125)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="250px x 125px")
     # images 1:2
     img_1x2_lg = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(500, 1000)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="500px x 1000px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(500, 1000)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="500px x 1000px")
     img_1x2_md = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(250, 500)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="250px x 500px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(250, 500)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="250px x 500px")
     img_1x2_sm = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(125, 250)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="125px x 250px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(125, 250)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="125px x 250px")
     # 16_9
     img_16x9 = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(1200, 675)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="16:9 1200px x 675px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(1200, 675)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="16:9 1200px x 675px")
     # 191_1
     img_191x1 = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        processors=[ResizeToFill(1200, 628)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="1.91:1 1200px x 628px")
+            upload_to='product_images/%Y/%m/%d',
+            processors=[ResizeToFill(1200, 628)],
+            format='WebP',
+            options={'quality': 80},
+            blank=True,
+            null=True,
+            help_text="1.91:1 1200px x 628px")
 
     class Meta:
         ordering = ('order', )
@@ -869,49 +933,55 @@ class Image(models.Model):
     def __str__(self):
         return '{}'.format(self.name)
 
+
 class ProductPartJoin(models.Model):
     parts = models.ForeignKey(
-        Part,
-        related_name='ppj_parts',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            Part,
+            related_name='ppj_parts',
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     products = models.ForeignKey(
-        Product,
-        related_name = 'ppj_products',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            Product,
+            related_name='ppj_products',
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     simple_products = models.ForeignKey(
-        SimpleProduct,
-        related_name = "ppj_simple_products",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            SimpleProduct,
+            related_name="ppj_simple_products",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     digital_products = models.ForeignKey(
-        DigitalProduct,
-        related_name = "ppj_digital_products",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            DigitalProduct,
+            related_name="ppj_digital_products",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     bundle_products = models.ForeignKey(
-        BundleProduct,
-        related_name = "ppj_bundle_products",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            BundleProduct,
+            related_name="ppj_bundle_products",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     variable_products = models.ForeignKey(
-        VariableProduct,
-        related_name = "ppj_variable_products",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            VariableProduct,
+            related_name="ppj_variable_products",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     quantity = models.IntegerField(
-            default=1, help_text="How many parts per product?")
+            default=1,
+            help_text="How many parts per product?")
     is_unlimited = models.BooleanField(
-        default=False, help_text="Denotes if a part should be considered unlimited.")
+            default=False,
+            help_text="Denotes if a part should be considered unlimited.")
     use_all = models.BooleanField(
-        default=False, help_text="Use all part inventory when the related product is brought into inventory.")
+            default=False,
+            help_text=(
+                "Use all part inventory when the related product is "
+                "brought into inventory."))
 
     @property
     def _ecpu(self):
@@ -921,4 +991,3 @@ class ProductPartJoin(models.Model):
     @property
     def _unit(self):
         return self.parts._unit
-
