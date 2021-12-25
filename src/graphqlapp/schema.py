@@ -193,7 +193,7 @@ class BannerNode(DjangoObjectType):
         return self.ban_lg_rectangle.url
 
     def resolve_ban_skyscraper(self, info):
-        return self.ban_square.url
+        return self.ban_skyscraper.url
 
 
 class Query(graphene.ObjectType):
