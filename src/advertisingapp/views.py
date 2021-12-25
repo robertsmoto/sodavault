@@ -1,5 +1,5 @@
-from .models import Campaign, Assett, Banner 
-from .forms import CampaignForm, AssettForm, BannerForm 
+from .models import Campaign, Banner
+from .forms import CampaignForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView, FormView
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -9,7 +9,7 @@ from django.urls import reverse
 
 
 class AdvertisingView(LoginRequiredMixin, Navigation, TemplateView):
-    template_name = 'advertisingapp/ads_home.html' 
+    template_name = 'advertisingapp/ads_home.html'
     pass
 
 
@@ -26,6 +26,7 @@ class CampaignAutocomplete(autocomplete.Select2QuerySetView):
 
         return qs
 
+
 class CampaignListView(ListView):
     model = Campaign
     # form_class = CampaignForm
@@ -40,12 +41,14 @@ class CampaignCreateView(CreateView):
     def get_success_url(self):
         return reverse('campaign-list')
 
+
 class CampaignUpdateView(UpdateView):
     model = Campaign
     form_class = CampaignForm
 
     def get_success_url(self):
         return reverse('campaign-list')
+
 
 class CampaignDeleteView(DeleteView):
     model = Campaign
@@ -55,18 +58,18 @@ class CampaignDeleteView(DeleteView):
         return reverse('campaign-list')
 
 
+# class AssettView(LoginRequiredMixin, Navigation, FormView):
+    # template_name = 'advertisingapp/assett.html'
+    # form_class = AssettForm
+    # success_url = 'core'
+    # pass
 
-class AssettView(LoginRequiredMixin, Navigation, FormView):
-    template_name = 'advertisingapp/assett.html' 
-    form_class = AssettForm
-    success_url = 'core'
-    pass
 
-class BannerView(LoginRequiredMixin, Navigation, FormView):
-    template_name = 'advertisingapp/banner.html' 
-    form_class = BannerForm
-    success_url = 'core'
-    pass
+# class BannerView(LoginRequiredMixin, Navigation, FormView):
+    # template_name = 'advertisingapp/banner.html'
+    # form_class = BannerForm
+    # success_url = 'core'
+#     pass
 
 # from rest_framework import viewsets
 # from rest_framework import permissions

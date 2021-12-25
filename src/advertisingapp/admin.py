@@ -1,18 +1,11 @@
 from django.contrib import admin
-from .models import Assett, Banner, Campaign
-
-
-class AssettsInline(admin.StackedInline):
-    model = Assett
-    extra = 0
-    verbose_name = "asset"
-    verbose_name_plural = "assetts"
+from .models import Banner, Campaign
 
 
 class BannersInline(admin.StackedInline):
     model = Banner
     extra = 0
-    exclude = ['image_lg', 'image_md', 'image_sm']
+    # exclude = ['image_lg', 'image_md', 'image_sm']
     verbose_name = "bannner"
     verbose_name_plural = "banner"
 
@@ -36,7 +29,6 @@ class CampaignAdmin(admin.ModelAdmin):
         'notes',
     ]
     inlines = [
-        AssettsInline,
         BannersInline
     ]
     # filter_horizontal = ['products']
