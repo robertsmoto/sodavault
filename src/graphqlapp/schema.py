@@ -118,15 +118,15 @@ class BlogPostNode(DjangoObjectType):
         return self.thumbnail_image.url
 
 
-class ProductNode(DjangoObjectType):
-    class Meta:
-        model = advertisingapp.models.Product
-        fields = [
-                "name", "sku", "cost", "price", "categories", "tags",
-                "identifiers", "measurements", "digital_options", "promotions",
-                "marketing"]
-        filter_fields = ["name"]
-        interfaces = (relay.Node, )
+# class ProductNode(DjangoObjectType):
+    # class Meta:
+        # model = advertisingapp.models.Product
+        # fields = [
+                # "name", "sku", "cost", "price", "categories", "tags",
+                # "identifiers", "measurements", "digital_options", "promotions",
+                # "marketing"]
+        # filter_fields = ["name"]
+        # interfaces = (relay.Node, )
 
 
 class CampaignNode(DjangoObjectType):
@@ -198,14 +198,14 @@ class BannerNode(DjangoObjectType):
 
 class Query(graphene.ObjectType):
     # products
-    products = relay.Node.Field(ProductNode)
-    all_products = DjangoFilterConnectionField(ProductNode)
+    # products = relay.Node.Field(ProductNode)
+    # all_products = DjangoFilterConnectionField(ProductNode)
 
-    category = relay.Node.Field(CategoryNode)
-    all_categories = DjangoFilterConnectionField(CategoryNode)
+    # category = relay.Node.Field(CategoryNode)
+    # all_categories = DjangoFilterConnectionField(CategoryNode)
 
-    tag = relay.Node.Field(TagNode)
-    all_tags = DjangoFilterConnectionField(TagNode)
+    # tag = relay.Node.Field(TagNode)
+    # all_tags = DjangoFilterConnectionField(TagNode)
 
     # blog and pages
     posts_and_pages = relay.Node.Field(BlogPostNode)
@@ -217,6 +217,5 @@ class Query(graphene.ObjectType):
 
     banner = relay.Node.Field(BannerNode)
     all_banners = DjangoFilterConnectionField(BannerNode)
-
 
 schema = graphene.Schema(query=Query)
