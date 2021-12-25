@@ -212,7 +212,7 @@ class Banner(models.Model):
             max_length=200,
             blank=True,
             help_text="automatic size: 500px x 500px")
-    ban_med_square = models.CharField(
+    ban_md_square = models.CharField(
             max_length=200,
             blank=True,
             help_text="automatic size: 250px x 250px")
