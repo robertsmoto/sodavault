@@ -395,7 +395,7 @@ class Banner(models.Model):
             if k == "ban_lg_square":
                 self.ban_lg_square = file_path
             if k == "ban_md_square":
-                self.ban_med_square = file_path
+                self.ban_md_square = file_path
             if k == "ban_sm_square":
                 self.ban_sm_square = file_path
 
