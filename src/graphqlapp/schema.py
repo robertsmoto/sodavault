@@ -143,42 +143,57 @@ class CampaignNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-class AssettNode(DjangoObjectType):
-    class Meta:
-        model = advertisingapp.models.Assett
-        fields = [
-                "campaign", "product", "name", "excerpt", "url_name",
-                "url_link", "img_1x1"]
-        filter_fields = []
-        interfaces = (relay.Node, )
+# class AssettNode(DjangoObjectType):
+    # class Meta:
+        # model = advertisingapp.models.Assett
+        # fields = [
+                # "campaign", "product", "name", "excerpt", "url_name",
+                # "url_link", "img_1x1"]
+        # filter_fields = []
+        # interfaces = (relay.Node, )
 
-    def resolve_img_1x1(self, info):
-        return self.img_1x1.url
+    # def resolve_img_1x1(self, info):
+        # return self.img_1x1.url
 
 
 class BannerNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Banner
         fields = [
-                "campaign", "name", "image_xl", "image_lg", "image_md",
-                "image_sm", "image_skyscraper"]
-        filter_fields = ["campaign"]
+                "campaign", "name", "excerpt", "url_name", "url_link",
+                "ban_square", "ban_lg_square", "ban_md_square",
+                "ban_sm_square", "ban_leaderboard", "ban_lg_leaderboard",
+                "ban_inline_rectangle", "ban_lg_rectangle", "ban_skyscraper"]
+
+        filter_fields = ["campaign", "name"]
         interfaces = (relay.Node, )
 
-    def resolve_image_xl(self, info):
-        return self.image_xl.url
+    def resolve_ban_square(self, info):
+        return self.ban_square.url
 
-    def resolve_image_lg(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.image_lg)
+    def resolve_ban_lg_square(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.ban_lg_square)
 
-    def resolve_image_md(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.image_md)
+    def resolve_ban_md_square(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.ban_md_square)
 
-    def resolve_image_sm(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.image_sm)
+    def resolve_ban_sm_square(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.ban_sm_square)
 
-    def resolve_image_skyscraper(self, info):
-        return self.image_skyscraper.url
+    def resolve_ban_leaderboard(self, info):
+        return self.ban_leaderboard.url
+
+    def resolve_ban_lg_leaderboard(self, info):
+        return self.ban_lg_leaderboard.url
+
+    def resolve_ban_inline_rectangle(self, info):
+        return self.ban_inline_rectangle.url
+
+    def resolve_ban_lg_rectangle(self, info):
+        return self.ban_lg_rectangle.url
+
+    def resolve_ban_skyscraper(self, info):
+        return self.ban_square.url
 
 
 class Query(graphene.ObjectType):
@@ -202,9 +217,6 @@ class Query(graphene.ObjectType):
 
     banner = relay.Node.Field(BannerNode)
     all_banners = DjangoFilterConnectionField(BannerNode)
-
-    assett = relay.Node.Field(AssettNode)
-    all_assetts = DjangoFilterConnectionField(AssettNode)
 
 
 schema = graphene.Schema(query=Query)
