@@ -267,7 +267,7 @@ class Banner(models.Model):
 
         if (
                 self._orig_ban_inline_rectangle != self.ban_inline_rectangle
-                and self.ban_inline_rectangel):
+                and self.ban_inline_rectangle):
 
             svlog_info("Creating ban_inline_rectangle image variations.")
 
