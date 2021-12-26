@@ -103,7 +103,9 @@ class BlogPostNode(DjangoObjectType):
                 "parent", "primary_menu", "post_type", "title", "excerpt",
                 "body", "slug", "status", "featured", "date_published",
                 "date_modified", "keyword_list", "featured_image",
-                "thumbnail_image", "image_title" "image_caption", "footer"]
+                "thumbnail_image", "image_title" "image_caption", "footer",
+                "featured_lg", "featured_md", "featured_sm", "thumb_lg",
+                "thumb_md", "thumb_sm"]
         filter_fields = [
                 "locations", "categories", "tags", "author", "menu_order",
                 "parent", "primary_menu", "post_type", "title", "excerpt",
@@ -114,9 +116,26 @@ class BlogPostNode(DjangoObjectType):
     def resolve_featured_image(self, info):
         return self.featured_image.url
 
+    def resolve_featured_lg(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
+
+    def resolve_featured_md(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.featured_md)
+
+    def resolve_featured_sm(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.featured_sm)
+
     def resolve_thumbnail_image(self, info):
         return self.thumbnail_image.url
 
+    def resolve_thumb_lg(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_lg)
+
+    def resolve_thumb_md(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_md)
+
+    def resolve_thumb_sm(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
 
 # class ProductNode(DjangoObjectType):
     # class Meta:
