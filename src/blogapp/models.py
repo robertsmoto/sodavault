@@ -280,6 +280,24 @@ class Post(models.Model):
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
 
+    @property
+    def reading_time(self):
+        text = ""
+        if len(self.body) > 0 or len(self.excerpt) > 0:
+            text = self.body + self.excerpt
+        time = round((len(text.split()) / 250))
+        if time < 1:
+            time = 1
+        return time
+
+    @property
+    def custom_string(self):
+        return "from the property"
+
+    @property
+    def dpd(self):
+        return "02"
+
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
         self._orig_featured_image = self.featured_image
@@ -369,23 +387,6 @@ class Post(models.Model):
             ],
         )
 
-    @property
-    def reading_time(self):
-        text = ""
-        if len(self.body) > 0 or len(self.excerpt) > 0:
-            text = self.body + self.excerpt
-        time = round((len(text.split()) / 250))
-        if time < 1:
-            time = 1
-        return time
-
-    @property
-    def custom_string(self):
-        return "from the property"
-
-    @property
-    def dpd(self):
-        return "02"
 
     class Meta:
         ordering = ('-featured', '-date_published')
