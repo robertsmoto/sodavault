@@ -127,14 +127,16 @@ class BlogPostNode(DjangoObjectType):
 
         interfaces = (relay.Node, )
 
-    def resolve_reading_time(self, info):
-        return self.reading_time
+    custom_string = graphene.String(source='custom_string')
 
-    def resolve_custom_string(self, info):
-        return self.custom_string
+#     def resolve_reading_time(self, info):
+        # return self.reading_time
 
-    def resolve_dpd(self, info):
-        return self.dpd
+    # def resolve_custom_string(self, info):
+        # return self.custom_string
+
+    # def resolve_dpd(self, info):
+        # return self.dpd
 
     # def resolve_dpd(self, info):
         # return self.date_published.day
