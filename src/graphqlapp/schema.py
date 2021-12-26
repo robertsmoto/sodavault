@@ -101,7 +101,7 @@ class BlogPostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
         fields = [
-                "locations", "categories", "tags", "author", "menu_order",
+                "locations__domain", "categories", "tags", "author", "menu_order",
                 "parent", "primary_menu", "post_type", "title", "excerpt",
                 "body", "slug", "status", "featured", "date_published",
                 "date_modified", "keyword_list", "featured_image",
@@ -109,7 +109,7 @@ class BlogPostNode(DjangoObjectType):
                 "featured_lg", "featured_md", "featured_sm", "thumb_lg",
                 "thumb_md", "thumb_sm"]
         filter_fields = {
-                'locations': ['iexact', 'icontains', 'istartswith'],
+                'locations__domain': ['iexact', 'icontains', 'istartswith'],
                 'categories': ['iexact', 'icontains', 'istartswith'],
                 'tags': ['iexact', 'icontains', 'istartswith'],
                 'author': ['isnull', ],
