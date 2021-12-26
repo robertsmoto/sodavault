@@ -11,10 +11,9 @@ import os
 def create_dir_size_var(fn: str, size: tuple) -> str:
     # Create dirs
     now = timezone.now()
-    banner_dir = "advertisingapp/banners/"
     date_dir = now.strftime("%Y/%m/%d/")
     fn = f'{fn}-{size[0]}x{size[1]}.webp'
-    return banner_dir, date_dir, fn
+    return date_dir, fn
 
 
 def modify_fn_and_path(filename: str) -> str:
@@ -153,6 +152,7 @@ def process_images(k: str, v) -> None:
     processor = v[0]
     source = v[1]
     size = v[2]
+    subdir = v[3]
 
     base_fn = os.path.basename(source.url)
     fn = os.path.splitext(base_fn)[0]
@@ -163,13 +163,13 @@ def process_images(k: str, v) -> None:
     # use django api to read processed image
     banner_read = ban.read()
 
-    banner_dir, date_dir, fn = create_dir_size_var(
+    date_dir, fn = create_dir_size_var(
             fn=fn,
             size=size)
 
     # upload image
     if config('ENV_USE_SPACES', cast=bool):
-        file_path = os.path.join(banner_dir, date_dir, fn)
+        file_path = os.path.join(subdir, date_dir, fn)
         s3_upload_path = os.path.join('media', file_path)
 
         # need to save image to temp dir before uploading to s3
@@ -237,7 +237,7 @@ def process_images(k: str, v) -> None:
     else:
         media_root = config('ENV_MEDIA_ROOT')
         base_dir = os.path.join(
-            media_root, banner_dir, date_dir)
+            media_root, subdir, date_dir)
 
         # first check if file exists and remove it
         # for the development server, write file directly

@@ -127,11 +127,20 @@ class Banner(models.Model):
             svlog_info("Creating ban_square image variations.")
 
             img_index['ban_lg_square'] = [
-                    utils_images.BannerLgSqWebp, self.ban_square, (500, 500)]
+                    utils_images.BannerLgSqWebp,
+                    self.ban_square,
+                    (500, 500),
+                    "advertisingapp/banner"]
             img_index['ban_md_square'] = [
-                    utils_images.BannerMdSqWebp, self.ban_square, (250, 250)]
+                    utils_images.BannerMdSqWebp,
+                    self.ban_square,
+                    (250, 250),
+                    "advertisingapp/banner"]
             img_index['ban_sm_square'] = [
-                    utils_images.BannerSmSqWebp, self.ban_square, (200, 200)]
+                    utils_images.BannerSmSqWebp,
+                    self.ban_square,
+                    (200, 200),
+                    "advertisingapp/banner"]
 
         if (
                 self._orig_ban_leaderboard != self.ban_leaderboard
@@ -140,9 +149,10 @@ class Banner(models.Model):
             svlog_info("Creating ban_leaderboard image variations.")
 
             img_index['ban_leaderboard'] = [
-                utils_images.BannerLeaderboardWebp,
-                self.ban_leaderboard,
-                (728, 90)]
+                    utils_images.BannerLeaderboardWebp,
+                    self.ban_leaderboard,
+                    (728, 90),
+                    "advertisingapp/banner"]
 
         if (
                 self._orig_ban_lg_leaderboard != self.ban_lg_leaderboard
@@ -151,9 +161,10 @@ class Banner(models.Model):
             svlog_info("Creating ban_lg_leaderboard image variations.")
 
             img_index['ban_lg_lederboard'] = [
-                utils_images.BannerLgLeaderboardWebp,
-                self.ban_lg_leaderboard,
-                (790, 90)]
+                    utils_images.BannerLgLeaderboardWebp,
+                    self.ban_lg_leaderboard,
+                    (790, 90),
+                    "advertisingapp/banner"]
 
         if (
                 self._orig_ban_inline_rectangle != self.ban_inline_rectangle
@@ -162,9 +173,10 @@ class Banner(models.Model):
             svlog_info("Creating ban_inline_rectangle image variations.")
 
             img_index['ban_inline_rectangle'] = [
-                utils_images.BannerInlineRectangleWebp,
-                self.ban_inline_rectangle,
-                (300, 250)]
+                    utils_images.BannerInlineRectangleWebp,
+                    self.ban_inline_rectangle,
+                    (300, 250),
+                    "advertisingapp/banner"]
 
         if (
                 self._orig_ban_lg_rectangle != self.ban_lg_rectangle
@@ -173,9 +185,10 @@ class Banner(models.Model):
             svlog_info("Creating ban_lg_rectangle image variations.")
 
             img_index['ban_lg_rectangle'] = [
-                utils_images.BannerLgRectangleWebp,
-                self.ban_lg_rectangle,
-                (336, 280)]
+                    utils_images.BannerLgRectangleWebp,
+                    self.ban_lg_rectangle,
+                    (336, 280),
+                    "advertisingapp/banner"]
 
         if (
                 self._orig_ban_skyscraper != self.ban_skyscraper
@@ -184,9 +197,10 @@ class Banner(models.Model):
             svlog_info("Creating ban_skyscraper image variations.")
 
             img_index['ban_skyscraper'] = [
-                utils_images.BannerSkyScraperWebp,
-                self.ban_skyscraper,
-                (160, 600)]
+                    utils_images.BannerSkyScraperWebp,
+                    self.ban_skyscraper,
+                    (160, 600),
+                    "advertisingapp/banner"]
 
         for k, v in img_index.items():
 

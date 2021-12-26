@@ -82,11 +82,20 @@ class Category(models.Model):
             svlog_info("Creating blog category image variations.")
 
             img_index['image_lg_square'] = [
-                    utils_images.BannerLgSqWebp, self.image, (500, 500)]
+                    utils_images.BannerLgSqWebp,
+                    self.image,
+                    (500, 500),
+                    "blogapp/category"]
             img_index['image_md_square'] = [
-                    utils_images.BannerMdSqWebp, self.image, (250, 250)]
+                    utils_images.BannerMdSqWebp,
+                    self.image,
+                    (250, 250),
+                    "blogapp/category"]
             img_index['image_sm_square'] = [
-                    utils_images.BannerSmSqWebp, self.image, (200, 200)]
+                    utils_images.BannerSmSqWebp,
+                    self.image,
+                    (200, 200),
+                    "blogapp/category"]
 
         for k, v in img_index.items():
 
@@ -291,15 +300,18 @@ class Post(models.Model):
             img_index['featured_lg'] = [
                     utils_images.FeaturedLgWebp,
                     self.featured_image,
-                    (1600, 800)]
+                    (1600, 800),
+                    "blogapp/featured"]
             img_index['featured_md'] = [
                     utils_images.FeaturedMdWebp,
                     self.featured_image,
-                    (800, 400)]
+                    (800, 400),
+                    "blogapp/featured"]
             img_index['featured_sm'] = [
                     utils_images.FeaturedSmWebp,
                     self.featured_image,
-                    (400, 200)]
+                    (400, 200),
+                    "blogapp/featured"]
 
         if (
                 self._orig_thumbnail_image != self.thumbnail_image
@@ -310,15 +322,18 @@ class Post(models.Model):
             img_index['thumb_lg'] = [
                     utils_images.BannerLgSqWebp,
                     self.thumbnail_image,
-                    (500, 500)]
+                    (500, 500),
+                    "blogapp/thumbnail"]
             img_index['thumb_md'] = [
                     utils_images.BannerMdSqWebp,
                     self.thumbnail_image,
-                    (250, 250)]
+                    (250, 250),
+                    "blogapp/thumbnail"]
             img_index['thumb_sm'] = [
                     utils_images.BannerSmSqWebp,
                     self.thumbnail_image,
-                    (200, 200)]
+                    (200, 200),
+                    "blogapp/thumbnail"]
 
         for k, v in img_index.items():
 
