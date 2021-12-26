@@ -98,7 +98,7 @@ class BlogTagNode(DjangoObjectType):
 
 
 class BlogPostNode(DjangoObjectType):
-    custom_string = graphene.String(source='custom_string')
+    custom_string = graphene.String()
 
     class Meta:
         model = blogapp.models.Post
