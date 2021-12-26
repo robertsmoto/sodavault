@@ -101,6 +101,9 @@ class BlogPostNode(DjangoObjectType):
 
     class Meta:
         model = blogapp.models.Post
+
+        custom_string = graphene.String(source='custom_string')
+
         fields = [
                 "locations__domain", "categories__name", "tags__name",
                 "author", "menu_order", "parent", "primary_menu", "post_type",
@@ -127,7 +130,6 @@ class BlogPostNode(DjangoObjectType):
 
         interfaces = (relay.Node, )
 
-    custom_string = graphene.String(source='custom_string')
 
 #     def resolve_reading_time(self, info):
         # return self.reading_time
