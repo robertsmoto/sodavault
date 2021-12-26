@@ -113,7 +113,7 @@ class BlogPostNode(DjangoObjectType):
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
-                "custom_string"]
+                "reading_time", "custom_string", "dpd"]
         filter_fields = {
                 'locations__domain': ['iexact', 'icontains', 'istartswith'],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
