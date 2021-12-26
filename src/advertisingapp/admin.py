@@ -5,7 +5,7 @@ from .models import Banner, Campaign
 class BannersInline(admin.StackedInline):
     model = Banner
     extra = 0
-    # exclude = ['image_lg', 'image_md', 'image_sm']
+    exclude = ['ban_lg_square', 'ban_md_square', 'ban_sm_square']
     verbose_name = "bannner"
     verbose_name_plural = "banner"
 
