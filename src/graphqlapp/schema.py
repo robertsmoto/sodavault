@@ -1,11 +1,11 @@
-import graphene
-from graphene import relay
-from graphene_django.filter import DjangoFilterConnectionField
-from graphene_django import DjangoObjectType
-import blogapp.models
-import itemsapp.models
-import advertisingapp.models
 from decouple import config
+from graphene import relay
+from graphene_django import DjangoObjectType
+from graphene_django.filter import DjangoFilterConnectionField
+import advertisingapp.models
+import blogapp.models
+import graphene
+import itemsapp.models
 import os
 
 
@@ -120,7 +120,7 @@ class BlogPostNode(DjangoObjectType):
                 'status': ['iexact', 'icontains', 'istartswith'],
                 'featured': ['iexact', 'icontains', 'istartswith'],
                 'date_published': ['iexact', 'icontains', 'istartswith'],
-                'date_modified': ['iexact', 'icontains', 'istartswith'],}
+                'date_modified': ['iexact', 'icontains', 'istartswith'], }
 
         interfaces = (relay.Node, )
 
@@ -247,5 +247,6 @@ class Query(graphene.ObjectType):
 
     banner = relay.Node.Field(BannerNode)
     all_banners = DjangoFilterConnectionField(BannerNode)
+
 
 schema = graphene.Schema(query=Query)
