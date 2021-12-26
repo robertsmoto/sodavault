@@ -98,6 +98,10 @@ class BlogTagNode(DjangoObjectType):
 
 
 class BlogPostNode(DjangoObjectType):
+    reading_time = graphene.Int(source='reading_time')
+    custom_string = graphene.String(default_value='hello_world')
+    # reading_time = graphene.String(source='reading_time')
+
     class Meta:
         model = blogapp.models.Post
         fields = [
@@ -124,6 +128,15 @@ class BlogPostNode(DjangoObjectType):
                 'date_modified': ['isnull', 'iexact', 'icontains'], }
 
         interfaces = (relay.Node, )
+
+#     def resolve_reading_time(self, info):
+        # return self.reading_time
+
+#     def resolve_dpm(self, info):
+        # return self.date_published.month
+
+    # def resolve_dpd(self, info):
+        # return self.date_published.day
 
     def resolve_featured_image(self, info):
         return self.featured_image.url
