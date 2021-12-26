@@ -106,10 +106,21 @@ class BlogPostNode(DjangoObjectType):
                 "thumbnail_image", "image_title" "image_caption", "footer",
                 "featured_lg", "featured_md", "featured_sm", "thumb_lg",
                 "thumb_md", "thumb_sm"]
-        filter_fields = [
-                "locations", "categories", "tags", "author", "menu_order",
-                "parent", "primary_menu", "post_type", "title", "excerpt",
-                "body", "slug", "status", "featured", "date_published"]
+        filter_fields = {
+                'locations': ['iexact', 'icontains', 'istartswith'],
+                'categories': ['iexact', 'icontains', 'istartswith'],
+                'tags': ['iexact', 'icontains', 'istartswith'],
+                'author': ['iexact', 'icontains', 'istartswith'],
+                'menu_order': ['iexact', 'icontains', 'istartswith'],
+                'parent': ['iexact', 'icontains', 'istartswith'],
+                'primary_menu': ['iexact', 'icontains', 'istartswith'],
+                'post_type': ['iexact', 'icontains', 'istartswith'],
+                'title': ['iexact', 'icontains', 'istartswith'],
+                'slug': ['iexact', 'icontains', 'istartswith'],
+                'status': ['iexact', 'icontains', 'istartswith'],
+                'featured': ['iexact', 'icontains', 'istartswith'],
+                'date_published': ['iexact', 'icontains', 'istartswith'],
+                'date_modified': ['iexact', 'icontains', 'istartswith'],}
 
         interfaces = (relay.Node, )
 
