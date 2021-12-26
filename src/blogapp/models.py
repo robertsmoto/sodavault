@@ -379,6 +379,14 @@ class Post(models.Model):
             time = 1
         return time
 
+    @property
+    def custom_string(self):
+        return "from the property"
+
+    @property
+    def dpd(self):
+        return "02"
+
     class Meta:
         ordering = ('-featured', '-date_published')
 
