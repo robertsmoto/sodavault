@@ -1,5 +1,5 @@
 from decouple import config
-from graphene import relay
+from graphene import relay, String, Int
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import advertisingapp.models
@@ -98,7 +98,7 @@ class BlogTagNode(DjangoObjectType):
 
 
 class BlogPostNode(DjangoObjectType):
-    # reading_time = graphene.Int(source='reading_time')
+    reading_time = graphene.Int(source='reading_time')
     custom_string = graphene.String(default_value='hello_world')
     # reading_time = graphene.String(source='reading_time')
 
