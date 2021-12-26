@@ -110,17 +110,16 @@ class BlogPostNode(DjangoObjectType):
                 'locations': ['iexact', 'icontains', 'istartswith'],
                 'categories': ['iexact', 'icontains', 'istartswith'],
                 'tags': ['iexact', 'icontains', 'istartswith'],
-                'author': ['iexact', 'icontains', 'istartswith'],
+                'author': ['isnull', 'icontains', 'istartswith'],
                 'menu_order': ['iexact', 'icontains', 'istartswith'],
-                'parent': ['iexact', 'icontains', 'istartswith'],
+                'parent': ['isnull', 'icontains', 'istartswith'],
                 'primary_menu': ['iexact', 'icontains', 'istartswith'],
                 'post_type': ['iexact', 'icontains', 'istartswith'],
                 'title': ['iexact', 'icontains', 'istartswith'],
-                'slug': ['iexact', 'icontains', 'istartswith'],
                 'status': ['iexact', 'icontains', 'istartswith'],
                 'featured': ['iexact', 'icontains', 'istartswith'],
-                'date_published': ['iexact', 'icontains', 'istartswith'],
-                'date_modified': ['iexact', 'icontains', 'istartswith'], }
+                'date_published': ['isnull', 'iexact', 'icontains'],
+                'date_modified': ['isnull', 'iexact', 'icontains'], }
 
         interfaces = (relay.Node, )
 
