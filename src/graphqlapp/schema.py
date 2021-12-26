@@ -98,15 +98,9 @@ class BlogTagNode(DjangoObjectType):
 
 
 class BlogPostNode(DjangoObjectType):
-    reading_time = graphene.Field(Int, source='reading_time')
-    custom_string = graphene.Field(
-            String,
-            source='custom_string',
-            default_value='hello_world')
-    dpd = graphene.Field(
-            String,
-            source='dpd',
-            default_value='none')
+    reading_time = graphene.Int()
+    custom_string = graphene.String()
+    dpd = graphene.String()
     # reading_time = graphene.String(source='reading_time')
 
     class Meta:
