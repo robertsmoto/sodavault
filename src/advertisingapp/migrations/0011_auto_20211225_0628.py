@@ -35,22 +35,22 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='banner',
             name='ban_inline_rectangle',
-            field=models.ImageField(blank=True, help_text='recommended size: 300px x 250px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=models.ImageField(blank=True, help_text='recommended size: 300px x 250px', null=True, upload_to=""),
         ),
         migrations.AddField(
             model_name='banner',
             name='ban_leaderboard',
-            field=models.ImageField(blank=True, help_text='recommended size: 728px x 90px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=models.ImageField(blank=True, help_text='recommended size: 728px x 90px', null=True, upload_to=""),
         ),
         migrations.AddField(
             model_name='banner',
             name='ban_lg_leaderboard',
-            field=models.ImageField(blank=True, help_text='recommended size: 970px x 90px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=models.ImageField(blank=True, help_text='recommended size: 970px x 90px', null=True, upload_to=""),
         ),
         migrations.AddField(
             model_name='banner',
             name='ban_lg_rectangle',
-            field=models.ImageField(blank=True, help_text='recommended size: 336px x 280px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=models.ImageField(blank=True, help_text='recommended size: 336px x 280px', null=True, upload_to=""),
         ),
         migrations.AddField(
             model_name='banner',
@@ -70,6 +70,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='banner',
             name='ban_square',
-            field=models.ImageField(blank=True, help_text='recommended size: 500px x 500px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=models.ImageField(blank=True, help_text='recommended size: 500px x 500px', null=True, upload_to=""),
         ),
     ]

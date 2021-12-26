@@ -19,16 +19,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='assett',
             name='img_1xl',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='recommended size: 250px x 250px', null=True, upload_to=advertisingapp.models.new_filename_assett),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='recommended size: 250px x 250px', null=True, upload_to=""),
         ),
         migrations.AlterField(
             model_name='banner',
             name='image_skyscraper',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='recommended size: 160px x 600px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='recommended size: 160px x 600px', null=True, upload_to=""),
         ),
         migrations.AlterField(
             model_name='banner',
             name='image_xl',
-            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='recommended size: 1140px x 380px', null=True, upload_to=advertisingapp.models.new_filename_banner),
+            field=imagekit.models.fields.ProcessedImageField(blank=True, help_text='recommended size: 1140px x 380px', null=True, upload_to=""),
         ),
     ]
