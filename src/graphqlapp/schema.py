@@ -112,7 +112,7 @@ class BlogPostNode(DjangoObjectType):
                 'tags': ['iexact', 'icontains', 'istartswith'],
                 'author': ['isnull', ],
                 'menu_order': ['iexact', 'icontains', 'istartswith'],
-                'parent': ['isnull', 'icontains', 'istartswith'],
+                'parent': ['isnull'],
                 'primary_menu': ['iexact', 'icontains', 'istartswith'],
                 'post_type': ['iexact', 'icontains', 'istartswith'],
                 'title': ['iexact', 'icontains', 'istartswith'],
