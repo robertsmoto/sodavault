@@ -239,6 +239,10 @@ class Query(graphene.ObjectType):
     # all_tags = DjangoFilterConnectionField(TagNode)
 
     # blog and pages
+    blog_locations = relay.Node.Field(BlogLocationNode)
+    post_and_pages_location = DjangoFilterConnectionField(BlogLocationNode)
+
+    # blog and pages
     posts_and_pages = relay.Node.Field(BlogPostNode)
     all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
 
