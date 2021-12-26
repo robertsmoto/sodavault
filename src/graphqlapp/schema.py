@@ -98,9 +98,9 @@ class BlogTagNode(DjangoObjectType):
 
 
 class BlogPostNode(DjangoObjectType):
-    reading_time = graphene.Int()
-    custom_string = graphene.String()
-    dpd = graphene.String()
+    reading_time = graphene.Int(source="reading_time")
+    custom_string = graphene.String(source="custom_string")
+    dpd = graphene.String(source="dpd")
     # reading_time = graphene.String(source='reading_time')
 
     class Meta:
@@ -113,7 +113,7 @@ class BlogPostNode(DjangoObjectType):
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
-                "reading_time", "custom_string", "dpd"]
+                "reading_time", "custom_string"]
         filter_fields = {
                 'locations__domain': ['iexact', 'icontains', 'istartswith'],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
