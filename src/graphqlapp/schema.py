@@ -111,7 +111,7 @@ class BlogPostNode(DjangoObjectType):
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
-                "reading_time", "dpd"]
+                ]
         filter_fields = {
                 'locations__domain': ['iexact', 'icontains', 'istartswith'],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
@@ -153,6 +153,9 @@ class BlogPostNode(DjangoObjectType):
     def resolve_thumb_sm(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
 
+    def resolve_custom_string(self, info):
+        return self.custom_string
+
     def resolve_reading_time(self, info):
         return self.reading_time
 
@@ -165,9 +168,9 @@ class BlogPostNode(DjangoObjectType):
     def resolve_dpd(self, info):
         return self.dpd
 
-    reading_time = graphene.Field(Int, resolver=resolve_reading_time)
+    custom_string = graphene.Field(String, resolver=resolve_custom_string)
 
-    dpy = graphene.Field(String, resolver=resolve_dpy)
+    # dpy = graphene.Field(String, resolver=resolve_dpy)
     # dpm = graphene.Field(String, resolver=resolve_dpm)
     # dpd = graphene.Field(String, resolver=resolve_dpd)
 

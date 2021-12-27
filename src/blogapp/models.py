@@ -281,6 +281,10 @@ class Post(models.Model):
     timestamp_modified = models.DateTimeField(auto_now=True)
 
     @property
+    def custom_string(self):
+        return "hello from the other side"
+
+    @property
     def reading_time(self):
         text = ""
         if len(self.body) > 0 or len(self.excerpt) > 0:
