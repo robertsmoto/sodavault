@@ -163,10 +163,10 @@ class BlogPostNode(DjangoObjectType):
         return self.date_published.strftime("%d")
 
     def resolve_pub_us(self, info):
-        return self.date_published.strftime("%M, %d %Y")
+        return self.date_published.strftime("%b, %d %Y")
 
     def resolve_mod_us(self, info):
-        return self.date_modified.strftime("%M, %d %Y")
+        return self.date_modified.strftime("%b, %d %Y")
 
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
     pub_month = graphene.Field(String, resolver=resolve_pub_month)
