@@ -178,7 +178,7 @@ class BlogPostNode(DjangoObjectType):
     def resolve_dpd(self, info):
         return self.dpd
 
-    # reading_time = graphene.Field(Int, resolver=resolve_reading_time)
+    reading_time = graphene.Field(Int, resolver=resolve_reading_time)
 
     # dpy = graphene.Field(String, resolver=resolve_dpy)
     # dpm = graphene.Field(String, resolver=resolve_dpm)
