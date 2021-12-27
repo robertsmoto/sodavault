@@ -286,7 +286,8 @@ class Post(models.Model):
 
     @property
     def pub_year(self):
-        return self.date_published.strftime("%Y")
+        # self.date_published.strftime("%Y")
+        return "can I return a date"
 
     # @property
     # def dp_month(self):
