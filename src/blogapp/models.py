@@ -296,11 +296,12 @@ class Post(models.Model):
 
     @property
     def dpy(self):
-        return self.date_published.strftime('%Y')
+        year = self.date_published.strftime('%Y')
+        return year
 
     @property
     def dpm(self):
-        return self.date_published.strftime('%m')
+        return "month"
 
     @property
     def dpd(self):
