@@ -294,18 +294,18 @@ class Post(models.Model):
             time = 1
         return time
 
-    @property
-    def dpy(self):
-        year = self.date_published.strftime('%Y')
-        return year
+#     @property
+    # def dpy(self):
+        # year = self.date_published.strftime('%Y')
+        # return year
 
-    @property
-    def dpm(self):
-        return "month"
+    # @property
+    # def dpm(self):
+        # return "month"
 
-    @property
-    def dpd(self):
-        return self.date_published.strftime('%d')
+    # @property
+    # def dpd(self):
+        # return self.date_published.strftime('%d')
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)

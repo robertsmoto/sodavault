@@ -160,19 +160,15 @@ class BlogPostNode(DjangoObjectType):
         return self.reading_time
 
     def resolve_dpy(self, info):
-        return self.dpy
+        return self.date_published.strftime("%Y")
 
     def resolve_dpm(self, info):
-        return self.dpm
+        return self.date_published.strftime("%m")
 
     def resolve_dpd(self, info):
-        return self.dpd
+        return self.date_published.strftime("%d")
 
     custom_string = graphene.Field(String, resolver=resolve_custom_string)
-
-    dpy = graphene.Field(String, resolver=resolve_dpy)
-    dpm = graphene.Field(String, resolver=resolve_dpm)
-    dpd = graphene.Field(String, resolver=resolve_dpd)
 
 
 class CampaignNode(DjangoObjectType):
