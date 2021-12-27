@@ -166,19 +166,22 @@ class BlogPostNode(DjangoObjectType):
     def resolve_thumb_sm(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
 
-    def resolve_date_day(self, info):
-        return self.custom_string
+    def resolve_reading_time(self, info):
+        return self.reading_time
 
-    dp_day = graphene.Field(String, resolver=resolve_date_day)
-# class ProductNode(DjangoObjectType):
-    # class Meta:
-        # model = advertisingapp.models.Product
-        # fields = [
-                # "name", "sku", "cost", "price", "categories", "tags",
-                # "identifiers", "measurements", "digital_options", "promotions",
-                # "marketing"]
-        # filter_fields = ["name"]
-        # interfaces = (relay.Node, )
+    def resolve_dpy(self, info):
+        return self.dpy
+
+    def resolve_dpm(self, info):
+        return self.dpm
+
+    def resolve_dpd(self, info):
+        return self.dpd
+
+    reading_time = graphene.Field(Int, resolver=resolve_reading_time)
+    dpy = graphene.Field(Int, resolver=resolve_dpy)
+    dpm = graphene.Field(Int, resolver=resolve_dpm)
+    dpd = graphene.Field(Int, resolver=resolve_dpd)
 
 
 class CampaignNode(DjangoObjectType):

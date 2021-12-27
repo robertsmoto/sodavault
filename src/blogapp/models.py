@@ -291,12 +291,18 @@ class Post(models.Model):
         return time
 
     @property
-    def custom_string(self):
-        return "from the property"
+    def dpy(self):
+        return self.date_published.year
+
+    @property
+    def dpm(self):
+        return self.date_published.month
 
     @property
     def dpd(self):
-        return "02"
+        return self.date_published.day
+
+
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
