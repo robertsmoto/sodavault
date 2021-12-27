@@ -173,10 +173,12 @@ class BlogPostNode(DjangoObjectType):
         if len(self.body) > 0 or len(self.excerpt) > 0:
             text = self.body + self.excerpt
         time = round((len(text.split()) / 250))
-        time = f"{time} minutes"
+        timestr = ""
         if time < 1:
-            time = "1 minute"
-        return time
+            timestr = "1 minute"
+        else:
+            timestr = f"{time} minutes"
+        return timestr
 
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
     pub_month = graphene.Field(String, resolver=resolve_pub_month)
