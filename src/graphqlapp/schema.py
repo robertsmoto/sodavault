@@ -1,5 +1,5 @@
 from decouple import config
-from graphene import relay, String, Int
+from graphene import relay, Field, String, Int
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import advertisingapp.models
@@ -166,6 +166,10 @@ class BlogPostNode(DjangoObjectType):
     def resolve_thumb_sm(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
 
+    def resolve_date_day(self, info):
+        return self.custom_string
+
+    dp_day = graphene.Field(String, resolver=resolve_date_day)
 # class ProductNode(DjangoObjectType):
     # class Meta:
         # model = advertisingapp.models.Product
