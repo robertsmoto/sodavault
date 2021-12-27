@@ -156,11 +156,11 @@ class BlogPostNode(DjangoObjectType):
     def resolve_custom_string(self, info):
         return self.custom_string
 
-    def resolve_reading_time(self, info):
-        return self.reading_time
+#     def resolve_reading_time(self, info):
+        # return self.reading_time
 
-#     def resolve_dp_year(self, info):
-        # return self..year
+    def resolve_pub_year(self, info):
+        return self.pub_year
 
     # def resolve_dp_month(self, info):
         # return self.date_published.month
@@ -169,8 +169,8 @@ class BlogPostNode(DjangoObjectType):
         # return self.date_published.strftime("%d")
 
     custom_string = graphene.Field(String, resolver=resolve_custom_string)
-    dp_year = graphene.Field(Date, source='date_published')
-    dp_month = graphene.Field(Date, source='date_published')
+    pub_year = graphene.Field(String, resolver=resolve_pub_year)
+    # dp_month = graphene.Field(Date, source='date_published')
 
 
 class CampaignNode(DjangoObjectType):
