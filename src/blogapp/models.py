@@ -281,32 +281,14 @@ class Post(models.Model):
     timestamp_modified = models.DateTimeField(auto_now=True)
 
     @property
-    def custom_string(self):
-        return "hello from the other side"
-
-    @property
-    def pub_year(self):
-        # self.date_published.strftime("%Y")
-        return "can I return a date"
-
-    # @property
-    # def dp_month(self):
-        # return "month"
-
-    # @property
-    # def dpd(self):
-        # return self.date_published.strftime('%d')
-
-#     @property
-    # def reading_time(self):
-        # text = ""
-        # if len(self.body) > 0 or len(self.excerpt) > 0:
-            # text = self.body + self.excerpt
-        # time = round((len(text.split()) / 250))
-        # if time < 1:
-            # time = 1
-        # return time
-
+    def reading_time(self):
+        text = ""
+        if len(self.body) > 0 or len(self.excerpt) > 0:
+            text = self.body + self.excerpt
+        time = round((len(text.split()) / 250))
+        if time < 1:
+            time = 1
+        return time
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)

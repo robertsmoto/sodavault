@@ -153,11 +153,8 @@ class BlogPostNode(DjangoObjectType):
     def resolve_thumb_sm(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
 
-    def resolve_custom_string(self, info):
-        return self.custom_string
-
     def resolve_pub_year(self, info):
-        return self.pub_year
+        return self.date_published.strftime("%Y")
 
     # def resolve_dp_month(self, info):
         # return self.date_published.month
@@ -168,7 +165,6 @@ class BlogPostNode(DjangoObjectType):
 #     def resolve_reading_time(self, info):
         # return self.reading_time
 
-    custom_string = graphene.Field(String, resolver=resolve_custom_string)
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
     # dp_month = graphene.Field(Date, source='date_published')
 
