@@ -129,19 +129,6 @@ class BlogPostNode(DjangoObjectType):
 
         interfaces = (relay.Node, )
 
-
-#     def resolve_reading_time(self, info):
-        # return self.reading_time
-
-    # def resolve_custom_string(self, info):
-        # return self.custom_string
-
-    # def resolve_dpd(self, info):
-        # return self.dpd
-
-    # def resolve_dpd(self, info):
-        # return self.date_published.day
-
     def resolve_featured_image(self, info):
         return self.featured_image.url
 
