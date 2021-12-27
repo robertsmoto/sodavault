@@ -179,9 +179,10 @@ class BlogPostNode(DjangoObjectType):
         return self.dpd
 
     reading_time = graphene.Field(Int, resolver=resolve_reading_time)
+
     dpy = graphene.Field(String, resolver=resolve_dpy)
-    dpm = graphene.Field(String, resolver=resolve_dpm)
-    dpd = graphene.Field(String, resolver=resolve_dpd)
+    # dpm = graphene.Field(String, resolver=resolve_dpm)
+    # dpd = graphene.Field(String, resolver=resolve_dpd)
 
 
 class CampaignNode(DjangoObjectType):

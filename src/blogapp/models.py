@@ -292,7 +292,7 @@ class Post(models.Model):
 
     @property
     def dpy(self):
-        return self.date_published.year
+        return self.date_published.strftime('%Y')
 
     @property
     def dpm(self):
@@ -301,8 +301,6 @@ class Post(models.Model):
     @property
     def dpd(self):
         return self.date_published.day
-
-
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
