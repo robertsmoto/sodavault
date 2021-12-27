@@ -156,17 +156,15 @@ class BlogPostNode(DjangoObjectType):
     def resolve_pub_year(self, info):
         return self.date_published.strftime("%Y")
 
-    # def resolve_dp_month(self, info):
-        # return self.date_published.month
+    def resolve_pub_month(self, info):
+        return self.date_published.strftime("%m")
 
-#     def resolve_dpd(self, info):
-        # return self.date_published.strftime("%d")
-
-#     def resolve_reading_time(self, info):
-        # return self.reading_time
+    def resolve_pub_day(self, info):
+        return self.date_published.strftime("%d")
 
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
-    # dp_month = graphene.Field(Date, source='date_published')
+    pub_month = graphene.Field(String, resolver=resolve_pub_month)
+    pub_day = graphene.Field(String, resolver=resolve_pub_day)
 
 
 class CampaignNode(DjangoObjectType):
