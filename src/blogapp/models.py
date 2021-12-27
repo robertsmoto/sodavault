@@ -294,15 +294,14 @@ class Post(models.Model):
             time = 1
         return time
 
-    @property
-    def dp_year(self):
-        year = self.date_published.strftime('%Y')
-        print("### year", year, type(year))
-        return year
+#     @property
+    # def dp_year(self):
+        # year = self.date_published.strftime('%Y')
+        # return year
 
-    @property
-    def dp_month(self):
-        return "month"
+    # @property
+    # def dp_month(self):
+        # return "month"
 
     # @property
     # def dpd(self):

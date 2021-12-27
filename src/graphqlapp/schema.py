@@ -1,5 +1,5 @@
 from decouple import config
-from graphene import relay, Field, String, Int
+from graphene import relay, Field, String, Date, Int
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import advertisingapp.models
@@ -160,17 +160,17 @@ class BlogPostNode(DjangoObjectType):
         return self.reading_time
 
     def resolve_dp_year(self, info):
-        return self.dp_year
+        return self.date_published.year
 
     def resolve_dp_month(self, info):
-        return self.dp_month
+        return self.date_published.month
 
 #     def resolve_dpd(self, info):
         # return self.date_published.strftime("%d")
 
     custom_string = graphene.Field(String, resolver=resolve_custom_string)
-    dp_year = graphene.Field(String, resolver=resolve_dp_year)
-    dp_month = graphene.Field(String, resolver=resolve_dp_month)
+    dp_year = graphene.Field(Date, resolver=resolve_dp_year)
+    dp_month = graphene.Field(Date, resolver=resolve_dp_month)
 
 
 class CampaignNode(DjangoObjectType):
