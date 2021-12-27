@@ -162,9 +162,17 @@ class BlogPostNode(DjangoObjectType):
     def resolve_pub_day(self, info):
         return self.date_published.strftime("%d")
 
+    def resolve_pub_us(self, info):
+        return self.date_published.strftime("%M, %d %Y")
+
+    def resolve_mod_us(self, info):
+        return self.date_modified.strftime("%M, %d %Y")
+
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
     pub_month = graphene.Field(String, resolver=resolve_pub_month)
     pub_day = graphene.Field(String, resolver=resolve_pub_day)
+    pub_us = graphene.Field(String, resolver=resolve_pub_us)
+    mod_us = graphene.Field(String, resolver=resolve_mod_us)
 
 
 class CampaignNode(DjangoObjectType):
