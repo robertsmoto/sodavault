@@ -300,11 +300,11 @@ class Post(models.Model):
 
     @property
     def dpm(self):
-        return self.date_published.month
+        return self.date_published.strftime('%m')
 
     @property
     def dpd(self):
-        return self.date_published.day
+        return self.date_published.strftime('%d')
 
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)

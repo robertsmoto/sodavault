@@ -170,9 +170,9 @@ class BlogPostNode(DjangoObjectType):
 
     custom_string = graphene.Field(String, resolver=resolve_custom_string)
 
-    # dpy = graphene.Field(String, resolver=resolve_dpy)
-    # dpm = graphene.Field(String, resolver=resolve_dpm)
-    # dpd = graphene.Field(String, resolver=resolve_dpd)
+    dpy = graphene.Field(String, resolver=resolve_dpy)
+    dpm = graphene.Field(String, resolver=resolve_dpm)
+    dpd = graphene.Field(String, resolver=resolve_dpd)
 
 
 class CampaignNode(DjangoObjectType):
