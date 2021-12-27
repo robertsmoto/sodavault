@@ -111,7 +111,7 @@ class BlogPostNode(DjangoObjectType):
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
-                "custom_string"]
+                "reading_time"]
         filter_fields = {
                 'locations__domain': ['iexact', 'icontains', 'istartswith'],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
@@ -178,7 +178,7 @@ class BlogPostNode(DjangoObjectType):
     def resolve_dpd(self, info):
         return self.dpd
 
-    reading_time = graphene.Field(Int, resolver=resolve_reading_time)
+    # reading_time = graphene.Field(Int, resolver=resolve_reading_time)
 
     # dpy = graphene.Field(String, resolver=resolve_dpy)
     # dpm = graphene.Field(String, resolver=resolve_dpm)
