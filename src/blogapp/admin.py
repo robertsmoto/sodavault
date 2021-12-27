@@ -33,16 +33,17 @@ class PostAdmin(admin.ModelAdmin):
         "footer",
         ("featured_image", "thumbnail_image"),
         ("image_title", "image_caption"),
-        ("categories", "tags","keyword_list"),
+        ("categories", "tags", "keyword_list"),
     ]
 
-    list_display = ["title", "author", "date_published", "status"]
+    list_display = ["title", "locations", "author", "date_published", "status"]
     list_filter = ["status"]
 
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ["locations", "categories", "tags"]
+
 
 @admin.register(Doc)
 class PostAdmin(admin.ModelAdmin):
@@ -63,6 +64,7 @@ class PostAdmin(admin.ModelAdmin):
 
     pass
 
+
 @admin.register(Page)
 class PostAdmin(admin.ModelAdmin):
     fields = [
@@ -81,5 +83,3 @@ class PostAdmin(admin.ModelAdmin):
     ]
 
     pass
-
-
