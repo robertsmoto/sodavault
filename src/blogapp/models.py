@@ -280,16 +280,6 @@ class Post(models.Model):
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
 
-    @property
-    def reading_time(self):
-        text = ""
-        if len(self.body) > 0 or len(self.excerpt) > 0:
-            text = self.body + self.excerpt
-        time = round((len(text.split()) / 250))
-        if time < 1:
-            time = 1
-        return time
-
     def __init__(self, *args, **kwargs):
         super(Post, self).__init__(*args, **kwargs)
         self._orig_featured_image = self.featured_image

@@ -73,8 +73,6 @@ class BlogListView(Navigation, ListView):
         context["context"] = context
         context["post_type"] = post_type
         return context
-
-
 # class PostListView(
     # BrCrumb, Navigation, MetaData, ListView
 # ):

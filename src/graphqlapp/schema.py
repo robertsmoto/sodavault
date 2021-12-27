@@ -163,16 +163,27 @@ class BlogPostNode(DjangoObjectType):
         return self.date_published.strftime("%d")
 
     def resolve_pub_us(self, info):
-        return self.date_published.strftime("%b, %d %Y")
+        return self.date_published.strftime("%b %d, %Y")
 
     def resolve_mod_us(self, info):
-        return self.date_modified.strftime("%b, %d %Y")
+        return self.date_modified.strftime("%b %d, %Y")
+
+    def resolve_reading_time(self, info):
+        text = ""
+        if len(self.body) > 0 or len(self.excerpt) > 0:
+            text = self.body + self.excerpt
+        time = round((len(text.split()) / 250))
+        time = f"{time} minutes"
+        if time < 1:
+            time = "1 minute"
+        return time
 
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
     pub_month = graphene.Field(String, resolver=resolve_pub_month)
     pub_day = graphene.Field(String, resolver=resolve_pub_day)
     pub_us = graphene.Field(String, resolver=resolve_pub_us)
     mod_us = graphene.Field(String, resolver=resolve_mod_us)
+    reading_time = graphene.Field(String, resolver=resolve_reading_time)
 
 
 class CampaignNode(DjangoObjectType):
