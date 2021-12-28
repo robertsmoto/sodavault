@@ -105,8 +105,8 @@ class BlogPostNode(DjangoObjectType):
 
         fields = [
                 "locations__domain", "categories__name", "tags__name",
-                "author__username", "author__first_name",
-                "suthor__last_name", "author__email",
+                "author__username", "author.first_name",
+                "suthor.last_name", "author__email",
                 "menu_order", "parent", "primary_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
                 "featured", "date_published", "date_modified", "keyword_list",
@@ -115,7 +115,7 @@ class BlogPostNode(DjangoObjectType):
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
                 ]
         filter_fields = {
-                'author__username': ['iexact', ],
+                # 'author__username': ['iexact', ],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
                 'date_modified': ['isnull', 'iexact', 'icontains'],
                 'date_published': ['isnull', 'iexact', 'icontains'],
