@@ -113,19 +113,17 @@ class BlogPostNode(DjangoObjectType):
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
                 ]
         filter_fields = {
-                'locations__domain': ['iexact', 'icontains', 'istartswith'],
-                'categories__name': ['iexact', 'icontains', 'istartswith'],
-                'tags__name': ['iexact', 'icontains', 'istartswith'],
                 'author': ['isnull', ],
-                'menu_order': ['iexact', 'icontains', 'istartswith'],
-                'parent': ['isnull'],
-                'primary_menu': ['iexact', 'icontains', 'istartswith'],
-                'post_type': ['iexact', 'icontains', 'istartswith'],
-                'title': ['iexact', 'icontains', 'istartswith'],
-                'status': ['iexact', 'icontains', 'istartswith'],
-                'featured': ['iexact', 'icontains', 'istartswith'],
+                'categories__name': ['iexact', 'icontains', 'istartswith'],
+                'date_modified': ['isnull', 'iexact', 'icontains'], 
                 'date_published': ['isnull', 'iexact', 'icontains'],
-                'date_modified': ['isnull', 'iexact', 'icontains'], }
+                'featured': ['iexact', 'icontains', 'istartswith'],
+                'locations__domain': ['iexact', 'icontains', 'istartswith'],
+                'post_type': ['iexact', 'icontains', 'istartswith'],
+                'primary_menu': ['iexact', 'icontains', 'istartswith'],
+                'status': ['iexact', 'icontains', 'istartswith'],
+                'tags__name': ['iexact', 'icontains', 'istartswith'],
+                }
 
         interfaces = (relay.Node, )
 
