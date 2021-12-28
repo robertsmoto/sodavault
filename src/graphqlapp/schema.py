@@ -15,16 +15,14 @@ from django.contrib.auth.models import User
 class UserProfileType(DjangoObjectType):
     class Meta:
         model = Profile
-        fields = ["pen_name", "bio", "location", "birth_date"]
-        filter_fields = []
         interfaces = (relay.Node, )
 
 
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        fields = ["username", "first_name", "last_name", "email"]
-        filter_fields = []
+        # fields = ["username", "first_name", "last_name", "email"]
+        # filter_fields = []
         interfaces = (relay.Node, )
 
 
