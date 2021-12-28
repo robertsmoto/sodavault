@@ -105,17 +105,16 @@ class BlogPostNode(DjangoObjectType):
 
         fields = [
                 "locations__domain", "categories__name", "tags__name",
-                "author__username", "author.first_name",
-                "suthor.last_name", "author__email",
                 "menu_order", "parent", "primary_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
                 "featured", "date_published", "date_modified", "keyword_list",
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
+                "author__username"
                 ]
         filter_fields = {
-                # 'author__username': ['iexact', ],
+                'author__username': ['iexact', ],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
                 'date_modified': ['isnull', 'iexact', 'icontains'],
                 'date_published': ['isnull', 'iexact', 'icontains'],
@@ -129,6 +128,10 @@ class BlogPostNode(DjangoObjectType):
                 }
 
         interfaces = (relay.Node, )
+    # "author.first_name", "author.last_name", "author__email",
+
+    def resolve_author__username(self, info):
+        return self.author__username
 
     def resolve_featured_image(self, info):
         return self.featured_image.url
