@@ -91,10 +91,9 @@ class PromotionNode(DjangoObjectType):
 class BlogLocationNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Location
-        fields = ["domain", "name", "description"]
+        # fields = ["domain", "name", "description"]
         filter_fields = {
                 'domain': ['iexact'], }
-
         interfaces = (relay.Node, )
 
 
