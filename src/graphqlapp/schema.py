@@ -21,8 +21,13 @@ class UserProfileType(DjangoObjectType):
 class UserType(DjangoObjectType):
     class Meta:
         model = User
-        # fields = ["username", "first_name", "last_name", "email"]
-        # filter_fields = []
+        fields = [
+                "id", "username", "first_name", "last_name", "email",
+                "profile"]
+        filter_fields = {
+                'id': ['iexact'],
+                'username': ['iexact'],
+                }
         interfaces = (relay.Node, )
 
 
