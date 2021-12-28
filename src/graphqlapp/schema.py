@@ -111,7 +111,8 @@ class BlogPostNode(DjangoObjectType):
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
-                "author__username"
+                "author__username", "author__first_name",
+                "author__last_name", "author__email"
                 ]
         filter_fields = {
                 'author__username': ['iexact', ],
@@ -131,7 +132,7 @@ class BlogPostNode(DjangoObjectType):
     # "author.first_name", "author.last_name", "author__email",
 
     def resolve_author__username(self, info):
-        return self.author__username
+        return self.author.username
 
     def resolve_featured_image(self, info):
         return self.featured_image.url
