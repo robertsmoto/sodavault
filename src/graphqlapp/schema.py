@@ -12,18 +12,18 @@ from django.contrib.auth.models import User
 
 
 # Users
-class UserNode(DjangoObjectType):
+class UserProfileType(DjangoObjectType):
     class Meta:
-        model = User
-        fields = ["username", "first_name", "last_name", "email"]
+        model = Profile
+        fields = ["pen_name", "bio", "location", "birth_date"]
         filter_fields = []
         interfaces = (relay.Node, )
 
 
-class UserProfileNode(DjangoObjectType):
+class UserType(DjangoObjectType):
     class Meta:
-        model = Profile
-        fields = ["pen_name", "bio", "location", "birth_date"]
+        model = User
+        fields = ["username", "first_name", "last_name", "email"]
         filter_fields = []
         interfaces = (relay.Node, )
 
