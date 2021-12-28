@@ -114,15 +114,13 @@ class BlogPostNode(DjangoObjectType):
         model = blogapp.models.Post
 
         fields = [
-                "locations__domain", "categories__name", "tags__name",
+                "locations", "categories", "tags", "author",
                 "menu_order", "parent", "primary_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
                 "featured", "date_published", "date_modified", "keyword_list",
                 "featured_image", "thumbnail_image", "image_title",
                 "image_caption", "footer", "featured_lg", "featured_md",
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
-                "author__username", "author__first_name",
-                "author__last_name", "author__email"
                 ]
         filter_fields = {
                 'author__username': ['iexact', ],
