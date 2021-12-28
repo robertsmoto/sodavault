@@ -105,7 +105,9 @@ class BlogPostNode(DjangoObjectType):
 
         fields = [
                 "locations__domain", "categories__name", "tags__name",
-                "author__username", "menu_order", "parent", "primary_menu",
+                "author__username", "author__first_name",
+                "suthor__last_name", "author__email",
+                "menu_order", "parent", "primary_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
                 "featured", "date_published", "date_modified", "keyword_list",
                 "featured_image", "thumbnail_image", "image_title",
