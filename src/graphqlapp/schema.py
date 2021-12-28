@@ -17,6 +17,10 @@ class UserProfileType(DjangoObjectType):
         model = Profile
         interfaces = (relay.Node, )
 
+    def resolve_avatar(self, info):
+        return self.avatar.url
+
+
 
 class UserType(DjangoObjectType):
     class Meta:
