@@ -36,10 +36,9 @@ class PostAdmin(admin.ModelAdmin):
         ("categories", "tags", "keyword_list"),
     ]
 
-    list_display = ["title", "locations", "author", "date_published", "status"]
-    list_filter = ["status"]
-
-    list_editable = ["locations", "author", "status"]
+    list_display = ["title", "author", "date_published", "status"]
+    list_filter = ["status", "locations__domain"]
+    list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ["locations", "categories", "tags"]

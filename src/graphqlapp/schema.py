@@ -1,7 +1,8 @@
 from decouple import config
-from graphene import relay, Field, String, Date, Int
+from graphene import relay, String
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
+from configapp.models import Profile
 import advertisingapp.models
 import blogapp.models
 import graphene
@@ -11,10 +12,18 @@ from django.contrib.auth.models import User
 
 
 # Users
-class UserType(DjangoObjectType):
+class UserNode(DjangoObjectType):
     class Meta:
         model = User
         fields = ["username", "first_name", "last_name", "email"]
+        filter_fields = []
+        interfaces = (relay.Node, )
+
+
+class UserProfileNode(DjangoObjectType):
+    class Meta:
+        model = Profile
+        fields = ["pen_name", "bio", "location", "birth_date"]
         filter_fields = []
         interfaces = (relay.Node, )
 
@@ -137,10 +146,6 @@ class BlogPostNode(DjangoObjectType):
                 }
 
         interfaces = (relay.Node, )
-    # "author.first_name", "author.last_name", "author__email",
-
-    def resolve_author__username(self, info):
-        return self.author__username
 
     def resolve_featured_image(self, info):
         return self.featured_image.url
