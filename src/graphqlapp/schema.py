@@ -123,7 +123,7 @@ class BlogPostNode(DjangoObjectType):
         model = blogapp.models.Post
 
         fields = [
-                "locations", "categories", "tags", "author",
+                "locations", "categories", "tags", "author", "author__pen_name",
                 "menu_order", "parent", "primary_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
                 "featured", "date_published", "date_modified", "keyword_list",
