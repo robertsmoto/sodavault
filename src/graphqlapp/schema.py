@@ -21,7 +21,6 @@ class UserProfileType(DjangoObjectType):
         return self.avatar.url
 
 
-
 class UserType(DjangoObjectType):
     class Meta:
         model = User

@@ -31,7 +31,7 @@ class Profile(models.Model):
             on_delete=models.CASCADE)
     pen_name = models.CharField(max_length=100, blank=True)
     avatar = models.ImageField(
-            upload_to="configapp/user_profile/%Y/%m/%d",
+            upload_to="configapp/avatars/%Y/%m/%d",
             blank=True,
             null=True,
             help_text="Recommended size 250 x 250px"
