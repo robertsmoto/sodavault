@@ -7,6 +7,16 @@ import blogapp.models
 import graphene
 import itemsapp.models
 import os
+from django.contrib.auth.models import User
+
+
+# Users
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+        fields = ["username", "first_name", "last_name", "email"]
+        filter_fields = []
+        interfaces = (relay.Node, )
 
 
 # Products
@@ -132,7 +142,7 @@ class BlogPostNode(DjangoObjectType):
     # "author.first_name", "author.last_name", "author__email",
 
     def resolve_author__username(self, info):
-        return self.author.username
+        return self.author__username
 
     def resolve_featured_image(self, info):
         return self.featured_image.url
