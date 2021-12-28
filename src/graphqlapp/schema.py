@@ -115,13 +115,14 @@ class BlogPostNode(DjangoObjectType):
         filter_fields = {
                 'author': ['isnull', ],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
-                'date_modified': ['isnull', 'iexact', 'icontains'], 
+                'date_modified': ['isnull', 'iexact', 'icontains'],
                 'date_published': ['isnull', 'iexact', 'icontains'],
-                'featured': ['iexact', 'icontains', 'istartswith'],
-                'locations__domain': ['iexact', 'icontains', 'istartswith'],
-                'post_type': ['iexact', 'icontains', 'istartswith'],
-                'primary_menu': ['iexact', 'icontains', 'istartswith'],
-                'status': ['iexact', 'icontains', 'istartswith'],
+                'featured': ['iexact'],
+                'locations__domain': ['iexact'],
+                'post_type': ['iexact'],
+                'primary_menu': ['iexact'],
+                'slug': ['iexact'],
+                'status': ['iexact'],
                 'tags__name': ['iexact', 'icontains', 'istartswith'],
                 }
 
