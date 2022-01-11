@@ -142,17 +142,17 @@ class BlogPostNode(DjangoObjectType):
                 "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
                 ]
         filter_fields = {
-                'author__username': ['iexact', ],
-                'categories__name': ['iexact', 'icontains', 'istartswith'],
+                # 'author__username': ['iexact', ],
+                # 'categories__name': ['iexact', 'icontains', 'istartswith'],
                 'date_modified': ['isnull', 'iexact', 'icontains'],
                 'date_published': ['isnull', 'iexact', 'icontains'],
                 'featured': ['iexact'],
-                'locations__domain': ['iexact'],
+                # 'locations__domain': ['iexact'],
                 'post_type': ['iexact'],
                 'primary_menu': ['iexact'],
                 'slug': ['iexact'],
                 'status': ['iexact'],
-                'tags__name': ['iexact', 'icontains', 'istartswith'],
+                # 'tags__name': ['iexact', 'icontains', 'istartswith'],
                 }
 
         interfaces = (relay.Node, )
