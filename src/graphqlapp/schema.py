@@ -101,7 +101,8 @@ class BlogLocationNode(DjangoObjectType):
         model = blogapp.models.Location
         # fields = ["domain", "name", "description"]
         filter_fields = {
-                'domain': ['iexact'], }
+                'domain': ['iexact'],
+                }
         interfaces = (relay.Node, )
 
 
@@ -109,7 +110,9 @@ class BlogCategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
         fields = ["name", "description", "image"]
-        filter_fields = ["name"]
+        filter_fields = {
+                'name': ['iexact'],
+                }
         interfaces = (relay.Node, )
 
 
@@ -117,7 +120,9 @@ class BlogTagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
         fields = ["name"]
-        filter_fields = ["name"]
+        filter_fields = {
+                'name': ['iexact'],
+                }
         interfaces = (relay.Node, )
 
 

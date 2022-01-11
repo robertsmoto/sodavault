@@ -17,15 +17,6 @@ def breadcrumb_processor(self, doc_slug='missing', context=None, *args, **kwargs
     ######################
     ######################
 
-#     if settings.SITE_ID == 1:
-        # url = "https://www.swim.express"
-    # elif settings.SITE_ID == 2:
-        # url = "https://www.blogfromprague.com"
-    # elif settings.SITE_ID == 3:
-        # url = "https://www.media.goodbyechlorine.com"
-    # else:
-#         url = "https://SOMETHINGELSE"
-
     url = "https://sodavault.com"
 
     if doc_slug != 'missing':
@@ -34,8 +25,6 @@ def breadcrumb_processor(self, doc_slug='missing', context=None, *args, **kwargs
         )
         doc_q = doc[0]
         doc_t = doc[1]
-        # print('doc_q :: ', doc_q, type(doc_q))
-        # print('doc_t :: ', doc_t)
 
         breadcrumbs = []
 
