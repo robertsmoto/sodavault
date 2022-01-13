@@ -150,12 +150,12 @@ class BlogPostNode(DjangoObjectType):
                 'featured': ['iexact'],
                 'locations__domain': ['iexact'],
                 'post_type': ['iexact'],
-                'is_primary_menu': [],
-                'is_secondary_menu': [],
-                'is_footer_menu': [],
                 'slug': ['iexact'],
                 'status': ['iexact'],
                 'tags__name': ['iexact', 'icontains', 'istartswith'],
+                'is_primary_menu': ['isnull'],
+                'is_secondary_menu': ['isnull'],
+                'is_footer_menu': ['isnull'],
                 }
 
         interfaces = (relay.Node, )
