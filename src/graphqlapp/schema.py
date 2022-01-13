@@ -134,7 +134,8 @@ class BlogPostNode(DjangoObjectType):
 
         fields = [
                 "locations", "categories", "tags", "author",
-                "menu_order", "parent", "primary_menu",
+                "menu_order", "parent", "is_primary_menu",
+                "is_secondary_menu", "is_footer_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
                 "featured", "date_published", "date_modified", "keyword_list",
                 "featured_image", "thumbnail_image", "image_title",
@@ -149,7 +150,9 @@ class BlogPostNode(DjangoObjectType):
                 'featured': ['iexact'],
                 'locations__domain': ['iexact'],
                 'post_type': ['iexact'],
-                'primary_menu': ['iexact'],
+                'is_primary_menu': ['iexact'],
+                'is_secondary_menu': ['iexact'],
+                'is_footer_menu': ['iexact'],
                 'slug': ['iexact'],
                 'status': ['iexact'],
                 'tags__name': ['iexact', 'icontains', 'istartswith'],

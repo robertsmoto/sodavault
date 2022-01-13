@@ -133,7 +133,6 @@ class Tag(models.Model):
         return '%s' % (self.name)
 
 
-
 class Post(models.Model):
 
     POST_TYPE_CHOICES = [
@@ -176,9 +175,15 @@ class Post(models.Model):
             null=True,
             related_name='children',
             help_text="Self-referencing field to nest menus.")
-    primary_menu = models.BooleanField(
+    is_primary_menu = models.BooleanField(
             default=False,
             help_text="Use if in primary menu.")
+    is_secondary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in secondary menu.")
+    is_footer_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in footer menu.")
     post_type = models.CharField(
             'Post Type',
             max_length=20,
