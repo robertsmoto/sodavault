@@ -1,5 +1,5 @@
 from decouple import config
-from graphene import relay, String
+from graphene import relay, String, Boolean
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 from configapp.models import Profile
@@ -150,15 +150,24 @@ class BlogPostNode(DjangoObjectType):
                 'featured': ['iexact'],
                 'locations__domain': ['iexact'],
                 'post_type': ['iexact'],
-                'is_primary_menu': ['boolean'],
-                'is_secondary_menu': ['boolean'],
-                'is_footer_menu': ['boolean'],
+                'is_primary_menu': ['iexact'],
+                'is_secondary_menu': ['iexact'],
+                'is_footer_menu': ['iexact'],
                 'slug': ['iexact'],
                 'status': ['iexact'],
                 'tags__name': ['iexact', 'icontains', 'istartswith'],
                 }
 
         interfaces = (relay.Node, )
+
+    def resolve_is_primary_menu(self, info):
+        return self.is_primary_menu
+
+    def resolve_is_secondary_menu(self, info):
+        return self.is_secondary_menu
+
+    def resolve_is_footer_menu(self, info):
+        return self.is_secondary_menu
 
     def resolve_featured_image(self, info):
         return self.featured_image.url
@@ -217,6 +226,9 @@ class BlogPostNode(DjangoObjectType):
     pub_us = graphene.Field(String, resolver=resolve_pub_us)
     mod_us = graphene.Field(String, resolver=resolve_mod_us)
     reading_time = graphene.Field(String, resolver=resolve_reading_time)
+    is_primary_menu = graphene.Field(Boolean, resolver=resolve_is_primary_menu)
+    is_secondary_menu = graphene.Field(Boolean, resolver=resolve_is_secondary_menu)
+    is_footer_menu = graphene.Field(Boolean, resolver=resolve_is_footer_menu)
 
 
 class CampaignNode(DjangoObjectType):
