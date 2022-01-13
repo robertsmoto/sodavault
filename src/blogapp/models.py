@@ -133,6 +133,7 @@ class Tag(models.Model):
         return '%s' % (self.name)
 
 
+
 class Post(models.Model):
 
     POST_TYPE_CHOICES = [
@@ -284,6 +285,14 @@ class Post(models.Model):
         super(Post, self).__init__(*args, **kwargs)
         self._orig_featured_image = self.featured_image
         self._orig_thumbnail_image = self.thumbnail_image
+
+    def metadata_data(self):
+        data = {
+                'title': self.title,
+                'description': self.excerpt,
+                'image': 'hello'
+                }
+        return data
 
     def save(self, *args, **kwargs):
         """Creates new banner sizes. Save new images directly to media server

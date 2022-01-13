@@ -2,7 +2,7 @@ from blogapp.models import Post
 from django.views.generic import DetailView
 from django.views.generic.list import ListView
 from django.db.models import Q
-from homeapp.mixins import Navigation, MetaData
+from homeapp.mixins import Navigation  #, MetaData
 from docsapp.views import BrCrumb
 import pickle
 
@@ -73,6 +73,7 @@ class BlogListView(Navigation, ListView):
         context["context"] = context
         context["post_type"] = post_type
         return context
+
 # class PostListView(
     # BrCrumb, Navigation, MetaData, ListView
 # ):
@@ -101,7 +102,7 @@ class BlogListView(Navigation, ListView):
         # return context
 
 
-class BlogDetailView(MetaData, Navigation, DetailView):
+class BlogDetailView(Navigation, DetailView):
 
     template_name = "blogapp/page_detail.html"
 
@@ -123,11 +124,12 @@ class BlogDetailView(MetaData, Navigation, DetailView):
     def get_context_data(self, **kwargs):
         context = super(BlogDetailView, self).get_context_data(**kwargs)
         context["context"] = context
+        # context["metadata"] = Post.metadata_func(self)
         context["post_type"] = self.kwargs["post_type"]
         return context
 
 
-class CategoryListView(BrCrumb, Navigation, MetaData, ListView):
+class CategoryListView(BrCrumb, Navigation, ListView):
 
     model = Post
     template_name = "blogapp/article_list.html"
@@ -145,7 +147,7 @@ class CategoryListView(BrCrumb, Navigation, MetaData, ListView):
         return context
 
 
-class TagListView(BrCrumb, Navigation, MetaData, ListView):
+class TagListView(BrCrumb, Navigation, ListView):
 
     model = Post
     paginate_by = 30
@@ -163,7 +165,7 @@ class TagListView(BrCrumb, Navigation, MetaData, ListView):
         return context
 
 
-class DocSearchListView(BrCrumb, Navigation, MetaData, ListView):
+class DocSearchListView(BrCrumb, Navigation, ListView):
 
     model = Post
     paginate_by = 30
@@ -190,4 +192,3 @@ class DocSearchListView(BrCrumb, Navigation, MetaData, ListView):
         context["context"] = context
         context['robots'] = 'no'
         return context
-
