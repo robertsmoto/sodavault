@@ -26,7 +26,7 @@ class Navigation(ContextMixin):
         # 'blogapp-post-detail' needs <post_type> and <slug>
         # pages_val = Post.objects
         pages_q = Post.objects.filter(
-            Q(status="PUBLI") & Q(post_type="PAGE") & Q(primary_menu=True)
+            Q(status="PUBLI") & Q(post_type="PAGE") & Q(is_primary_menu=True)
         ).values_list('title', 'post_type', 'slug')
         pages_q.query = pickle.loads(pickle.dumps(pages_q.query))
         navigation["pages"] = pages_q
