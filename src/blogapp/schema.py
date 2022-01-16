@@ -74,7 +74,7 @@ class BlogPostNode(DjangoObjectType):
                 'is_footer_menu',
                 'is_primary_menu',
                 'is_secondary_menu',
-                'location',
+                'locations__name',
                 'featured',
                 'slug',
                 'status',
