@@ -140,51 +140,15 @@ class BlogPostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
 
-        fields = [
-                "id", "locations", "categories", "tags", "author",
-                "menu_order", "parent", "is_primary_menu",
-                "is_secondary_menu", "is_footer_menu",
-                "post_type", "title", "excerpt", "body", "slug", "status",
-                "featured", "date_published", "date_modified", "kwd_list",
-                "image_featured", "image_thumb", "image_191", "image_21",
-                "image_title", "image_caption", "footer", "featured_lg",
-                "featured_md", "featured_sm", "thumb_lg", "thumb_md",
-                "thumb_sm",
-                ]
         filter_fields = [
-                'id', 'author__username', 'categories__name',
+                'author__username', 'categories__name',
                 'date_modified', 'date_published', 'featured', 'kwd_list',
                 'locations__domain', 'post_type', 'slug', 'status',
                 'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
                 'is_secondary_menu', 'is_footer_menu',
                 ]
 
-        # 'id': ['iexact', ],
-        # 'author__username': ['iexact', ],
-        # 'categories__name': ['iexact', 'icontains', 'istartswith'],
-        # 'date_modified': ['isnull', 'iexact', 'icontains'],
-        # 'date_published': ['isnull', 'iexact', 'icontains'],
-        # 'featured': ['iexact'],
-        # 'kwd_list': ['icontains'],
-        # 'locations__domain': ['iexact'],
-        # 'post_type': ['iexact'],
-        # 'slug': ['iexact'],
-        # 'status': ['iexact'],
-        # 'tags__name': ['iexact', 'icontains', 'istartswith'],
-        # 'is_primary_menu': [],
-        # 'is_secondary_menu': '',
-        # 'is_footer_menu': '',
-
         interfaces = (relay.Node, )
-
-    def resolve_is_primary_menu(self, info):
-        return self.is_primary_menu
-
-    def resolve_is_secondary_menu(self, info):
-        return self.is_secondary_menu
-
-    def resolve_is_footer_menu(self, info):
-        return self.is_secondary_menu
 
     def resolve_image_featured(self, info):
         return self.image_featured.url
@@ -243,9 +207,6 @@ class BlogPostNode(DjangoObjectType):
     pub_us = graphene.Field(String, resolver=resolve_pub_us)
     mod_us = graphene.Field(String, resolver=resolve_mod_us)
     reading_time = graphene.Field(String, resolver=resolve_reading_time)
-    is_primary_menu = graphene.Field(Boolean, resolver=resolve_is_primary_menu)
-    is_secondary_menu = graphene.Field(Boolean, resolver=resolve_is_secondary_menu)
-    is_footer_menu = graphene.Field(Boolean, resolver=resolve_is_footer_menu)
 
 
 class CampaignNode(DjangoObjectType):
