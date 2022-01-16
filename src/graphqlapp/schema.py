@@ -152,13 +152,13 @@ class BlogPostNode(DjangoObjectType):
                 "thumb_sm",
                 ]
 
-#         filter_fields = [
-                # 'id', 'author__username', 'categories__name',
-                # 'date_modified', 'date_published', 'featured', 'kwd_list',
-                # 'locations__domain', 'post_type', 'slug', 'status',
-                # 'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
-                # 'is_secondary_menu', 'is_footer_menu',
-                # ]
+        filter_fields = [
+                'id', 'author__username', 'categories__name',
+                'date_modified', 'date_published', 'featured', 'kwd_list',
+                'locations__domain', 'post_type', 'slug', 'status',
+                'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
+                'is_secondary_menu', 'is_footer_menu',
+                ]
 
         # 'id': ['iexact', ],
         # 'author__username': ['iexact', ],
