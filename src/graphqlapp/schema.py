@@ -164,9 +164,9 @@ class BlogPostNode(DjangoObjectType):
                 'slug': ['iexact'],
                 'status': ['iexact'],
                 'tags__name': ['iexact', 'icontains', 'istartswith'],
-                'is_primary_menu': ['isnull'],
-                'is_secondary_menu': ['isnull'],
-                'is_footer_menu': ['isnull'],
+                'is_primary_menu': ['iexact'],
+                'is_secondary_menu': [],
+                'is_footer_menu': ['iexact'],
                 }
 
         interfaces = (relay.Node, )
