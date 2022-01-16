@@ -47,6 +47,11 @@ def new_filename_blog_cat(instance, filename):
     return os.path.join('blogapp/category/', date_dir, fn)
 
 
+def new_filename_blog_tag(instance, filename):
+    date_dir, fn = modify_fn_and_path(filename=filename)
+    return os.path.join('blogapp/tag/', date_dir, fn)
+
+
 def new_filename_banner(instance, filename):
     date_dir, fn = modify_fn_and_path(filename=filename)
     return os.path.join('advertisingapp/banners/', date_dir, fn)

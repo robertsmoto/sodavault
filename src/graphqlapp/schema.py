@@ -109,8 +109,11 @@ class BlogLocationNode(DjangoObjectType):
 class BlogCategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
-        fields = ["name", "description", "image"]
+        fields = [
+                "id", "name", "description", "image", "image_191", "image_21"
+                ]
         filter_fields = {
+                'id': ['iexact'],
                 'name': ['iexact'],
                 }
         interfaces = (relay.Node, )
@@ -119,8 +122,11 @@ class BlogCategoryNode(DjangoObjectType):
 class BlogTagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
-        fields = ["name"]
+        fields = [
+                "id", "name", "description", "image", "image_191", "image_21"
+                ]
         filter_fields = {
+                'id': ['iexact'],
                 'name': ['iexact'],
                 }
         interfaces = (relay.Node, )
@@ -133,16 +139,18 @@ class BlogPostNode(DjangoObjectType):
         model = blogapp.models.Post
 
         fields = [
-                "locations", "categories", "tags", "author",
+                "id", "locations", "categories", "tags", "author",
                 "menu_order", "parent", "is_primary_menu",
                 "is_secondary_menu", "is_footer_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
-                "featured", "date_published", "date_modified", "keyword_list",
-                "featured_image", "thumbnail_image", "image_title",
-                "image_caption", "footer", "featured_lg", "featured_md",
-                "featured_sm", "thumb_lg", "thumb_md", "thumb_sm",
+                "featured", "date_published", "date_modified", "keywords",
+                "image_featured", "image_thumb", "image_191", "image_21",
+                "image_title", "image_caption", "footer", "featured_lg",
+                "featured_md", "featured_sm", "thumb_lg", "thumb_md",
+                "thumb_sm",
                 ]
         filter_fields = {
+                'id': ['iexact', ],
                 'author__username': ['iexact', ],
                 'categories__name': ['iexact', 'icontains', 'istartswith'],
                 'date_modified': ['isnull', 'iexact', 'icontains'],
@@ -169,8 +177,8 @@ class BlogPostNode(DjangoObjectType):
     def resolve_is_footer_menu(self, info):
         return self.is_secondary_menu
 
-    def resolve_featured_image(self, info):
-        return self.featured_image.url
+    def resolve_image_featured(self, info):
+        return self.image_featured.url
 
     def resolve_featured_lg(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
@@ -181,8 +189,8 @@ class BlogPostNode(DjangoObjectType):
     def resolve_featured_sm(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.featured_sm)
 
-    def resolve_thumbnail_image(self, info):
-        return self.thumbnail_image.url
+    def resolve_image_thumb(self, info):
+        return self.image_thumb.url
 
     def resolve_thumb_lg(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.thumb_lg)

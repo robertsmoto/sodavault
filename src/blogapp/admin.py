@@ -31,7 +31,8 @@ class PostAdmin(admin.ModelAdmin):
         "excerpt",
         "body",
         "footer",
-        ("featured_image", "thumbnail_image"),
+        ("image_featured", "image_thumb"),
+        ("image_191", "image_21"),
         ("image_title", "image_caption"),
         ("categories", "tags", "keyword_list"),
     ]
