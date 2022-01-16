@@ -161,9 +161,11 @@ class BlogPostNode(DjangoObjectType):
 
     class Meta:
         model = blogapp.models.Post
-        filter_fields = [
-                'is_primary_menu', 'is_secondary_menu', 'is_footer_menu',
-                ]
+        filter_fields = {
+                'is_primary_menu': ['exact'],
+                'is_secondary_menu': ['exact'],
+                'is_footer_menu': ['iexact'],
+                }
 
         interfaces = (relay.Node, )
 
