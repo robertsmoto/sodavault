@@ -14,13 +14,13 @@
       {% if object_list.exists %}
                 
         {% if post_type == "ARTICLE" %}
-          {% if post.thumbnail_image %}
+          {% if post.image_thumb %}
             <img 
               class="d-none d-lg-block float-left pr-3 bfp-photothumbnail" 
-              src="{{ post.thumbnail_image.url }}" alt="Blog from Prague thumbnail image" />
+              src="{{ post.image_thumb.url }}" alt="Blog from Prague thumbnail image" />
             <img 
               class="d-block d-lg-none pr-3 bfp-photofeatured" 
-              src="{{ post.featured_image.url }}" alt="Blog from Prague featured image" />
+              src="{{ post.image_featured.url }}" alt="Blog from Prague featured image" />
           {% else %}
             <img class="d-lg-none bfp-photofeatured pr-3" 
             src="{% static 'default_images/blogfromprague/Default_Thumbnail_Image.jpeg' %}" 

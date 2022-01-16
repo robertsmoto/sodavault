@@ -34,7 +34,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_featured", "image_thumb"),
         ("image_191", "image_21"),
         ("image_title", "image_caption"),
-        ("categories", "tags", "keyword_list"),
+        ("categories", "tags", "keywords"),
     ]
 
     list_display = ["title", "author", "date_published", "status"]
@@ -51,15 +51,16 @@ class PostAdmin(admin.ModelAdmin):
         ("locations", "post_type"),
         ("title", "slug"),
         ("parent", "menu_order", "primary_menu"),
-        ("keyword_list", "author"),
+        ("author"),
         ("status", "featured"),
         ("date_published", "date_modified"),
         "excerpt",
         "body",
         "footer",
-        ("featured_image", "thumbnail_image"),
+        ("image_featured", "image_thumb"),
+        ("image_191", "image_21"),
         ("image_title", "image_caption"),
-        ("categories", "tags"),
+        ("categories", "tags", "keywords"),
     ]
 
     pass
@@ -70,16 +71,19 @@ class PostAdmin(admin.ModelAdmin):
     fields = [
         ("locations", "post_type"),
         ("title", "slug"),
-        ("parent", "menu_order", "is_primary_menu", "is_secondary_menu", "is_footer_menu"),
-        ("keyword_list", "author"),
+        (
+            "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
+            "is_footer_menu"),
+        ("author"),
         ("status", "featured"),
         ("date_published", "date_modified"),
         "excerpt",
         "body",
         "footer",
-        ("featured_image", "thumbnail_image"),
+        ("image_featured", "image_thumb"),
+        ("image_191", "image_21"),
         ("image_title", "image_caption"),
-        ("categories", "tags"),
+        ("categories", "tags", "keywords"),
     ]
 
     pass

@@ -14,6 +14,7 @@ class DocDetailView(DetailView):
         context['context'] = context
         return context
 
+
 class BrCrumb(ContextMixin):
 
     def get_context_data(self, **kwargs):

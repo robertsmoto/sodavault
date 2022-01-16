@@ -48,8 +48,8 @@ class BlogListView(Navigation, ListView):
             parent__isnull=True
         ).prefetch_related('children').only(
             'title', 'excerpt', 'slug', 'post_type', 'parent', 
-            'featured_image', 'thumbnail_image'
-        ).order_by('menu_order', 'id') 
+            'image_featured', 'image_thumb'
+        ).order_by('menu_order', 'id')
         return list_q
 
 #     def get_template_names(self):
