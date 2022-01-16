@@ -133,15 +133,9 @@ class BlogTagNode(DjangoObjectType):
                 }
         interfaces = (relay.Node, )
 
-
-class BlogPostNode(DjangoObjectType):
-    custom_string = graphene.String()
-
-    class Meta:
-        model = blogapp.models.Post
-
+        """
         fields = [
-                "id", "locations", "categories", "tags", "author",
+                "locations", "categories", "tags", "author",
                 "menu_order", "parent", "is_primary_menu",
                 "is_secondary_menu", "is_footer_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
@@ -159,6 +153,25 @@ class BlogPostNode(DjangoObjectType):
                 'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
                 'is_secondary_menu', 'is_footer_menu',
                 ]
+        """
+
+
+class BlogPostNode(DjangoObjectType):
+    custom_string = graphene.String()
+
+    class Meta:
+        model = blogapp.models.Post
+
+        fields = [
+                "is_primary_menu", "is_secondary_menu", "is_footer_menu",
+                "title", "excerpt", "body", "slug", "status",
+                ]
+
+        filter_fields = [
+                'is_primary_menu', 'is_secondary_menu', 'is_footer_menu',
+                ]
+
+        interfaces = (relay.Node, )
 
         # 'id': ['iexact', ],
         # 'author__username': ['iexact', ],
@@ -174,7 +187,6 @@ class BlogPostNode(DjangoObjectType):
         # 'tags__name': ['iexact', 'icontains', 'istartswith'],
         # 'is_primary_menu': [],
 
-        interfaces = (relay.Node, )
 
 #     def resolve_image_featured(self, info):
         # return self.image_featured.url
