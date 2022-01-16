@@ -43,7 +43,7 @@ class Category(models.Model):
             'Category Description',
             max_length=100,
             blank=True)
-    keywords = models.CharField(
+    kwd_list = models.CharField(
             'Category Keywords',
             max_length=100,
             blank=True,
@@ -141,7 +141,7 @@ class Tag(models.Model):
             'Tag Description',
             max_length=100,
             blank=True)
-    keywords = models.CharField(
+    kwd_list = models.CharField(
             'Tag Keywords',
             max_length=100,
             blank=True,
@@ -317,7 +317,7 @@ class Post(models.Model):
             default=datetime.date.today,
             blank=True,
             null=True,)
-    keywords = models.CharField(
+    kwd_list = models.CharField(
             'Keyword List',
             max_length=200,
             blank=True,

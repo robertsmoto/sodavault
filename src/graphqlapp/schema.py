@@ -110,7 +110,7 @@ class BlogCategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
         fields = [
-                "id", "name", "description", "keywords", "image",
+                "id", "name", "description", "kwd_list", "image",
                 "image_191", "image_21"
                 ]
         filter_fields = {
@@ -124,7 +124,7 @@ class BlogTagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
         fields = [
-                "id", "name", "description", "keywords", "image",
+                "id", "name", "description", "kwd_list", "image",
                 "image_191", "image_21"
                 ]
         filter_fields = {
@@ -145,7 +145,7 @@ class BlogPostNode(DjangoObjectType):
                 "menu_order", "parent", "is_primary_menu",
                 "is_secondary_menu", "is_footer_menu",
                 "post_type", "title", "excerpt", "body", "slug", "status",
-                "featured", "date_published", "date_modified", "keywords",
+                "featured", "date_published", "date_modified", "kwd_list",
                 "image_featured", "image_thumb", "image_191", "image_21",
                 "image_title", "image_caption", "footer", "featured_lg",
                 "featured_md", "featured_sm", "thumb_lg", "thumb_md",
@@ -158,6 +158,7 @@ class BlogPostNode(DjangoObjectType):
                 'date_modified': ['isnull', 'iexact', 'icontains'],
                 'date_published': ['isnull', 'iexact', 'icontains'],
                 'featured': ['iexact'],
+                'kwd_list': ['icontains'],
                 'locations__domain': ['iexact'],
                 'post_type': ['iexact'],
                 'slug': ['iexact'],
