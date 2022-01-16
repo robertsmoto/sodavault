@@ -110,7 +110,8 @@ class BlogCategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
         fields = [
-                "id", "name", "description", "image", "image_191", "image_21"
+                "id", "name", "description", "keywords", "image",
+                "image_191", "image_21"
                 ]
         filter_fields = {
                 'id': ['iexact'],
@@ -123,7 +124,8 @@ class BlogTagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
         fields = [
-                "id", "name", "description", "image", "image_191", "image_21"
+                "id", "name", "description", "keywords", "image",
+                "image_191", "image_21"
                 ]
         filter_fields = {
                 'id': ['iexact'],
