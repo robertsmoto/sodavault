@@ -151,28 +151,29 @@ class BlogPostNode(DjangoObjectType):
                 "featured_md", "featured_sm", "thumb_lg", "thumb_md",
                 "thumb_sm",
                 ]
-        filter_fields = {
+        filter_fields = [
                 'id', 'author__username', 'categories__name',
                 'date_modified', 'date_published', 'featured', 'kwd_list',
                 'locations__domain', 'post_type', 'slug', 'status',
                 'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
                 'is_secondary_menu', 'is_footer_menu',
-                # 'id': ['iexact', ],
-                # 'author__username': ['iexact', ],
-                # 'categories__name': ['iexact', 'icontains', 'istartswith'],
-                # 'date_modified': ['isnull', 'iexact', 'icontains'],
-                # 'date_published': ['isnull', 'iexact', 'icontains'],
-                # 'featured': ['iexact'],
-                # 'kwd_list': ['icontains'],
-                # 'locations__domain': ['iexact'],
-                # 'post_type': ['iexact'],
-                # 'slug': ['iexact'],
-                # 'status': ['iexact'],
-                # 'tags__name': ['iexact', 'icontains', 'istartswith'],
-                # 'is_primary_menu': [],
-                # 'is_secondary_menu': '',
-                # 'is_footer_menu': '',
-                }
+                ]
+
+        # 'id': ['iexact', ],
+        # 'author__username': ['iexact', ],
+        # 'categories__name': ['iexact', 'icontains', 'istartswith'],
+        # 'date_modified': ['isnull', 'iexact', 'icontains'],
+        # 'date_published': ['isnull', 'iexact', 'icontains'],
+        # 'featured': ['iexact'],
+        # 'kwd_list': ['icontains'],
+        # 'locations__domain': ['iexact'],
+        # 'post_type': ['iexact'],
+        # 'slug': ['iexact'],
+        # 'status': ['iexact'],
+        # 'tags__name': ['iexact', 'icontains', 'istartswith'],
+        # 'is_primary_menu': [],
+        # 'is_secondary_menu': '',
+        # 'is_footer_menu': '',
 
         interfaces = (relay.Node, )
 
