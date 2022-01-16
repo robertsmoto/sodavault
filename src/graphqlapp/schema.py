@@ -253,19 +253,6 @@ class CampaignNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-# class AssettNode(DjangoObjectType):
-    # class Meta:
-        # model = advertisingapp.models.Assett
-        # fields = [
-                # "campaign", "product", "name", "excerpt", "url_name",
-                # "url_link", "img_1x1"]
-        # filter_fields = []
-        # interfaces = (relay.Node, )
-
-    # def resolve_img_1x1(self, info):
-        # return self.img_1x1.url
-
-
 class BannerNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Banner
@@ -328,6 +315,10 @@ class Query(graphene.ObjectType):
     # blog and pages
     posts_and_pages = relay.Node.Field(BlogPostNode)
     all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
+    post_categories = relay.Node.Field(BlogCategoryNode)
+    all_post_categories = DjangoFilterConnectionField(BlogCategoryNode)
+    post_tags = relay.Node.Field(BlogTagNode)
+    all_post_tags = DjangoFilterConnectionField(BlogTagNode)
 
     # ads
     campaign = relay.Node.Field(CampaignNode)
