@@ -140,13 +140,39 @@ class BlogPostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
 
-        filter_fields = [
-                'author__username', 'categories__name',
-                'date_modified', 'date_published', 'featured', 'kwd_list',
-                'locations__domain', 'post_type', 'slug', 'status',
-                'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
-                'is_secondary_menu', 'is_footer_menu',
+        fields = [
+                "id", "locations", "categories", "tags", "author",
+                "menu_order", "parent", "is_primary_menu",
+                "is_secondary_menu", "is_footer_menu",
+                "post_type", "title", "excerpt", "body", "slug", "status",
+                "featured", "date_published", "date_modified", "kwd_list",
+                "image_featured", "image_thumb", "image_191", "image_21",
+                "image_title", "image_caption", "footer", "featured_lg",
+                "featured_md", "featured_sm", "thumb_lg", "thumb_md",
+                "thumb_sm",
                 ]
+
+#         filter_fields = [
+                # 'id', 'author__username', 'categories__name',
+                # 'date_modified', 'date_published', 'featured', 'kwd_list',
+                # 'locations__domain', 'post_type', 'slug', 'status',
+                # 'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
+                # 'is_secondary_menu', 'is_footer_menu',
+                # ]
+
+        # 'id': ['iexact', ],
+        # 'author__username': ['iexact', ],
+        # 'categories__name': ['iexact', 'icontains', 'istartswith'],
+        # 'date_modified': ['isnull', 'iexact', 'icontains'],
+        # 'date_published': ['isnull', 'iexact', 'icontains'],
+        # 'featured': ['iexact'],
+        # 'kwd_list': ['icontains'],
+        # 'locations__domain': ['iexact'],
+        # 'post_type': ['iexact'],
+        # 'slug': ['iexact'],
+        # 'status': ['iexact'],
+        # 'tags__name': ['iexact', 'icontains', 'istartswith'],
+        # 'is_primary_menu': [],
 
         interfaces = (relay.Node, )
 
