@@ -50,7 +50,9 @@ class PostAdmin(admin.ModelAdmin):
     fields = [
         ("locations", "post_type"),
         ("title", "slug"),
-        ("parent", "menu_order", "primary_menu"),
+        (
+            "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
+            "is_footer_menu"),
         ("author"),
         ("status", "featured"),
         ("date_published", "date_modified"),
