@@ -1,101 +1,10 @@
-from decouple import config
-from graphene import relay, String, Boolean
+from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-from configapp.models import Profile
-import advertisingapp.models
 import blogapp.models
 import graphene
-import itemsapp.models
-import os
-from django.contrib.auth.models import User
 
 
-# Users
-class UserProfileType(DjangoObjectType):
-    class Meta:
-        model = Profile
-        interfaces = (relay.Node, )
-
-    def resolve_avatar(self, info):
-        return self.avatar.url
-
-
-class UserType(DjangoObjectType):
-    class Meta:
-        model = User
-        fields = [
-                "id", "username", "first_name", "last_name", "email",
-                "profile"]
-        filter_fields = {
-                'id': ['iexact'],
-                'username': ['iexact'],
-                }
-        interfaces = (relay.Node, )
-
-
-# Products
-class CategoryNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.Category
-        fields = ["product", "name", "slug", "parent"]
-        filter_fields = []
-        interfaces = (relay.Node, )
-
-
-class TagNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.Category
-        fields = ["product", "name", "slug"]
-        filter_fields = []
-        interfaces = (relay.Node, )
-
-
-class IdentifierNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.Identifier
-        fields = ["product", "pid_i", "pid_c", "gtin", "isbn"]
-        interfaces = (relay.Node, )
-
-
-class MeasurementNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.Measurement
-        fields = ["product", "weight", "length", "width", "height"]
-        filter_fields = []
-        interfaces = (relay.Node, )
-
-
-class BundleOptionNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.Bundle
-        fields = [
-                "product", "subproduct", "quantity_min", "quantity_max",
-                "is_optional"]
-        filter_fields = []
-        interfaces = (relay.Node, )
-
-
-class DigitalOptionNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.DigitalOption
-        fields = ["product", "name"]
-        filter_fields = []
-        interfaces = (relay.Node, )
-
-
-class PromotionNode(DjangoObjectType):
-    class Meta:
-        model = itemsapp.models.Promotion
-        fields = [
-                "product", "promotion_override", "name", "slug", "begins",
-                "ends", "percentage", "fixed", "price", "is_free_shipping",
-                "bogx"]
-        filter_fields = []
-        interfaces = (relay.Node, )
-
-
-# blog and pages
 class BlogLocationNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Location
@@ -243,75 +152,7 @@ class BlogPostNode(DjangoObjectType):
     # reading_time = graphene.Field(String, resolver=resolve_reading_time)
 
 
-class CampaignNode(DjangoObjectType):
-
-    class Meta:
-        model = advertisingapp.models.Campaign
-
-        fields = [
-                "name", "date_added", "date_expires", "site_name", "site_url",
-                "url_analyticscode", "banners", "assetts"]
-        filter_fields = {
-            'name': ['iexact', 'icontains', 'istartswith'],
-            'date_expires': ['isnull']}
-        interfaces = (relay.Node, )
-
-
-class BannerNode(DjangoObjectType):
-    class Meta:
-        model = advertisingapp.models.Banner
-        fields = [
-                "name", "excerpt", "url_name", "url_link",
-                "ban_square", "ban_lg_square", "ban_md_square",
-                "ban_sm_square", "ban_leaderboard", "ban_lg_leaderboard",
-                "ban_inline_rectangle", "ban_lg_rectangle", "ban_skyscraper"]
-
-        filter_fields = ["name"]
-        interfaces = (relay.Node, )
-
-    def resolve_ban_square(self, info):
-        return self.ban_square.url
-
-    def resolve_ban_lg_square(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.ban_lg_square)
-
-    def resolve_ban_md_square(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.ban_md_square)
-
-    def resolve_ban_sm_square(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.ban_sm_square)
-
-    def resolve_ban_leaderboard(self, info):
-        return self.ban_leaderboard.url
-
-    def resolve_ban_lg_leaderboard(self, info):
-        return self.ban_lg_leaderboard.url
-
-    def resolve_ban_inline_rectangle(self, info):
-        return self.ban_inline_rectangle.url
-
-    def resolve_ban_lg_rectangle(self, info):
-        return self.ban_lg_rectangle.url
-
-    def resolve_ban_skyscraper(self, info):
-        return self.ban_skyscraper.url
-
-
 class Query(graphene.ObjectType):
-    # products
-    # products = relay.Node.Field(ProductNode)
-    # all_products = DjangoFilterConnectionField(ProductNode)
-
-    # category = relay.Node.Field(CategoryNode)
-    # all_categories = DjangoFilterConnectionField(CategoryNode)
-
-    # tag = relay.Node.Field(TagNode)
-    # all_tags = DjangoFilterConnectionField(TagNode)
-
-    # users
-    all_users = relay.Node.Field(UserType)
-    all_users = DjangoFilterConnectionField(UserType)
-
     # blog by locations
     all_locations = relay.Node.Field(BlogLocationNode)
     all_location = DjangoFilterConnectionField(BlogLocationNode)
@@ -323,13 +164,3 @@ class Query(graphene.ObjectType):
     all_post_categories = DjangoFilterConnectionField(BlogCategoryNode)
     post_tags = relay.Node.Field(BlogTagNode)
     all_post_tags = DjangoFilterConnectionField(BlogTagNode)
-
-    # ads
-    campaign = relay.Node.Field(CampaignNode)
-    all_campaigns = DjangoFilterConnectionField(CampaignNode)
-
-    banner = relay.Node.Field(BannerNode)
-    all_banners = DjangoFilterConnectionField(BannerNode)
-
-
-schema = graphene.Schema(query=Query)

@@ -1,14 +1,10 @@
 from decouple import config
-from graphene import relay, String, Boolean
+from graphene import relay
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
-from configapp.models import Profile
 import advertisingapp.models
-import blogapp.models
 import graphene
-import itemsapp.models
 import os
-from django.contrib.auth.models import User
 
 
 class CampaignNode(DjangoObjectType):
