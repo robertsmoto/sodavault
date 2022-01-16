@@ -3,7 +3,7 @@ import advertisingapp.schema
 
 
 class Query(
-        advertisingapp.schema,):
+        advertisingapp.schema.Query,):
     pass
 
 
