@@ -34,7 +34,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_featured", "image_thumb"),
         ("image_191", "image_21"),
         ("image_title", "image_caption"),
-        ("categories", "tags", "keywords"),
+        ("categories", "tags", "kwd_list"),
     ]
 
     list_display = ["title", "author", "date_published", "status"]
@@ -60,7 +60,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_featured", "image_thumb"),
         ("image_191", "image_21"),
         ("image_title", "image_caption"),
-        ("categories", "tags", "keywords"),
+        ("categories", "tags", "kwd_list"),
     ]
 
     pass
@@ -83,7 +83,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_featured", "image_thumb"),
         ("image_191", "image_21"),
         ("image_title", "image_caption"),
-        ("categories", "tags", "keywords"),
+        ("categories", "tags", "kwd_list"),
     ]
 
     pass
