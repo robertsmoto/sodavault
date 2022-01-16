@@ -176,63 +176,63 @@ class BlogPostNode(DjangoObjectType):
 
         interfaces = (relay.Node, )
 
-    def resolve_image_featured(self, info):
-        return self.image_featured.url
+#     def resolve_image_featured(self, info):
+        # return self.image_featured.url
 
-    def resolve_featured_lg(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
+    # def resolve_featured_lg(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
 
-    def resolve_featured_md(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.featured_md)
+    # def resolve_featured_md(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.featured_md)
 
-    def resolve_featured_sm(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.featured_sm)
+    # def resolve_featured_sm(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.featured_sm)
 
-    def resolve_image_thumb(self, info):
-        return self.image_thumb.url
+    # def resolve_image_thumb(self, info):
+        # return self.image_thumb.url
 
-    def resolve_thumb_lg(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_lg)
+    # def resolve_thumb_lg(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.thumb_lg)
 
-    def resolve_thumb_md(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_md)
+    # def resolve_thumb_md(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.thumb_md)
 
-    def resolve_thumb_sm(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
+    # def resolve_thumb_sm(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
 
-    def resolve_pub_year(self, info):
-        return self.date_published.strftime("%Y")
+    # def resolve_pub_year(self, info):
+        # return self.date_published.strftime("%Y")
 
-    def resolve_pub_month(self, info):
-        return self.date_published.strftime("%m")
+    # def resolve_pub_month(self, info):
+        # return self.date_published.strftime("%m")
 
-    def resolve_pub_day(self, info):
-        return self.date_published.strftime("%d")
+    # def resolve_pub_day(self, info):
+        # return self.date_published.strftime("%d")
 
-    def resolve_pub_us(self, info):
-        return self.date_published.strftime("%b %d, %Y")
+    # def resolve_pub_us(self, info):
+        # return self.date_published.strftime("%b %d, %Y")
 
-    def resolve_mod_us(self, info):
-        return self.date_modified.strftime("%b %d, %Y")
+    # def resolve_mod_us(self, info):
+        # return self.date_modified.strftime("%b %d, %Y")
 
-    def resolve_reading_time(self, info):
-        text = ""
-        if len(self.body) > 0 or len(self.excerpt) > 0:
-            text = self.body + self.excerpt
-        time = round((len(text.split()) / 250))
-        timestr = ""
-        if time > 1:
-            timestr = f"{time} minutes"
-        else:
-            timestr = "1 minute"
-        return timestr
+    # def resolve_reading_time(self, info):
+        # text = ""
+        # if len(self.body) > 0 or len(self.excerpt) > 0:
+            # text = self.body + self.excerpt
+        # time = round((len(text.split()) / 250))
+        # timestr = ""
+        # if time > 1:
+            # timestr = f"{time} minutes"
+        # else:
+            # timestr = "1 minute"
+        # return timestr
 
-    pub_year = graphene.Field(String, resolver=resolve_pub_year)
-    pub_month = graphene.Field(String, resolver=resolve_pub_month)
-    pub_day = graphene.Field(String, resolver=resolve_pub_day)
-    pub_us = graphene.Field(String, resolver=resolve_pub_us)
-    mod_us = graphene.Field(String, resolver=resolve_mod_us)
-    reading_time = graphene.Field(String, resolver=resolve_reading_time)
+    # pub_year = graphene.Field(String, resolver=resolve_pub_year)
+    # pub_month = graphene.Field(String, resolver=resolve_pub_month)
+    # pub_day = graphene.Field(String, resolver=resolve_pub_day)
+    # pub_us = graphene.Field(String, resolver=resolve_pub_us)
+    # mod_us = graphene.Field(String, resolver=resolve_mod_us)
+    # reading_time = graphene.Field(String, resolver=resolve_reading_time)
 
 
 class CampaignNode(DjangoObjectType):
