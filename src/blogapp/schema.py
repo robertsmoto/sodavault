@@ -5,6 +5,27 @@ from graphene_django.filter import DjangoFilterConnectionField
 import blogapp.models
 import graphene
 import os
+from configapp.models import Profile
+from django.contrib.auth.models import User
+
+
+# Users
+class UserProfileType(DjangoObjectType):
+    class Meta:
+        model = Profile
+        interfaces = (relay.Node, )
+
+    def resolve_avatar(self, info):
+        return self.avatar.url
+
+
+class UserType(DjangoObjectType):
+    class Meta:
+        model = User
+        filter_fields = [
+                'username',
+                ]
+        interfaces = (relay.Node, )
 
 
 class BlogLocationNode(DjangoObjectType):
