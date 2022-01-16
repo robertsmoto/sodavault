@@ -78,6 +78,7 @@ class BlogPostNode(DjangoObjectType):
                 'is_secondary_menu',
                 'locations__domain',
                 'featured',
+                'post_type',
                 'slug',
                 'status',
                 ]
