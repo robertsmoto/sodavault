@@ -48,7 +48,7 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(Doc)
 class PostAdmin(admin.ModelAdmin):
     fields = [
-        ("locations", "post_type"),
+        ("locations"),
         ("title", "slug"),
         (
             "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
@@ -65,13 +65,18 @@ class PostAdmin(admin.ModelAdmin):
         ("categories", "tags", "kwd_list"),
     ]
 
-    pass
+    list_display = ["title", "author", "date_published", "status"]
+    list_filter = ["status", "locations__domain"]
+    list_editable = ["author", "status"]
+
+    prepopulated_fields = {"slug": ("title",)}
+    autocomplete_fields = ["locations", "categories", "tags"]
 
 
 @admin.register(Page)
 class PostAdmin(admin.ModelAdmin):
     fields = [
-        ("locations", "post_type"),
+        ("locations"),
         ("title", "slug"),
         (
             "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
@@ -88,4 +93,9 @@ class PostAdmin(admin.ModelAdmin):
         ("categories", "tags", "kwd_list"),
     ]
 
-    pass
+    list_display = ["title", "author", "date_published", "status"]
+    list_filter = ["status", "locations__domain"]
+    list_editable = ["author", "status"]
+
+    prepopulated_fields = {"slug": ("title",)}
+    autocomplete_fields = ["locations", "categories", "tags"]

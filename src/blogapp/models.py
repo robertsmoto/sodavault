@@ -233,9 +233,9 @@ class Tag(models.Model):
 class Post(models.Model):
 
     POST_TYPE_CHOICES = [
-        ('article', 'Article'),
-        ('page', 'Page'),
-        ('doc', 'Docs')
+        ('ARTICLE', 'Article'),
+        ('PAGE', 'Page'),
+        ('DOC', 'Docs')
     ]
     STATUS_CHOICES = [
         ('PUBLI', 'Published'),
@@ -512,7 +512,7 @@ Using proxy models for:
 
 class ArticleManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(post_type='article')
+        return super().get_queryset().filter(post_type='ARTICLE')
 
 
 class Article(Post):
@@ -524,14 +524,14 @@ class Article(Post):
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
-        if self.post_type == '':
-            self.post_type = 'article'
+        if self.post_type != 'ARTICLE':
+            self.post_type = 'ARTICLE'
         super(Article, self).save(*args, **kwargs)
 
 
 class DocManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(post_type='doc')
+        return super().get_queryset().filter(post_type='DOC')
 
 
 class Doc(Post):
@@ -543,14 +543,14 @@ class Doc(Post):
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
-        if self.post_type == '':
-            self.post_type = 'doc'
+        if self.post_type != 'DOC':
+            self.post_type = 'DOC'
         super(Article, self).save(*args, **kwargs)
 
 
 class PageManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(post_type='page')
+        return super().get_queryset().filter(post_type='PAGE')
 
 
 class Page(Post):
@@ -562,6 +562,6 @@ class Page(Post):
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
-        if self.post_type == '':
-            self.post_type = 'page'
+        if self.post_type != 'PAGE':
+            self.post_type = 'PAGE'
         super(Page, self).save(*args, **kwargs)
