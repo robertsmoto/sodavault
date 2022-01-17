@@ -233,9 +233,9 @@ class Tag(models.Model):
 class Post(models.Model):
 
     POST_TYPE_CHOICES = [
-        ('ARTI', 'Article'),
-        ('PAGE', 'Page'),
-        ('DOCS', 'Docs')
+        ('article', 'Article'),
+        ('page', 'Page'),
+        ('doc', 'Docs')
     ]
     STATUS_CHOICES = [
         ('PUBLI', 'Published'),
