@@ -525,7 +525,7 @@ class Article(Post):
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type == '':
-            self.post_type = 'ARTI'
+            self.post_type = 'article'
         super(Article, self).save(*args, **kwargs)
 
 
@@ -544,7 +544,7 @@ class Doc(Post):
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type == '':
-            self.post_type = 'DOCS'
+            self.post_type = 'doc'
         super(Article, self).save(*args, **kwargs)
 
 
@@ -563,5 +563,5 @@ class Page(Post):
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type == '':
-            self.post_type = 'PAGE'
+            self.post_type = 'page'
         super(Page, self).save(*args, **kwargs)
