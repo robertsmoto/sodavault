@@ -284,7 +284,7 @@ class Post(models.Model):
             'Post Type',
             max_length=20,
             choices=POST_TYPE_CHOICES,
-            default='ARTI',)
+            default='article',)
     title = models.CharField(
             'Title',
             max_length=200,
@@ -512,7 +512,7 @@ Using proxy models for:
 
 class ArticleManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(post_type='ARTI')
+        return super().get_queryset().filter(post_type='article')
 
 
 class Article(Post):
@@ -531,7 +531,7 @@ class Article(Post):
 
 class DocManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(post_type='DOCS')
+        return super().get_queryset().filter(post_type='doc')
 
 
 class Doc(Post):
@@ -550,7 +550,7 @@ class Doc(Post):
 
 class PageManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(post_type='PAGE')
+        return super().get_queryset().filter(post_type='page')
 
 
 class Page(Post):
