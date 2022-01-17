@@ -110,25 +110,37 @@ class BlogPostNode(DjangoObjectType):
         return self.image_featured.url
 
     def resolve_featured_lg(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
+        if self.featured_lg:
+            return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
+        return ''
 
     def resolve_featured_md(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.featured_md)
+        if self.featured_md:
+            return os.path.join(config('ENV_MEDIA_URL'), self.featured_md)
+        return ''
 
     def resolve_featured_sm(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.featured_sm)
+        if self.featured_sm:
+            return os.path.join(config('ENV_MEDIA_URL'), self.featured_sm)
+        return ''
 
     def resolve_image_thumb(self, info):
         return self.image_thumb.url
 
     def resolve_thumb_lg(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_lg)
+        if self.thumb_lg:
+            return os.path.join(config('ENV_MEDIA_URL'), self.thumb_lg)
+        return ''
 
     def resolve_thumb_md(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_md)
+        if self.thumb_md:
+            return os.path.join(config('ENV_MEDIA_URL'), self.thumb_md)
+        return ''
 
     def resolve_thumb_sm(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
+        if self.thumb_sm:
+            return os.path.join(config('ENV_MEDIA_URL'), self.thumb_sm)
+        return ''
 
     def resolve_pub_year(self, info):
         return self.date_published.strftime("%Y")
