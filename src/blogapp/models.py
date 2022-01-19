@@ -35,6 +35,14 @@ class Location(models.Model):
 
 
 class Category(models.Model):
+    parent = models.ForeignKey(
+            'self',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            related_name='children',
+            help_text="Self-referencing field to nest menus.")
+    slug = models.SlugField('Slug',)  # <-- add autofill in admin
     name = models.CharField(
             'Category Name',
             max_length=100,
@@ -43,6 +51,24 @@ class Category(models.Model):
             'Category Description',
             max_length=100,
             blank=True)
+    menu_order = models.IntegerField(
+            'Menu Order',
+            default=0,
+            help_text="Use to order menu")
+    is_primary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in primary menu.")
+    is_secondary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in secondary menu.")
+    is_footer_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in footer menu.")
+    kwd_list = models.CharField(
+            'Category Keywords',
+            max_length=100,
+            blank=True,
+            help_text="Comma-separated values.")
     kwd_list = models.CharField(
             'Category Keywords',
             max_length=100,
@@ -52,7 +78,7 @@ class Category(models.Model):
             upload_to=utils_images.new_filename_blog_cat,
             null=True,
             blank=True,
-            help_text="recommended size 500px x 500px")
+            help_text="Recommended size 500px x 500px")
     image_191 = models.ImageField(
             upload_to=utils_images.new_filename_blog_cat,
             null=True,
@@ -62,7 +88,7 @@ class Category(models.Model):
             upload_to=utils_images.new_filename_blog_cat,
             null=True,
             blank=True,
-            help_text="recommended size 1200px x 600px")
+            help_text="Recommended size 1200px x 600px")
 
     """The following are automatically generated using the
     model's save method."""
@@ -70,15 +96,15 @@ class Category(models.Model):
     image_lg_square = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 500px x 500px")
+            help_text="Automatic size: 500px x 500px")
     image_md_square = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 250px x 250px")
+            help_text="Automatic size: 250px x 250px")
     image_sm_square = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 200px x 200px")
+            help_text="Automatic size: 200px x 200px")
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
@@ -133,6 +159,14 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
+    parent = models.ForeignKey(
+            'self',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            related_name='children',
+            help_text="Self-referencing field to nest menus.")
+    slug = models.SlugField('Slug',)  # <-- add autofill in admin
     name = models.CharField(
             'Tag Name',
             max_length=100,
@@ -141,6 +175,19 @@ class Tag(models.Model):
             'Tag Description',
             max_length=100,
             blank=True)
+    menu_order = models.IntegerField(
+            'Menu Order',
+            default=0,
+            help_text="Use to order menu")
+    is_primary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in primary menu.")
+    is_secondary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in secondary menu.")
+    is_footer_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in footer menu.")
     kwd_list = models.CharField(
             'Tag Keywords',
             max_length=100,
@@ -150,7 +197,7 @@ class Tag(models.Model):
             upload_to=utils_images.new_filename_blog_tag,
             null=True,
             blank=True,
-            help_text="recommended size 500px x 500px")
+            help_text="Recommended size 500px x 500px")
     image_191 = models.ImageField(
             upload_to=utils_images.new_filename_blog_tag,
             null=True,
@@ -160,7 +207,7 @@ class Tag(models.Model):
             upload_to=utils_images.new_filename_blog_tag,
             null=True,
             blank=True,
-            help_text="recommended size 1200px x 600px")
+            help_text="Recommended size 1200px x 600px")
 
     """The following are automatically generated using the
     model's save method."""
@@ -168,15 +215,15 @@ class Tag(models.Model):
     image_lg_square = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 500px x 500px")
+            help_text="Automatic size: 500px x 500px")
     image_md_square = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 250px x 250px")
+            help_text="Automatic size: 250px x 250px")
     image_sm_square = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 200px x 200px")
+            help_text="Automatic size: 200px x 200px")
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
@@ -260,10 +307,6 @@ class Post(models.Model):
             blank=True,
             null=True,
             related_name='posts')
-    menu_order = models.IntegerField(
-            'Menu Order',
-            default=0,
-            help_text="Use to order menu")
     parent = models.ForeignKey(
             'self',
             on_delete=models.CASCADE,
@@ -271,20 +314,7 @@ class Post(models.Model):
             null=True,
             related_name='children',
             help_text="Self-referencing field to nest menus.")
-    is_primary_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in primary menu.")
-    is_secondary_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in secondary menu.")
-    is_footer_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in footer menu.")
-    post_type = models.CharField(
-            'Post Type',
-            max_length=20,
-            choices=POST_TYPE_CHOICES,
-            default='article',)
+    slug = models.SlugField('Slug',)  # <-- add autofill in admin
     title = models.CharField(
             'Title',
             max_length=200,
@@ -299,7 +329,6 @@ class Post(models.Model):
             null=True,
             blank=True,
             config_name='blog',)
-    slug = models.SlugField('Slug',)  # <-- add autofill in admin
     status = models.CharField(
             'Status',
             choices=STATUS_CHOICES,
@@ -309,6 +338,25 @@ class Post(models.Model):
             'Featured Post',
             default=False,
             help_text='Moves post to front page.')
+
+    menu_order = models.IntegerField(
+            'Menu Order',
+            default=0,
+            help_text="Use to order menu")
+    is_primary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in primary menu.")
+    is_secondary_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in secondary menu.")
+    is_footer_menu = models.BooleanField(
+            default=False,
+            help_text="Use if in footer menu.")
+    post_type = models.CharField(
+            'Post Type',
+            max_length=20,
+            choices=POST_TYPE_CHOICES,
+            default='article',)
     date_published = models.DateField(
             'Date Published',
             default=datetime.date.today,)
@@ -321,7 +369,7 @@ class Post(models.Model):
             'Keyword List',
             max_length=200,
             blank=True,
-            help_text='comma-separated list')
+            help_text='Comma-separated list')
     image_featured = models.ImageField(
             upload_to=utils_images.new_filename_blog_feat,
             null=True,
@@ -341,7 +389,7 @@ class Post(models.Model):
             upload_to=utils_images.new_filename_blog_tag,
             null=True,
             blank=True,
-            help_text="recommended size 1200px x 600px")
+            help_text="Recommended size 1200px x 600px")
     image_title = models.CharField(
             'Image Title',
             max_length=200,
@@ -366,28 +414,28 @@ class Post(models.Model):
     featured_lg = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 1600px x 800px")
+            help_text="Automatic size: 1600px x 800px")
     featured_md = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 800px x 400px")
+            help_text="Automatic size: 800px x 400px")
     featured_sm = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 400px x 200px")
+            help_text="Automatic size: 400px x 200px")
 
     thumb_lg = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 500px x 500px")
+            help_text="Automatic size: 500px x 500px")
     thumb_md = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 250px x 250px")
+            help_text="Automatic size: 250px x 250px")
     thumb_sm = models.CharField(
             max_length=200,
             blank=True,
-            help_text="automatic size: 200px x 200px")
+            help_text="Automatic size: 200px x 200px")
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
