@@ -31,7 +31,6 @@ class UserType(DjangoObjectType):
 class BlogLocationNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Location
-        # fields = ["domain", "name", "description"]
         filter_fields = {
                 'domain': ['iexact'],
                 }
@@ -86,10 +85,14 @@ class BlogPostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
         filter_fields = [
+                'categories__id',
+                'categories__slug',
+                'tags__id',
+                'tags__slug',
+                'locations__domain',
                 'is_footer_menu',
                 'is_primary_menu',
                 'is_secondary_menu',
-                'locations__domain',
                 'featured',
                 'post_type',
                 'slug',
