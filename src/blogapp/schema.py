@@ -32,7 +32,8 @@ class LocationNode(DjangoObjectType):
     class Meta:
         model = Location
         filter_fields = {
-                'domain': ['iexact'],
+                'domain',
+                'name',
                 }
         interfaces = (relay.Node, )
 
@@ -41,8 +42,9 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = {
-                'id': ['iexact'],
-                'name': ['iexact'],
+                'id',
+                'name',
+                'locations__domain',
                 }
         interfaces = (relay.Node, )
 
@@ -51,8 +53,9 @@ class TagNode(DjangoObjectType):
     class Meta:
         model = Tag
         filter_fields = {
-                'id': ['iexact'],
-                'name': ['iexact'],
+                'id',
+                'name',
+                'locations__domain',
                 }
         interfaces = (relay.Node, )
 
