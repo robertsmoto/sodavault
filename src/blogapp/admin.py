@@ -11,12 +11,14 @@ class LocationAdmin(admin.ModelAdmin):
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["topics"]
+    autocomplete_fields = ["locations"]
     pass
 
 
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     search_fields = ["interests"]
+    autocomplete_fields = ["locations"]
     pass
 
 

@@ -35,6 +35,10 @@ class Location(models.Model):
 
 
 class Category(models.Model):
+    locations = models.ManyToManyField(
+            Location,
+            blank=True,
+            related_name='categories')
     parent = models.ForeignKey(
             'self',
             on_delete=models.CASCADE,
@@ -159,6 +163,10 @@ class Category(models.Model):
 
 
 class Tag(models.Model):
+    locations = models.ManyToManyField(
+            Location,
+            blank=True,
+            related_name='tags')
     parent = models.ForeignKey(
             'self',
             on_delete=models.CASCADE,
