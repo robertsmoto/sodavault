@@ -13,7 +13,7 @@ from blogapp.models import Category, Tag, Location, Post
 class UserProfileType(DjangoObjectType):
     class Meta:
         model = Profile
-        interfaces = (relay.Node, )
+        # interfaces = (relay.Node, )
 
     def resolve_avatar(self, info):
         return self.avatar.url
@@ -25,39 +25,39 @@ class UserType(DjangoObjectType):
         filter_fields = [
                 'username',
                 ]
-        interfaces = (relay.Node, )
+        # interfaces = (relay.Node, )
 
 
-class BlogLocationNode(DjangoObjectType):
+class LocationType(DjangoObjectType):
     class Meta:
         model = Location
         filter_fields = {
                 'domain': ['iexact'],
                 }
-        interfaces = (relay.Node, )
+        # interfaces = (relay.Node, )
 
 
-class BlogCategoryNode(DjangoObjectType):
+class CategoryType(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
                 }
-        interfaces = (relay.Node, )
+        # interfaces = (relay.Node, )
 
 
-class BlogTagNode(DjangoObjectType):
+class TagType(DjangoObjectType):
     class Meta:
         model = Tag
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
                 }
-        interfaces = (relay.Node, )
+        # interfaces = (relay.Node, )
 
 
-class BlogPostNode(DjangoObjectType):
+class PostType(DjangoObjectType):
     custom_string = graphene.String()
 
     class Meta:
@@ -77,7 +77,7 @@ class BlogPostNode(DjangoObjectType):
                 'status',
                 ]
 
-    interfaces = (relay.Node, )
+    # interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
         return self.image_featured.url
@@ -151,23 +151,51 @@ class BlogPostNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    # blog by locations
-    all_locations = relay.Node.Field(BlogLocationNode)
-    all_location = DjangoFilterConnectionField(BlogLocationNode)
+    all_locations = graphene.List(LocationType)
 
-    # blog and pages
-    posts_and_pages = relay.Node.Field(BlogPostNode)
-    all_posts_and_pages = DjangoFilterConnectionField(BlogPostNode)
-    post_categories = relay.Node.Field(BlogCategoryNode)
-    all_post_categories = DjangoFilterConnectionField(BlogCategoryNode)
-    post_tags = relay.Node.Field(BlogTagNode)
-    all_post_tags = DjangoFilterConnectionField(BlogTagNode)
+    def resolve_all_locations(self, info):
+        return Location.objects.all().order_by('id')
 
-    # primary menu categories
-    p_menu_cat = DjangoListField(BlogCategoryNode)
+    all_pages = graphene.List(PostType)
+
+    def resolve_all_pages(self, info):
+        return Post.objects.filter(
+                post_type="PAGE").order_by('-date_published')
+
+    all_articles = graphene.List(PostType)
+
+    def resolve_all_articles(self, info):
+        return Post.objects.filter(
+                post_type="ARTICLE").order_by('-date_published')
+
+    all_categories = graphene.List(CategoryType)
+
+    def resolve_all_categories(self, info):
+        return Category.objects.all().order_by('name')
+
+    all_tags = graphene.List(TagType)
+
+    def resolve_all_tags(self, info):
+        return Tag.objects.all().order_by('name')
+
+    # primary menu
+    p_menu_cat = graphene.List(CategoryType)
 
     def resolve_p_menu_cat(self, info):
-        # Categories that have posts and ordered
-        return Category.objects.filter(
-                is_primary_menu=True).exclude(
-                posts__id="").order_by('menu_order')
+        query = (
+                Category.objects
+                .filter(is_primary_menu=True)
+                .exclude(posts__id='')
+                .order_by('menu_order')
+                )
+        return query
+
+    p_menu_page = graphene.List(PostType)
+
+    def resolve_p_menu_page(self, info):
+        query = (
+                Post.objects
+                .filter(is_primary_menu=True, post_type="PAGE")
+                .order_by('menu_order')
+                )
+        return query
