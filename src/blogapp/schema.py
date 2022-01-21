@@ -42,10 +42,15 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = {
-                'id',
-                'name',
-                'locations__domain',
+                'id': ['exact'],
+                'name': ['iexact'],
+                'is_primary_menu': ['iexact'],
+                'is_secondary_menu': ['iexact'],
+                'is_footer_menu': ['iexact'],
+                'locations__domain': ['iexact'],
+                'posts': ['isnull'],
                 }
+
         interfaces = (relay.Node, )
 
 
