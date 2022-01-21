@@ -43,11 +43,11 @@ class CategoryNode(DjangoObjectType):
         model = Category
         filter_fields = {
                 'id': ['exact'],
-                'name': ['iexact'],
-                'is_primary_menu': ['iexact'],
-                'is_secondary_menu': ['iexact'],
-                'is_footer_menu': ['iexact'],
-                'locations__domain': ['iexact'],
+                'name': ['exact'],
+                'is_primary_menu': ['exact'],
+                'is_secondary_menu': ['exact'],
+                'is_footer_menu': ['exact'],
+                'locations__domain': ['exact'],
                 'posts': ['isnull'],
                 }
 
