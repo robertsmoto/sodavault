@@ -12,6 +12,7 @@ class LocationAdmin(admin.ModelAdmin):
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["topics"]
     autocomplete_fields = ["locations"]
+    prepopulated_fields = {"slug": ("name",)}
     pass
 
 
@@ -19,6 +20,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     search_fields = ["interests"]
     autocomplete_fields = ["locations"]
+    prepopulated_fields = {"slug": ("name",)}
     pass
 
 
