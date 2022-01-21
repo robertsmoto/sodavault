@@ -74,8 +74,7 @@ class PostNode(DjangoObjectType):
                 'slug',
                 'status',
                 ]
-
-    interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
         return self.image_featured.url
