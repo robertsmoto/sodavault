@@ -1,12 +1,12 @@
+from blogapp.models import Category, Tag, Location, Post
+from configapp.models import Profile
 from decouple import config
+from django.contrib.auth.models import User
 from graphene import relay, String
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 import os
-from configapp.models import Profile
-from django.contrib.auth.models import User
-from blogapp.models import Category, Tag, Location, Post
 
 
 # Users
@@ -58,8 +58,6 @@ class TagNode(DjangoObjectType):
 
 
 class PostNode(DjangoObjectType):
-    custom_string = graphene.String()
-
     class Meta:
         model = Post
         filter_fields = [
