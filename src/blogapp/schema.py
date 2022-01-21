@@ -43,6 +43,7 @@ class BlogCategoryNode(DjangoObjectType):
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
+                'posts': ['isNull'],
                 }
         interfaces = (relay.Node, )
 
@@ -53,6 +54,7 @@ class BlogTagNode(DjangoObjectType):
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
+                'posts': ['isNull'],
                 }
         interfaces = (relay.Node, )
 
