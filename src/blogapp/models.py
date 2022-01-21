@@ -157,6 +157,7 @@ class Category(models.Model):
 
     class Meta:
         verbose_name_plural = "05. Categories"
+        ordering = ['menu_order', 'name']
 
     def __str__(self):
         return '%s' % (self.name)
@@ -280,6 +281,7 @@ class Tag(models.Model):
 
     class Meta:
         verbose_name_plural = "06. Tags"
+        ordering = ['menu_order', 'name']
 
     def __str__(self):
         return '%s' % (self.name)
@@ -547,7 +549,6 @@ class Post(models.Model):
 
     class Meta:
         ordering = ('-featured', '-date_published')
-
         indexes = [
             models.Index(fields=[
                 'status',

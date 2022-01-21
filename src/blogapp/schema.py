@@ -10,54 +10,56 @@ from blogapp.models import Category, Tag, Location, Post
 
 
 # Users
-class UserProfileType(DjangoObjectType):
+class UserProfileNode(DjangoObjectType):
     class Meta:
         model = Profile
-        # interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
     def resolve_avatar(self, info):
         return self.avatar.url
 
 
-class UserType(DjangoObjectType):
+class UserNode(DjangoObjectType):
     class Meta:
         model = User
         filter_fields = [
                 'username',
                 ]
-        # interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
 
-class LocationType(DjangoObjectType):
+class LocationNode(DjangoObjectType):
     class Meta:
         model = Location
         filter_fields = {
                 'domain': ['iexact'],
                 }
-        # interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
 
-class CategoryType(DjangoObjectType):
+class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
+                'locations__domain': ['iexact'],
                 }
-        # interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
 
-class TagType(DjangoObjectType):
+class TagNode(DjangoObjectType):
     class Meta:
         model = Tag
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
+                'locations__domain': ['iexact'],
                 }
-        # interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
 
-class PostType(DjangoObjectType):
+class PostNode(DjangoObjectType):
     custom_string = graphene.String()
 
     class Meta:
@@ -77,7 +79,7 @@ class PostType(DjangoObjectType):
                 'status',
                 ]
 
-    # interfaces = (relay.Node, )
+    interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
         return self.image_featured.url
@@ -151,50 +153,14 @@ class PostType(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    all_locations = graphene.List(LocationType)
+    location = relay.Node.Field(LocationNode)
+    all_locations = DjangoFilterConnectionField(LocationNode)
 
-    def resolve_all_locations(self, info):
-        return Location.objects.all().order_by('id')
+    category = relay.Node.Field(CategoryNode)
+    all_categories = DjangoFilterConnectionField(CategoryNode)
 
-    all_pages = graphene.List(PostType)
+    tag = relay.Node.Field(TagNode)
+    all_tags = DjangoFilterConnectionField(TagNode)
 
-    def resolve_all_pages(self, info):
-        return Post.objects.filter(
-                post_type="PAGE").order_by('-date_published')
-
-    all_articles = graphene.List(PostType)
-
-    def resolve_all_articles(self, info):
-        return Post.objects.filter(
-                post_type="ARTICLE").order_by('-date_published')
-
-    all_categories = graphene.List(CategoryType)
-
-    def resolve_all_categories(self, info):
-        return Category.objects.all().order_by('name')
-
-    all_tags = graphene.List(TagType)
-
-    def resolve_all_tags(self, info):
-        return Tag.objects.all().order_by('name')
-
-    # primary menu
-    p_menu_cat = graphene.List(CategoryType)
-
-    def resolve_p_menu_cat(self, info):
-        query = (
-                Category.objects
-                .filter(is_primary_menu=True)
-                .order_by('menu_order')
-                )
-        return query
-
-    p_menu_page = graphene.List(PostType)
-
-    def resolve_p_menu_page(self, info):
-        query = (
-                Post.objects
-                .filter(is_primary_menu=True, post_type="PAGE")
-                .order_by('menu_order')
-                )
-        return query
+    posts = relay.Node.Field(PostNode)
+    all_posts = DjangoFilterConnectionField(PostNode)
