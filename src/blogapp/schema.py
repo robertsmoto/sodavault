@@ -1,6 +1,6 @@
 from decouple import config
 from graphene import relay, String
-from graphene_django import DjangoObjectType, DjangoListField
+from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 import os
@@ -43,7 +43,6 @@ class CategoryNode(DjangoObjectType):
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
-                'locations__domain': ['iexact'],
                 }
         interfaces = (relay.Node, )
 
@@ -54,7 +53,6 @@ class TagNode(DjangoObjectType):
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
-                'locations__domain': ['iexact'],
                 }
         interfaces = (relay.Node, )
 
