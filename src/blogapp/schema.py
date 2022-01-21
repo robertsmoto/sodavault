@@ -1,12 +1,12 @@
 from decouple import config
 from graphene import relay, String
-from graphene_django import DjangoObjectType
+from graphene_django import DjangoObjectType, DjangoListField
 from graphene_django.filter import DjangoFilterConnectionField
-import blogapp.models
 import graphene
 import os
 from configapp.models import Profile
 from django.contrib.auth.models import User
+from blogapp.models import Category, Tag, Location, Post
 
 
 # Users
@@ -30,7 +30,7 @@ class UserType(DjangoObjectType):
 
 class BlogLocationNode(DjangoObjectType):
     class Meta:
-        model = blogapp.models.Location
+        model = Location
         filter_fields = {
                 'domain': ['iexact'],
                 }
@@ -39,53 +39,29 @@ class BlogLocationNode(DjangoObjectType):
 
 class BlogCategoryNode(DjangoObjectType):
     class Meta:
-        model = blogapp.models.Category
+        model = Category
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
-                'posts': ['isNull'],
                 }
         interfaces = (relay.Node, )
 
 
 class BlogTagNode(DjangoObjectType):
     class Meta:
-        model = blogapp.models.Tag
+        model = Tag
         filter_fields = {
                 'id': ['iexact'],
                 'name': ['iexact'],
-                'posts': ['isNull'],
                 }
         interfaces = (relay.Node, )
-
-        """
-        fields = [
-                "locations", "categories", "tags", "author",
-                "menu_order", "parent", "is_primary_menu",
-                "is_secondary_menu", "is_footer_menu",
-                "post_type", "title", "excerpt", "body", "slug", "status",
-                "featured", "date_published", "date_modified", "kwd_list",
-                "image_featured", "image_thumb", "image_191", "image_21",
-                "image_title", "image_caption", "footer", "featured_lg",
-                "featured_md", "featured_sm", "thumb_lg", "thumb_md",
-                "thumb_sm",
-                ]
-
-        filter_fields = [
-                'id', 'author__username', 'categories__name',
-                'date_modified', 'date_published', 'featured', 'kwd_list',
-                'locations__domain', 'post_type', 'slug', 'status',
-                'tags__name', 'icontains', 'istartswith', 'is_primary_menu',
-                'is_secondary_menu', 'is_footer_menu',
-                ]
-        """
 
 
 class BlogPostNode(DjangoObjectType):
     custom_string = graphene.String()
 
     class Meta:
-        model = blogapp.models.Post
+        model = Post
         filter_fields = [
                 'categories__id',
                 'categories__slug',
@@ -101,7 +77,7 @@ class BlogPostNode(DjangoObjectType):
                 'status',
                 ]
 
-        interfaces = (relay.Node, )
+    interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
         return self.image_featured.url
@@ -186,3 +162,12 @@ class Query(graphene.ObjectType):
     all_post_categories = DjangoFilterConnectionField(BlogCategoryNode)
     post_tags = relay.Node.Field(BlogTagNode)
     all_post_tags = DjangoFilterConnectionField(BlogTagNode)
+
+    # primary menu categories
+    p_menu_cat = DjangoListField(BlogCategoryNode)
+
+    def resolve_p_menu_cat(self, info):
+        # Categories that have posts and ordered
+        return Category.objects.filter(
+                is_primary_menu=True).exclude(
+                posts__id="").order_by('menu_order')
