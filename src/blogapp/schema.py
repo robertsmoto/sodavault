@@ -185,7 +185,6 @@ class Query(graphene.ObjectType):
         query = (
                 Category.objects
                 .filter(is_primary_menu=True)
-                .exclude(posts__id='')
                 .order_by('menu_order')
                 )
         return query
