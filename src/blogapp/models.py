@@ -287,65 +287,189 @@ class Tag(models.Model):
         return '%s' % (self.name)
 
 
-class Review(models.Model):
-    NOREC = (0, 'Not Recommended')
-    RECOM = (1, 'Recommended')
-    ENDORSEMENT_CHOICES = [
-        ('NOREC', 'Not Recommended'),
-        ('RECOM', 'Recommended'),
-    ]
-    ITEM_CHOICES = [
-        ('BOOK', 'Book'),
-        ('MOVI', 'Movie'),
-        ('LOBU', 'Local Business'),
-        ('REST', 'Restaurant'),
-    ]
-    COUNTRY_CHOICES = [
-        ('AT', 'Austria'),
-        ('CZ', 'Czech Republic'),
-        ('DE', 'Germany'),
-        ('FR', 'France'),
-        ('IT', 'Italy'),
-        ('SK', 'Slovakia'),
-        ('US', 'United States of America'),
-    ]
-    LANGUAGE_CHOICES = [
-        ('en-GB', 'English United Kingdom'),
-        ('en-IE', 'English Ireland'),
-        ('en-US', 'English United States'),
-        ('cs-CZ', 'Czech Czech Republic'),
-        ('de-DE', 'German Germany'),
-        ('fr-FR', 'French France'),
-        ('it-IT', 'Italian Italy'),
-        ('sk-SK', 'Slovak Slovakia')
-    ]
-    RATING_CHOICES = [
-        ('1.0', '1.0 worst'),
-        ('1.5', '1.5'),
-        ('2.0', '2.0'),
-        ('2.5', '2.5'),
-        ('3.0', '3.0 average'),
-        ('3.5', '3.5'),
-        ('4.0', '4.0'),
-        ('4.5', '4.5'),
-        ('5.0', '5.0 best')
-    ]
-    COST_CHOICES = [
-        ('FREE', 'Free'),
-        ('CHEA', 'Cheap'),
-        ('MODE', 'Moderate'),
-        ('EXPE', 'Expensive'),
-    ]
-    RES_TYPE_CHOICES = [
-        ('CASU', 'Casual Dining'),
-        ('FINE', 'Fine Dining'),
-        ('FAST', 'Fast Service'),
-    ]
-    item = models.CharField(
-            'Item Reviewed',
-            choices=ITEM_CHOICES,
-            max_length=4,
+NOREC = (0, 'Not Recommended')
+RECOM = (1, 'Recommended')
+ENDORSEMENT_CHOICES = [
+    ('NOREC', 'Not Recommended'),
+    ('RECOM', 'Recommended'),
+]
+COUNTRY_CHOICES = [
+    ('AT', 'Austria'),
+    ('CZ', 'Czech Republic'),
+    ('DE', 'Germany'),
+    ('FR', 'France'),
+    ('IT', 'Italy'),
+    ('SK', 'Slovakia'),
+    ('US', 'United States of America'),
+]
+LANGUAGE_CHOICES = [
+    ('en-GB', 'English United Kingdom'),
+    ('en-IE', 'English Ireland'),
+    ('en-US', 'English United States'),
+    ('cs-CZ', 'Czech Czech Republic'),
+    ('de-DE', 'German Germany'),
+    ('fr-FR', 'French France'),
+    ('it-IT', 'Italian Italy'),
+    ('sk-SK', 'Slovak Slovakia')
+]
+RATING_CHOICES = [
+    ('1.0', '1.0 worst'),
+    ('1.5', '1.5'),
+    ('2.0', '2.0'),
+    ('2.5', '2.5'),
+    ('3.0', '3.0 average'),
+    ('3.5', '3.5'),
+    ('4.0', '4.0'),
+    ('4.5', '4.5'),
+    ('5.0', '5.0 best')
+]
+COST_CHOICES = [
+    ('FREE', 'Free'),
+    ('CHEA', 'Cheap'),
+    ('MODE', 'Moderate'),
+    ('EXPE', 'Expensive'),
+]
+RES_TYPE_CHOICES = [
+    ('CASU', 'Casual Dining'),
+    ('FINE', 'Fine Dining'),
+    ('FAST', 'Fast Service'),
+]
+
+
+def star_display_func(self):
+    if self.rating:
+        rating = self.rating
+        rating_list = rating.split('.')
+        f_star = int(rating_list[0])
+        h_star = int(rating_list[1])
+        star_string = ''
+
+        d_full = '<i class="fas fa-star" style="color: #FFD700;"></i>'
+        d_half = '<i class="fas fa-star-half-alt" style="color: #FFD700;"></i>'
+        d_outl = '<i class="far fa-star" style="color: #FFD700;"></i>'
+
+        if h_star > 0:
+            h_star = 1
+        else:
+            h_star = 0
+        o_star = 5 - (f_star + h_star)
+
+        while f_star > 0:
+            star_string = star_string + d_full
+            f_star -= 1
+
+        while h_star > 0:
+            star_string = star_string + d_half
+            h_star -= 1
+
+        while o_star > 0:
+            star_string = star_string + d_outl
+            o_star -= 1
+
+        return star_string
+
+
+class ReviewBusiness(models.Model):
+    name = models.CharField(
+            'Business name',
+            max_length=200,
+            blank=True,
+            null=True)
+    address_street = models.CharField(
+            'Street Address',
+            max_length=100,
+            blank=True,
+            null=True)
+    address_city = models.CharField(
+            'City',
+            max_length=100,
             blank=True,)
+    address_state = models.CharField(
+            'State',
+            max_length=100,
+            blank=True,
+            help_text='state or province')
+    address_zipcode = models.CharField(
+            'Zip Code',
+            max_length=20,
+            blank=True,)
+    address_country = models.CharField(
+            'Country',
+            choices=COUNTRY_CHOICES,
+            max_length=2,
+            default='CZ',)
+    business_website = models.URLField(
+            'Business Website',
+            max_length=100,
+            blank=True,
+            help_text='Use google maps link.')
+    phone = models.CharField(
+            'Phone Number',
+            max_length=20,
+            blank=True,
+            help_text='Including country code, only for businesses.')
+    url_map = models.URLField(
+            'Map Link to Business',
+            max_length=100,
+            blank=True,
+            help_text='Use google maps link.')
+    latitude = models.DecimalField(
+            'Latitude',
+            max_digits=8,
+            decimal_places=6,
+            blank=True,
+            null=True)
+    longitude = models.DecimalField(
+            'Longitude',
+            max_digits=8,
+            decimal_places=6,
+            blank=True,
+            null=True)
+    cost = models.CharField(
+            'Cost',
+            max_length=4,
+            choices=COST_CHOICES,
+            blank=True,
+            help_text='How expensive?')
+    rating = models.CharField(
+            'Rating',
+            max_length=3,
+            choices=RATING_CHOICES,
+            blank=True,
+            help_text='5 stars is best.')
+    endorsement = models.CharField(
+            'Endorsement',
+            max_length=5,
+            choices=ENDORSEMENT_CHOICES,
+            blank=True,
+            help_text='Select Recommendation')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+    @property
+    def star_display(self):
+        return star_display_func(self)
+
+
+class ReviewRestaurant(models.Model):
+    name = models.CharField(
+            'Restaurant name',
+            max_length=50,
+            blank=True,)
+    restaurant_type = models.CharField(
+            'Restaurant Type',
+            max_length=4,
+            choices=RES_TYPE_CHOICES,
+            blank=True,)
+    restaurant_cuisine = models.CharField(
+            'Cuisine Offered.',
+            max_length=100,
+            blank=True,
+            help_text='Cuisine')
     address_street = models.CharField(
             'Street Address',
             max_length=100,
@@ -391,32 +515,112 @@ class Review(models.Model):
             max_length=20,
             blank=True,
             help_text='Including country code, only for businesses.')
+    cost = models.CharField(
+            'Cost',
+            max_length=4,
+            choices=COST_CHOICES,
+            blank=True,
+            help_text='How expensive?')
+    rating = models.CharField(
+            'Rating',
+            max_length=3,
+            choices=RATING_CHOICES,
+            blank=True,
+            help_text='5 stars is best.')
+    endorsement = models.CharField(
+            'Endorsement',
+            max_length=5,
+            choices=ENDORSEMENT_CHOICES,
+            blank=True,
+            help_text='Select Recommendation')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+    @property
+    def star_display(self):
+        return star_display_func(self)
+
+
+class ReviewBook(models.Model):
+    book_title = models.CharField(
+            'Book title',
+            max_length=200,
+            blank=True,
+            null=True)
     isbn = models.CharField(
             'ISBN',
             max_length=13,
-            blank=True,
-            help_text='Required only for book reviews.')
-    author_book = models.CharField(
+            blank=True,)
+    author = models.CharField(
             'Book Author',
             max_length=100,
             blank=True,
             null=True,
             help_text='Author of book.')
-    author_book_url = models.URLField(
+    author_url = models.URLField(
             'Link to Book Author',
             max_length=100,
             blank=True,
             help_text='Website or wiki of Book Author.')
-    name = models.CharField(
-            'Name',
-            max_length=50,
-            blank=True,
-            help_text='Name of item reviewed: Book, Movie or Business.')
-    url_item = models.URLField(
-            'Website of item being reviewed.',
+    url_book = models.URLField(
+            'Link to book.',
             max_length=100,
             blank=True,
             help_text='Website of item being reviewed.')
+    url_review = models.URLField(
+            'Link to full review.',
+            max_length=100,
+            blank=True,
+            help_text='Link to page if there is a full review.')
+    language = models.CharField(
+            'Language',
+            max_length=5,
+            choices=LANGUAGE_CHOICES,
+            default='en-US')
+    cost = models.CharField(
+            'Cost',
+            max_length=4,
+            choices=COST_CHOICES,
+            blank=True,
+            help_text='How expensive?')
+    rating = models.CharField(
+            'Rating',
+            max_length=3,
+            choices=RATING_CHOICES,
+            blank=True,
+            help_text='5 stars is best.')
+    endorsement = models.CharField(
+            'Endorsement',
+            max_length=5,
+            choices=ENDORSEMENT_CHOICES,
+            blank=True,
+            help_text='Select Recommendation')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+    @property
+    def star_display(self):
+        return star_display_func(self)
+
+
+class ReviewMovie(models.Model):
+    title = models.CharField(
+            'Movie title',
+            max_length=200,
+            blank=True,
+            null=True)
+    url_item = models.URLField(
+            'Movie website.',
+            max_length=100,
+            blank=True,)
     url_review = models.URLField(
             'Website full review.',
             max_length=100,
@@ -433,22 +637,6 @@ class Review(models.Model):
             choices=RATING_CHOICES,
             blank=True,
             help_text='5 stars is best.')
-    cost = models.CharField(
-            'Cost',
-            max_length=4,
-            choices=COST_CHOICES,
-            blank=True,
-            help_text='How expensive?')
-    restaurant_type = models.CharField(
-            'Restaurant Type',
-            max_length=4,
-            choices=RES_TYPE_CHOICES,
-            blank=True,)
-    restaurant_cuisine = models.CharField(
-            'Cuisine Offered.',
-            max_length=100,
-            blank=True,
-            help_text='Cuisine')
     endorsement = models.CharField(
             'Endorsement',
             max_length=5,
@@ -464,36 +652,7 @@ class Review(models.Model):
 
     @property
     def star_display(self):
-        if self.rating:
-            rating = self.rating
-            rating_list = rating.split('.')
-            f_star = int(rating_list[0])
-            h_star = int(rating_list[1])
-            star_string = ''
-
-            d_full = '<i class="fas fa-star" style="color: #FFD700;"></i>'
-            d_half = '<i class="fas fa-star-half-alt" style="color: #FFD700;"></i>'
-            d_outl = '<i class="far fa-star" style="color: #FFD700;"></i>'
-
-            if h_star > 0:
-                h_star = 1
-            else:
-                h_star = 0
-            o_star = 5 - (f_star + h_star)
-
-            while f_star > 0:
-                star_string = star_string + d_full
-                f_star -= 1
-
-            while h_star > 0:
-                star_string = star_string + d_half
-                h_star -= 1
-
-            while o_star > 0:
-                star_string = star_string + d_outl
-                o_star -= 1
-
-            return star_string
+        return star_display_func(self)
 
 
 class Recipe(models.Model):
@@ -605,8 +764,23 @@ class Post(models.Model):
             null=True,
             related_name='children',
             help_text="Self-referencing field to nest menus.")
-    review = models.OneToOneField(
-            Review,
+    review_business = models.OneToOneField(
+            ReviewBusiness,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    review_restaurant = models.OneToOneField(
+            ReviewRestaurant,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    review_book = models.OneToOneField(
+            ReviewBook,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    review_movie = models.OneToOneField(
+            ReviewMovie,
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
@@ -908,6 +1082,3 @@ class Page(Post):
         if self.post_type != 'PAGE':
             self.post_type = 'PAGE'
         super(Page, self).save(*args, **kwargs)
-
-
-

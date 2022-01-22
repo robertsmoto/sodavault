@@ -1,7 +1,8 @@
 from django.contrib import admin
 from .models import Location, Category, Tag
 from .models import Article, Doc, Page
-from .models import Recipe, Ingredient, Review
+from .models import Recipe, Ingredient
+from .models import ReviewBusiness, ReviewRestaurant, ReviewBook, ReviewMovie
 
 
 class IngredientInline(admin.TabularInline):
@@ -12,12 +13,23 @@ class RecipeInline(admin.StackedInline):
     model = Recipe
 
 
-class ReviewInline(admin.StackedInline):
-    model = Review
+@admin.register(ReviewBusiness)
+class ReviewBusinessAdmin(admin.ModelAdmin):
+    pass
 
 
-@admin.register(Review)
-class ReviewAdmin(admin.ModelAdmin):
+@admin.register(ReviewRestaurant)
+class ReviewRestaurantAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ReviewBook)
+class ReviewBookAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(ReviewMovie)
+class ReviewMovieAdmin(admin.ModelAdmin):
     pass
 
 
