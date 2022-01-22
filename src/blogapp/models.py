@@ -408,8 +408,13 @@ class ReviewBusiness(models.Model):
             max_length=20,
             blank=True,
             help_text='Including country code, only for businesses.')
-    url_map = models.URLField(
-            'Map Link to Business',
+    website = models.URLField(
+            'Business website.',
+            max_length=100,
+            blank=True,
+            help_text='Use google maps link.')
+    map_link = models.URLField(
+            'Map link.',
             max_length=100,
             blank=True,
             help_text='Use google maps link.')
@@ -493,8 +498,18 @@ class ReviewRestaurant(models.Model):
             choices=COUNTRY_CHOICES,
             max_length=2,
             default='CZ',)
-    url_map = models.URLField(
-            'Map Link to Business',
+    phone = models.CharField(
+            'Phone Number',
+            max_length=20,
+            blank=True,
+            help_text='Including country code, only for businesses.')
+    website = models.URLField(
+            'Business website.',
+            max_length=100,
+            blank=True,
+            help_text='Use google maps link.')
+    map_link = models.URLField(
+            'Map link.',
             max_length=100,
             blank=True,
             help_text='Use google maps link.')
@@ -510,11 +525,6 @@ class ReviewRestaurant(models.Model):
             decimal_places=6,
             blank=True,
             null=True)
-    phone = models.CharField(
-            'Phone Number',
-            max_length=20,
-            blank=True,
-            help_text='Including country code, only for businesses.')
     cost = models.CharField(
             'Cost',
             max_length=4,
