@@ -81,7 +81,8 @@ class PostAdmin(admin.ModelAdmin):
         ("image_191", "image_21"),
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
-        ("review", "recipe")
+        "recipe",
+        ("review_business", "review_restaurant", "review_movie", "review_book")
     ]
 
     list_display = ["title", "author", "date_published", "status"]
