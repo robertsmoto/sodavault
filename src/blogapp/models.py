@@ -398,11 +398,6 @@ class ReviewBusiness(models.Model):
             choices=COUNTRY_CHOICES,
             max_length=2,
             default='CZ',)
-    business_website = models.URLField(
-            'Business Website',
-            max_length=100,
-            blank=True,
-            help_text='Use google maps link.')
     phone = models.CharField(
             'Phone Number',
             max_length=20,
