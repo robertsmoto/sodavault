@@ -1,5 +1,35 @@
 from django.contrib import admin
-from .models import *
+from .models import Location, Category, Tag
+from .models import Article, Doc, Page
+from .models import Recipe, Ingredient, Review
+
+
+class IngredientInline(admin.TabularInline):
+    model = Ingredient
+
+
+class RecipeInline(admin.StackedInline):
+    model = Recipe
+
+
+class ReviewInline(admin.StackedInline):
+    model = Review
+
+
+@admin.register(Review)
+class ReviewAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Ingredient)
+class IngredientAdmin(admin.ModelAdmin):
+    pass
+
+
+@admin.register(Recipe)
+class RecipeAdmin(admin.ModelAdmin):
+    inlines = [IngredientInline, ]
+    pass
 
 
 @admin.register(Location)
@@ -39,6 +69,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_191", "image_21"),
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
+        ("review", "recipe")
     ]
 
     list_display = ["title", "author", "date_published", "status"]
@@ -50,7 +81,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Doc)
-class PostAdmin(admin.ModelAdmin):
+class DocAdmin(admin.ModelAdmin):
     fields = [
         ("locations"),
         ("title", "slug"),
@@ -78,7 +109,7 @@ class PostAdmin(admin.ModelAdmin):
 
 
 @admin.register(Page)
-class PostAdmin(admin.ModelAdmin):
+class PageAdmin(admin.ModelAdmin):
     fields = [
         ("locations"),
         ("title", "slug"),
@@ -103,3 +134,6 @@ class PostAdmin(admin.ModelAdmin):
 
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ["locations", "categories", "tags"]
+
+
+

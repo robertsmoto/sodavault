@@ -287,6 +287,287 @@ class Tag(models.Model):
         return '%s' % (self.name)
 
 
+class Review(models.Model):
+    NOREC = (0, 'Not Recommended')
+    RECOM = (1, 'Recommended')
+    ENDORSEMENT_CHOICES = [
+        ('NOREC', 'Not Recommended'),
+        ('RECOM', 'Recommended'),
+    ]
+    ITEM_CHOICES = [
+        ('BOOK', 'Book'),
+        ('MOVI', 'Movie'),
+        ('LOBU', 'Local Business'),
+        ('REST', 'Restaurant'),
+    ]
+    COUNTRY_CHOICES = [
+        ('AT', 'Austria'),
+        ('CZ', 'Czech Republic'),
+        ('DE', 'Germany'),
+        ('FR', 'France'),
+        ('IT', 'Italy'),
+        ('SK', 'Slovakia'),
+        ('US', 'United States of America'),
+    ]
+    LANGUAGE_CHOICES = [
+        ('en-GB', 'English United Kingdom'),
+        ('en-IE', 'English Ireland'),
+        ('en-US', 'English United States'),
+        ('cs-CZ', 'Czech Czech Republic'),
+        ('de-DE', 'German Germany'),
+        ('fr-FR', 'French France'),
+        ('it-IT', 'Italian Italy'),
+        ('sk-SK', 'Slovak Slovakia')
+    ]
+    RATING_CHOICES = [
+        ('1.0', '1.0 worst'),
+        ('1.5', '1.5'),
+        ('2.0', '2.0'),
+        ('2.5', '2.5'),
+        ('3.0', '3.0 average'),
+        ('3.5', '3.5'),
+        ('4.0', '4.0'),
+        ('4.5', '4.5'),
+        ('5.0', '5.0 best')
+    ]
+    COST_CHOICES = [
+        ('FREE', 'Free'),
+        ('CHEA', 'Cheap'),
+        ('MODE', 'Moderate'),
+        ('EXPE', 'Expensive'),
+    ]
+    RES_TYPE_CHOICES = [
+        ('CASU', 'Casual Dining'),
+        ('FINE', 'Fine Dining'),
+        ('FAST', 'Fast Service'),
+    ]
+    item = models.CharField(
+            'Item Reviewed',
+            choices=ITEM_CHOICES,
+            max_length=4,
+            blank=True,)
+    address_street = models.CharField(
+            'Street Address',
+            max_length=100,
+            blank=True,
+            null=True)
+    address_city = models.CharField(
+            'City',
+            max_length=100,
+            blank=True,)
+    address_state = models.CharField(
+            'State',
+            max_length=100,
+            blank=True,
+            help_text='state or province')
+    address_zipcode = models.CharField(
+            'Zip Code',
+            max_length=20,
+            blank=True,)
+    address_country = models.CharField(
+            'Country',
+            choices=COUNTRY_CHOICES,
+            max_length=2,
+            default='CZ',)
+    url_map = models.URLField(
+            'Map Link to Business',
+            max_length=100,
+            blank=True,
+            help_text='Use google maps link.')
+    latitude = models.DecimalField(
+            'Latitude',
+            max_digits=8,
+            decimal_places=6,
+            blank=True,
+            null=True)
+    longitude = models.DecimalField(
+            'Longitude',
+            max_digits=8,
+            decimal_places=6,
+            blank=True,
+            null=True)
+    phone = models.CharField(
+            'Phone Number',
+            max_length=20,
+            blank=True,
+            help_text='Including country code, only for businesses.')
+    isbn = models.CharField(
+            'ISBN',
+            max_length=13,
+            blank=True,
+            help_text='Required only for book reviews.')
+    author_book = models.CharField(
+            'Book Author',
+            max_length=100,
+            blank=True,
+            null=True,
+            help_text='Author of book.')
+    author_book_url = models.URLField(
+            'Link to Book Author',
+            max_length=100,
+            blank=True,
+            help_text='Website or wiki of Book Author.')
+    name = models.CharField(
+            'Name',
+            max_length=50,
+            blank=True,
+            help_text='Name of item reviewed: Book, Movie or Business.')
+    url_item = models.URLField(
+            'Website of item being reviewed.',
+            max_length=100,
+            blank=True,
+            help_text='Website of item being reviewed.')
+    url_review = models.URLField(
+            'Website full review.',
+            max_length=100,
+            blank=True,
+            help_text='Link to page if there is a full review.')
+    language = models.CharField(
+            'Language',
+            max_length=5,
+            choices=LANGUAGE_CHOICES,
+            default='en-US')
+    rating = models.CharField(
+            'Rating',
+            max_length=3,
+            choices=RATING_CHOICES,
+            blank=True,
+            help_text='5 stars is best.')
+    cost = models.CharField(
+            'Cost',
+            max_length=4,
+            choices=COST_CHOICES,
+            blank=True,
+            help_text='How expensive?')
+    restaurant_type = models.CharField(
+            'Restaurant Type',
+            max_length=4,
+            choices=RES_TYPE_CHOICES,
+            blank=True,)
+    restaurant_cuisine = models.CharField(
+            'Cuisine Offered.',
+            max_length=100,
+            blank=True,
+            help_text='Cuisine')
+    endorsement = models.CharField(
+            'Endorsement',
+            max_length=5,
+            choices=ENDORSEMENT_CHOICES,
+            blank=True,
+            help_text='Select Recommendation')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+    @property
+    def star_display(self):
+        if self.rating:
+            rating = self.rating
+            rating_list = rating.split('.')
+            f_star = int(rating_list[0])
+            h_star = int(rating_list[1])
+            star_string = ''
+
+            d_full = '<i class="fas fa-star" style="color: #FFD700;"></i>'
+            d_half = '<i class="fas fa-star-half-alt" style="color: #FFD700;"></i>'
+            d_outl = '<i class="far fa-star" style="color: #FFD700;"></i>'
+
+            if h_star > 0:
+                h_star = 1
+            else:
+                h_star = 0
+            o_star = 5 - (f_star + h_star)
+
+            while f_star > 0:
+                star_string = star_string + d_full
+                f_star -= 1
+
+            while h_star > 0:
+                star_string = star_string + d_half
+                h_star -= 1
+
+            while o_star > 0:
+                star_string = star_string + d_outl
+                o_star -= 1
+
+            return star_string
+
+
+class Recipe(models.Model):
+    name = models.CharField(
+            'Name',
+            max_length=100,
+            blank=True,
+            help_text='Name of dish.')
+    prep_time = models.IntegerField(
+            'Prep Time',
+            blank=True,
+            null=True,
+            help_text='Time in minutes. eg. 30')
+    cook_time = models.IntegerField(
+            'Cook Time',
+            blank=True,
+            null=True,
+            help_text='Time in minutes. eg. 45')
+    instructions = models.TextField(
+            'Instructions',
+            blank=True,
+            help_text='In a large bowl ...')
+    recipe_yield_qnty = models.IntegerField(
+            'Yield Qnty',
+            blank=True,
+            null=True,
+            help_text='eg. 25')
+    recipe_yield_description = models.CharField(
+            'Yield Description',
+            max_length=50,
+            blank=True,
+            help_text='eg. cookies, loaf, servings')
+    recipe_yield_notes = models.CharField(
+            'Yield Notes',
+            max_length=50,
+            blank=True,
+            help_text='eg. Cookies approx. size 25 grams.')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+    @property
+    def total_time(self):
+        return self.prep_time + self.cook_time
+
+
+class Ingredient(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE)
+    weight = models.IntegerField(
+        'Weight (grams)',
+        blank=True,
+        null=True,
+        help_text="Weight in grams. eg. 50"
+    )
+    name = models.CharField(
+        'Ingredient',
+        max_length=100,
+        blank=True,
+        help_text='ex. white onion, celery, pasta'
+    )
+    notes = models.CharField(
+        'Note',
+        max_length=200,
+        blank=True,
+        help_text='ex. finely chopped'
+    )
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+
 class Post(models.Model):
 
     POST_TYPE_CHOICES = [
@@ -324,6 +605,16 @@ class Post(models.Model):
             null=True,
             related_name='children',
             help_text="Self-referencing field to nest menus.")
+    review = models.OneToOneField(
+            Review,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    recipe = models.OneToOneField(
+            Recipe,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
     slug = models.SlugField('Slug',)  # <-- add autofill in admin
     title = models.CharField(
             'Title',
@@ -559,12 +850,7 @@ class Post(models.Model):
         ]
 
 
-"""
-Using proxy models for:
-    1. Articles
-    2. Docs
-    3. Pages
-"""
+"""Using proxy models for: 1. Articles 2. Docs 3. Pages"""
 
 
 class ArticleManager(models.Manager):
@@ -622,3 +908,6 @@ class Page(Post):
         if self.post_type != 'PAGE':
             self.post_type = 'PAGE'
         super(Page, self).save(*args, **kwargs)
+
+
+
