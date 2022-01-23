@@ -222,7 +222,6 @@ development environment.
 CKEDITOR_UPLOAD_PATH = "ckeditor_uploads/"
 CKEDITOR_RESTRICT_BY_USER = True
 CKEDITOR_BROWSE_SHOW_DIRS = True
-CKEDITOR_IMAGE_BACKEND = "Pillow"
 AWS_QUERYSTRING_AUTH = False
 # the wordcount pluging config is in the ckeditor/config.js file
 CKEDITOR_CONFIGS = {
@@ -238,6 +237,7 @@ CKEDITOR_CONFIGS = {
         # 'toolbar': 'CustomConfig', # <-- use custom config
         'height': 100,
         'tabSpaces': 4,
+        'removePlugins': 'stylesheetparser',
         'extraPlugins': ','.join([
             'uploadimage', # the upload image feature
             # your extra plugins here
