@@ -49,6 +49,7 @@ admin.site.index_title = 'Control Panel'
 admin.site.site_title = 'SODAVault Admin'
 
 urlpatterns = [
+    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', include('homeapp.urls')),
     path('admin/', admin.site.urls),
     path('_nested_admin/', include('nested_admin.urls')),
@@ -71,7 +72,6 @@ urlpatterns = [
     path('content/', include('blogapp.urls')),
     path('core/', include('coreapp.urls')),
     path('config/', include('configapp.urls')),
-    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('graphql/', include('graphqlapp.urls')),
     path('items/', include('itemsapp.urls')),
 ]
