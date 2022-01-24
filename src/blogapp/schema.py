@@ -1,4 +1,7 @@
 from blogapp.models import Category, Tag, Location, Post
+from blogapp.models import Ingredient, Recipe
+from blogapp.models import ReviewBook, ReviewBusiness
+from blogapp.models import ReviewMovie, ReviewRestaurant
 from configapp.models import Profile
 from decouple import config
 from django.contrib.auth.models import User
@@ -9,7 +12,42 @@ import graphene
 import os
 
 
-# Users
+class IngredientNode(DjangoObjectType):
+    class Meta:
+        model = Ingredient
+        interfaces = (relay.Node, )
+
+
+class RecipeNode(DjangoObjectType):
+    class Meta:
+        model = Recipe
+        interfaces = (relay.Node, )
+
+
+class ReviewBookNode(DjangoObjectType):
+    class Meta:
+        model = ReviewBook
+        interfaces = (relay.Node, )
+
+
+class ReviewBusinessNode(DjangoObjectType):
+    class Meta:
+        model = ReviewBusiness
+        interfaces = (relay.Node, )
+
+
+class ReviewMovieNode(DjangoObjectType):
+    class Meta:
+        model = ReviewMovie
+        interfaces = (relay.Node, )
+
+
+class ReviewRestaurantNode(DjangoObjectType):
+    class Meta:
+        model = ReviewRestaurant
+        interfaces = (relay.Node, )
+
+
 class UserProfileNode(DjangoObjectType):
     class Meta:
         model = Profile
