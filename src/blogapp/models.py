@@ -369,6 +369,116 @@ def star_display_func(self):
         return star_string
 
 
+class ReviewBook(models.Model):
+    title = models.CharField(
+            'Book title',
+            max_length=200,
+            blank=True,
+            null=True)
+    isbn = models.CharField(
+            'ISBN',
+            max_length=13,
+            blank=True,)
+    author = models.CharField(
+            'Book Author',
+            max_length=100,
+            blank=True,
+            null=True,
+            help_text='Author of book.')
+    author_url = models.URLField(
+            'Link to Book Author',
+            max_length=100,
+            blank=True,
+            help_text='Website or wiki of Book Author.')
+    url_book = models.URLField(
+            'Link to book.',
+            max_length=100,
+            blank=True,
+            help_text='Website of item being reviewed.')
+    url_review = models.URLField(
+            'Link to full review.',
+            max_length=100,
+            blank=True,
+            help_text='Link to page if there is a full review.')
+    language = models.CharField(
+            'Language',
+            max_length=5,
+            choices=LANGUAGE_CHOICES,
+            default='en-US')
+    cost = models.CharField(
+            'Cost',
+            max_length=4,
+            choices=COST_CHOICES,
+            blank=True,
+            help_text='How expensive?')
+    rating = models.CharField(
+            'Rating',
+            max_length=3,
+            choices=RATING_CHOICES,
+            blank=True,
+            help_text='5 stars is best.')
+    endorsement = models.CharField(
+            'Endorsement',
+            max_length=5,
+            choices=ENDORSEMENT_CHOICES,
+            blank=True,
+            help_text='Select Recommendation')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.title)
+
+    @property
+    def star_display(self):
+        return star_display_func(self)
+
+
+class ReviewMovie(models.Model):
+    title = models.CharField(
+            'Movie title',
+            max_length=200,
+            blank=True,
+            null=True)
+    url_item = models.URLField(
+            'Movie website.',
+            max_length=100,
+            blank=True,)
+    url_review = models.URLField(
+            'Website full review.',
+            max_length=100,
+            blank=True,
+            help_text='Link to page if there is a full review.')
+    language = models.CharField(
+            'Language',
+            max_length=5,
+            choices=LANGUAGE_CHOICES,
+            default='en-US')
+    rating = models.CharField(
+            'Rating',
+            max_length=3,
+            choices=RATING_CHOICES,
+            blank=True,
+            help_text='5 stars is best.')
+    endorsement = models.CharField(
+            'Endorsement',
+            max_length=5,
+            choices=ENDORSEMENT_CHOICES,
+            blank=True,
+            help_text='Select Recommendation')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.title)
+
+    @property
+    def star_display(self):
+        return star_display_func(self)
+
+
 class ReviewBusiness(models.Model):
     name = models.CharField(
             'Business name',
@@ -548,117 +658,6 @@ class ReviewRestaurant(models.Model):
     @property
     def star_display(self):
         return star_display_func(self)
-
-
-class ReviewBook(models.Model):
-    book_title = models.CharField(
-            'Book title',
-            max_length=200,
-            blank=True,
-            null=True)
-    isbn = models.CharField(
-            'ISBN',
-            max_length=13,
-            blank=True,)
-    author = models.CharField(
-            'Book Author',
-            max_length=100,
-            blank=True,
-            null=True,
-            help_text='Author of book.')
-    author_url = models.URLField(
-            'Link to Book Author',
-            max_length=100,
-            blank=True,
-            help_text='Website or wiki of Book Author.')
-    url_book = models.URLField(
-            'Link to book.',
-            max_length=100,
-            blank=True,
-            help_text='Website of item being reviewed.')
-    url_review = models.URLField(
-            'Link to full review.',
-            max_length=100,
-            blank=True,
-            help_text='Link to page if there is a full review.')
-    language = models.CharField(
-            'Language',
-            max_length=5,
-            choices=LANGUAGE_CHOICES,
-            default='en-US')
-    cost = models.CharField(
-            'Cost',
-            max_length=4,
-            choices=COST_CHOICES,
-            blank=True,
-            help_text='How expensive?')
-    rating = models.CharField(
-            'Rating',
-            max_length=3,
-            choices=RATING_CHOICES,
-            blank=True,
-            help_text='5 stars is best.')
-    endorsement = models.CharField(
-            'Endorsement',
-            max_length=5,
-            choices=ENDORSEMENT_CHOICES,
-            blank=True,
-            help_text='Select Recommendation')
-
-    timestamp_created = models.DateTimeField(auto_now_add=True)
-    timestamp_modified = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return '%s' % (self.name)
-
-    @property
-    def star_display(self):
-        return star_display_func(self)
-
-
-class ReviewMovie(models.Model):
-    title = models.CharField(
-            'Movie title',
-            max_length=200,
-            blank=True,
-            null=True)
-    url_item = models.URLField(
-            'Movie website.',
-            max_length=100,
-            blank=True,)
-    url_review = models.URLField(
-            'Website full review.',
-            max_length=100,
-            blank=True,
-            help_text='Link to page if there is a full review.')
-    language = models.CharField(
-            'Language',
-            max_length=5,
-            choices=LANGUAGE_CHOICES,
-            default='en-US')
-    rating = models.CharField(
-            'Rating',
-            max_length=3,
-            choices=RATING_CHOICES,
-            blank=True,
-            help_text='5 stars is best.')
-    endorsement = models.CharField(
-            'Endorsement',
-            max_length=5,
-            choices=ENDORSEMENT_CHOICES,
-            blank=True,
-            help_text='Select Recommendation')
-
-    timestamp_created = models.DateTimeField(auto_now_add=True)
-    timestamp_modified = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return '%s' % (self.name)
-
-    @property
-    def star_display(self):
-        return star_display_func(self)
-
 
 class Recipe(models.Model):
     name = models.CharField(
