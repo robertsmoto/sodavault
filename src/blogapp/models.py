@@ -1,13 +1,10 @@
-# from ckeditor.fields import RichTextField
 from ckeditor_uploader.fields import RichTextUploadingField
-from django.db import models
 from django.contrib.auth.models import User
+from django.db import models
 from django.urls import reverse
-# from imagekit.models import ProcessedImageField
-# from imagekit.processors import ResizeToFill
-import datetime
-from utilities import utils_images
 from sodavault.utils_logging import svlog_info
+from utilities import utils_images
+import datetime
 
 
 class Location(models.Model):
@@ -313,15 +310,15 @@ LANGUAGE_CHOICES = [
     ('sk-SK', 'Slovak Slovakia')
 ]
 RATING_CHOICES = [
-    ('1.0', '1.0 worst'),
-    ('1.5', '1.5'),
-    ('2.0', '2.0'),
-    ('2.5', '2.5'),
-    ('3.0', '3.0 average'),
-    ('3.5', '3.5'),
-    ('4.0', '4.0'),
-    ('4.5', '4.5'),
-    ('5.0', '5.0 best')
+    ('10', '1.0 worst'),
+    ('15', '1.5'),
+    ('20', '2.0'),
+    ('25', '2.5'),
+    ('30', '3.0 average'),
+    ('35', '3.5'),
+    ('40', '4.0'),
+    ('45', '4.5'),
+    ('50', '5.0 best')
 ]
 COST_CHOICES = [
     ('FREE', 'Free'),
@@ -334,39 +331,6 @@ RES_TYPE_CHOICES = [
     ('FINE', 'Fine Dining'),
     ('FAST', 'Fast Service'),
 ]
-
-
-def star_display_func(self):
-    if self.rating:
-        rating = self.rating
-        rating_list = rating.split('.')
-        f_star = int(rating_list[0])
-        h_star = int(rating_list[1])
-        star_string = ''
-
-        d_full = '<i class="fas fa-star" style="color: #FFD700;"></i>'
-        d_half = '<i class="fas fa-star-half-alt" style="color: #FFD700;"></i>'
-        d_outl = '<i class="far fa-star" style="color: #FFD700;"></i>'
-
-        if h_star > 0:
-            h_star = 1
-        else:
-            h_star = 0
-        o_star = 5 - (f_star + h_star)
-
-        while f_star > 0:
-            star_string = star_string + d_full
-            f_star -= 1
-
-        while h_star > 0:
-            star_string = star_string + d_half
-            h_star -= 1
-
-        while o_star > 0:
-            star_string = star_string + d_outl
-            o_star -= 1
-
-        return star_string
 
 
 class ReviewBook(models.Model):
@@ -430,9 +394,9 @@ class ReviewBook(models.Model):
     def __str__(self):
         return '%s' % (self.title)
 
-    @property
-    def star_display(self):
-        return star_display_func(self)
+#     @property
+    # def star_display(self):
+        # return star_display_func(self)
 
 
 class ReviewMovie(models.Model):
@@ -474,9 +438,9 @@ class ReviewMovie(models.Model):
     def __str__(self):
         return '%s' % (self.title)
 
-    @property
-    def star_display(self):
-        return star_display_func(self)
+#     @property
+    # def star_display(self):
+        # return star_display_func(self)
 
 
 class ReviewBusiness(models.Model):
@@ -560,9 +524,9 @@ class ReviewBusiness(models.Model):
     def __str__(self):
         return '%s' % (self.name)
 
-    @property
-    def star_display(self):
-        return star_display_func(self)
+#     @property
+    # def star_display(self):
+        # return star_display_func(self)
 
 
 class ReviewRestaurant(models.Model):
@@ -655,9 +619,9 @@ class ReviewRestaurant(models.Model):
     def __str__(self):
         return '%s' % (self.name)
 
-    @property
-    def star_display(self):
-        return star_display_func(self)
+#     @property
+    # def star_display(self):
+        # return star_display_func(self)
 
 class Recipe(models.Model):
     name = models.CharField(
