@@ -69,24 +69,24 @@ class UserNode(DjangoObjectType):
 class LocationNode(DjangoObjectType):
     class Meta:
         model = Location
-        filter_fields = {
+        filter_fields = [
                 'domain',
                 'name',
-                }
+                ]
         interfaces = (relay.Node, )
 
 
 class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
-        filter_fields = {
+        filter_fields = [
                 'slug',
                 'name',
                 'is_primary_menu',
                 'is_secondary_menu',
                 'is_footer_menu',
                 'locations__domain',
-                }
+                ]
 
         interfaces = (relay.Node, )
 
@@ -94,11 +94,11 @@ class CategoryNode(DjangoObjectType):
 class TagNode(DjangoObjectType):
     class Meta:
         model = Tag
-        filter_fields = {
+        filter_fields = [
                 'slug',
                 'name',
                 'locations__domain',
-                }
+                ]
         interfaces = (relay.Node, )
 
 
