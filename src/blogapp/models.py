@@ -43,7 +43,7 @@ class Category(models.Model):
             null=True,
             related_name='children',
             help_text="Self-referencing field to nest menus.")
-    slug = models.SlugField('Slug',)  # <-- add autofill in admin
+    slug = models.SlugField('Slug',)
     name = models.CharField(
             'Category Name',
             max_length=100,
