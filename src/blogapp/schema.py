@@ -80,7 +80,6 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = {
-                'id',
                 'slug',
                 'name',
                 'is_primary_menu',
@@ -96,7 +95,6 @@ class TagNode(DjangoObjectType):
     class Meta:
         model = Tag
         filter_fields = {
-                'id',
                 'slug',
                 'name',
                 'locations__domain',
