@@ -80,13 +80,14 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = Category
         filter_fields = {
-                'id': ['exact'],
-                'name': ['exact'],
-                'is_primary_menu': ['exact'],
-                'is_secondary_menu': ['exact'],
-                'is_footer_menu': ['exact'],
-                'locations__domain': ['exact'],
-                'posts': ['isnull'],
+                'id',
+                'slug',
+                'name',
+                'is_primary_menu',
+                'is_secondary_menu',
+                'is_footer_menu',
+                'locations__domain',
+                'posts',
                 }
 
         interfaces = (relay.Node, )
@@ -97,6 +98,7 @@ class TagNode(DjangoObjectType):
         model = Tag
         filter_fields = {
                 'id',
+                'slug',
                 'name',
                 'locations__domain',
                 }
