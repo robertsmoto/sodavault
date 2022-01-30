@@ -87,7 +87,6 @@ class CategoryNode(DjangoObjectType):
                 'is_secondary_menu',
                 'is_footer_menu',
                 'locations__domain',
-                'posts',
                 }
 
         interfaces = (relay.Node, )
