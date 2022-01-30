@@ -107,20 +107,21 @@ class TagNode(DjangoObjectType):
 class PostNode(DjangoObjectType):
     class Meta:
         model = Post
-        filter_fields = [
-                'categories__id',
-                'categories__slug',
-                'tags__id',
-                'tags__slug',
-                'locations__domain',
-                'is_footer_menu',
-                'is_primary_menu',
-                'is_secondary_menu',
-                'featured',
-                'post_type',
-                'slug',
-                'status',
-                ]
+        filter_fields = {
+                'categories__id': ['exact'],
+                'categories__slug': ['exact'],
+                'tags__id': ['exact'],
+                'tags__slug': ['exact'],
+                'locations__domain': ['exact'],
+                'is_footer_menu': ['exact'],
+                'is_primary_menu': ['exact'],
+                'is_secondary_menu': ['exact'],
+                'featured': ['exact'],
+                'post_type': ['exact'],
+                'slug': ['exact'],
+                'status': ['exact'],
+                'excerpt': ['icontains'],
+                }
         interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
