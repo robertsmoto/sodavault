@@ -1,7 +1,8 @@
 from blogapp.models import Category, Tag, Location, Post
 from blogapp.models import Ingredient, Recipe
-from blogapp.models import ReviewBook, ReviewBusiness
-from blogapp.models import ReviewMovie, ReviewRestaurant
+from blogapp.models import LocalBusiness, Book, Movie
+from blogapp.models import OpeningHours, Review
+from blogapp.models import ReviewRestaurant
 from configapp.models import Profile
 from decouple import config
 from django.contrib.auth.models import User
@@ -10,6 +11,18 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import graphene
 import os
+
+
+class OpeningHooursNode(DjangoObjectType):
+    class Meta:
+        model = OpeningHours
+        interfaces = (relay.Node, )
+
+
+class ReviewNode(DjangoObjectType):
+    class Meta:
+        model = Review
+        interfaces = (relay.Node, )
 
 
 class IngredientNode(DjangoObjectType):
@@ -26,19 +39,19 @@ class RecipeNode(DjangoObjectType):
 
 class ReviewBookNode(DjangoObjectType):
     class Meta:
-        model = ReviewBook
+        model = Book
         interfaces = (relay.Node, )
 
 
 class ReviewBusinessNode(DjangoObjectType):
     class Meta:
-        model = ReviewBusiness
+        model = LocalBusiness
         interfaces = (relay.Node, )
 
 
 class ReviewMovieNode(DjangoObjectType):
     class Meta:
-        model = ReviewMovie
+        model = Movie
         interfaces = (relay.Node, )
 
 
