@@ -530,10 +530,21 @@ class Review(models.Model):
     """The review summary, full-lenth review, link to review can all be
     geneated from the linked item"""
 
-    business = models.OneToOneField(LocalBusiness, on_delete=models.CASCADE)
-    movie = models.OneToOneField(Movie, on_delete=models.CASCADE)
-    book = models.OneToOneField(Book, on_delete=models.CASCADE)
-
+    business = models.OneToOneField(
+            LocalBusiness,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    movie = models.OneToOneField(
+            Movie,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    book = models.OneToOneField(
+            Book,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
     rating = models.CharField(
             'Rating',
             max_length=3,
