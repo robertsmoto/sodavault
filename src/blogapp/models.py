@@ -479,6 +479,16 @@ class LocalBusiness(models.Model):
             max_length=100,
             blank=True,
             help_text='Link to menu for restaurants.')
+    restaurant_type = models.CharField(
+            'Restaurant Type',
+            max_length=4,
+            choices=RES_TYPE_CHOICES,
+            blank=True,)
+    restaurant_cuisine = models.CharField(
+            'Cuisine Offered.',
+            max_length=100,
+            blank=True,
+            help_text='Cuisine')
     price_range = models.CharField(
             'Price Range',
             max_length=4,
