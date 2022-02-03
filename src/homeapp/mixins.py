@@ -1,5 +1,6 @@
 from blogapp.models import Post
 from django.views.generic.base import ContextMixin
+import pickle
 
 
 class Navigation(ContextMixin):
@@ -13,5 +14,6 @@ class Navigation(ContextMixin):
             post_type="PAGE",
             is_primary_menu=True
         ).values_list('title', 'post_type', 'slug')
+        pages_q.query = pickle.loads(pickle.dumps(pages_q.query))
         navigation["pages"] = pages_q
         return context
