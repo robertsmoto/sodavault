@@ -133,7 +133,9 @@ class PostNode(DjangoObjectType):
                 'post_type': ['exact'],
                 'slug': ['exact'],
                 'status': ['exact'],
+                'title': ['icontains'],
                 'excerpt': ['icontains'],
+                'body': ['icontains'],
                 }
         interfaces = (relay.Node, )
 
