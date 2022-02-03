@@ -474,7 +474,7 @@ class LocalBusiness(models.Model):
             decimal_places=6,
             blank=True,
             null=True)
-    menu = models.URLField(
+    restaurant_menu = models.URLField(
             'Menu',
             max_length=100,
             blank=True,
@@ -489,6 +489,10 @@ class LocalBusiness(models.Model):
             max_length=100,
             blank=True,
             help_text='Cuisine')
+    restaurant_reservations = models.BooleanField(
+            'Accepts Reservations',
+            default=False,
+            help_text='Does the restaurant accept reservations?')
     price_range = models.CharField(
             'Price Range',
             max_length=4,
