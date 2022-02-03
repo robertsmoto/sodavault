@@ -160,128 +160,133 @@ class Category(models.Model):
         return '%s' % (self.name)
 
 
-class Tag(models.Model):
-    locations = models.ManyToManyField(
-            Location,
-            blank=True,
-            related_name='tags')
-    parent = models.ForeignKey(
-            'self',
-            on_delete=models.CASCADE,
-            blank=True,
-            null=True,
-            related_name='children',
-            help_text="Self-referencing field to nest menus.")
-    slug = models.SlugField('Slug',)  # <-- add autofill in admin
-    name = models.CharField(
-            'Tag Name',
-            max_length=100,
-            blank=True)
-    description = models.CharField(
-            'Tag Description',
-            max_length=100,
-            blank=True)
-    menu_order = models.IntegerField(
-            'Menu Order',
-            default=0,
-            help_text="Use to order menu")
-    is_primary_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in primary menu.")
-    is_secondary_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in secondary menu.")
-    is_footer_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in footer menu.")
-    kwd_list = models.CharField(
-            'Tag Keywords',
-            max_length=100,
-            blank=True,
-            help_text="Comma-separated values.")
-    image = models.ImageField(
-            upload_to=utils_images.new_filename_blog_tag,
-            null=True,
-            blank=True,
-            help_text="Recommended size 500px x 500px")
-    image_191 = models.ImageField(
-            upload_to=utils_images.new_filename_blog_tag,
-            null=True,
-            blank=True,
-            help_text="1.9:1 ratio recommended size 1200px x 630px")
-    image_21 = models.ImageField(
-            upload_to=utils_images.new_filename_blog_tag,
-            null=True,
-            blank=True,
-            help_text="Recommended size 1200px x 600px")
-
-    """The following are automatically generated using the
-    model's save method."""
-
-    image_lg_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 500px x 500px")
-    image_md_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 250px x 250px")
-    image_sm_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 200px x 200px")
-
-    timestamp_created = models.DateTimeField(auto_now_add=True)
-    timestamp_modified = models.DateTimeField(auto_now=True)
-
-    def __init__(self, *args, **kwargs):
-        super(Tag, self).__init__(*args, **kwargs)
-        self._orig_image = self.image
-
-    def save(self, *args, **kwargs):
-        """Creates new image sizes. Save new images directly to media server
-        and save the url in a char field."""
-
-        img_index = {}
-
-        if self._orig_image != self.image and self.image:
-            svlog_info("Creating blog tag image variations.")
-
-            img_index['image_lg_square'] = [
-                    utils_images.BannerLgSqWebp,
-                    self.image,
-                    (500, 500),
-                    "blogapp/tag"]
-            img_index['image_md_square'] = [
-                    utils_images.BannerMdSqWebp,
-                    self.image,
-                    (250, 250),
-                    "blogapp/tag"]
-            img_index['image_sm_square'] = [
-                    utils_images.BannerSmSqWebp,
-                    self.image,
-                    (200, 200),
-                    "blogapp/tag"]
-
-        for k, v in img_index.items():
-
-            file_path = utils_images.process_images(k=k, v=v)
-
-            if k == "image_lg_square":
-                self.image_lg_square = file_path
-            if k == "image_md_square":
-                self.image_md_square = file_path
-            if k == "image_sm_square":
-                self.image_sm_square = file_path
-
-        super(Tag, self).save(*args, **kwargs)
-
+class Tag(Category):
     class Meta:
-        verbose_name_plural = "06. Tags"
-        ordering = ['menu_order', 'name']
+        proxy = True
 
-    def __str__(self):
-        return '%s' % (self.name)
+# make tag a proxy model of Category
+# class Tag(models.Model):
+    # locations = models.ManyToManyField(
+            # Location,
+            # blank=True,
+            # related_name='tags')
+    # parent = models.ForeignKey(
+            # 'self',
+            # on_delete=models.CASCADE,
+            # blank=True,
+            # null=True,
+            # related_name='children',
+            # help_text="Self-referencing field to nest menus.")
+    # slug = models.SlugField('Slug',)  # <-- add autofill in admin
+    # name = models.CharField(
+            # 'Tag Name',
+            # max_length=100,
+            # blank=True)
+    # description = models.CharField(
+            # 'Tag Description',
+            # max_length=100,
+            # blank=True)
+    # menu_order = models.IntegerField(
+            # 'Menu Order',
+            # default=0,
+            # help_text="Use to order menu")
+    # is_primary_menu = models.BooleanField(
+            # default=False,
+            # help_text="Use if in primary menu.")
+    # is_secondary_menu = models.BooleanField(
+            # default=False,
+            # help_text="Use if in secondary menu.")
+    # is_footer_menu = models.BooleanField(
+            # default=False,
+            # help_text="Use if in footer menu.")
+    # kwd_list = models.CharField(
+            # 'Tag Keywords',
+            # max_length=100,
+            # blank=True,
+            # help_text="Comma-separated values.")
+    # image = models.ImageField(
+            # upload_to=utils_images.new_filename_blog_tag,
+            # null=True,
+            # blank=True,
+            # help_text="Recommended size 500px x 500px")
+    # image_191 = models.ImageField(
+            # upload_to=utils_images.new_filename_blog_tag,
+            # null=True,
+            # blank=True,
+            # help_text="1.9:1 ratio recommended size 1200px x 630px")
+    # image_21 = models.ImageField(
+            # upload_to=utils_images.new_filename_blog_tag,
+            # null=True,
+            # blank=True,
+            # help_text="Recommended size 1200px x 600px")
+
+    # """The following are automatically generated using the
+    # model's save method."""
+
+    # image_lg_square = models.CharField(
+            # max_length=200,
+            # blank=True,
+            # help_text="Automatic size: 500px x 500px")
+    # image_md_square = models.CharField(
+            # max_length=200,
+            # blank=True,
+            # help_text="Automatic size: 250px x 250px")
+    # image_sm_square = models.CharField(
+            # max_length=200,
+            # blank=True,
+            # help_text="Automatic size: 200px x 200px")
+
+    # timestamp_created = models.DateTimeField(auto_now_add=True)
+    # timestamp_modified = models.DateTimeField(auto_now=True)
+
+    # def __init__(self, *args, **kwargs):
+        # super(Tag, self).__init__(*args, **kwargs)
+        # self._orig_image = self.image
+
+    # def save(self, *args, **kwargs):
+        # """Creates new image sizes. Save new images directly to media server
+        # and save the url in a char field."""
+
+        # img_index = {}
+
+        # if self._orig_image != self.image and self.image:
+            # svlog_info("Creating blog tag image variations.")
+
+            # img_index['image_lg_square'] = [
+                    # utils_images.BannerLgSqWebp,
+                    # self.image,
+                    # (500, 500),
+                    # "blogapp/tag"]
+            # img_index['image_md_square'] = [
+                    # utils_images.BannerMdSqWebp,
+                    # self.image,
+                    # (250, 250),
+                    # "blogapp/tag"]
+            # img_index['image_sm_square'] = [
+                    # utils_images.BannerSmSqWebp,
+                    # self.image,
+                    # (200, 200),
+                    # "blogapp/tag"]
+
+        # for k, v in img_index.items():
+
+            # file_path = utils_images.process_images(k=k, v=v)
+
+            # if k == "image_lg_square":
+                # self.image_lg_square = file_path
+            # if k == "image_md_square":
+                # self.image_md_square = file_path
+            # if k == "image_sm_square":
+                # self.image_sm_square = file_path
+
+        # super(Tag, self).save(*args, **kwargs)
+
+    # class Meta:
+        # verbose_name_plural = "06. Tags"
+        # ordering = ['menu_order', 'name']
+
+    # def __str__(self):
+        # return '%s' % (self.name)
 
 
 NOREC = (0, 'Not Recommended')
@@ -331,9 +336,18 @@ RES_TYPE_CHOICES = [
     ('FINE', 'Fine Dining'),
     ('FAST', 'Fast Service'),
 ]
+DOW_CHOICES = [
+    ('MON', 'Monday'),
+    ('TUE', 'Tuesday'),
+    ('WED', 'Wednesday'),
+    ('THU', 'Thursday'),
+    ('FRI', 'Friday'),
+    ('SAT', 'Saturday'),
+    ('SUN', 'Sunday'),
+]
 
 
-class ReviewBook(models.Model):
+class Book(models.Model):
     title = models.CharField(
             'Book title',
             max_length=200,
@@ -359,11 +373,6 @@ class ReviewBook(models.Model):
             max_length=100,
             blank=True,
             help_text='Website of item being reviewed.')
-    url_review = models.URLField(
-            'Link to full review.',
-            max_length=100,
-            blank=True,
-            help_text='Link to page if there is a full review.')
     language = models.CharField(
             'Language',
             max_length=5,
@@ -375,18 +384,6 @@ class ReviewBook(models.Model):
             choices=COST_CHOICES,
             blank=True,
             help_text='How expensive?')
-    rating = models.CharField(
-            'Rating',
-            max_length=3,
-            choices=RATING_CHOICES,
-            blank=True,
-            help_text='5 stars is best.')
-    endorsement = models.CharField(
-            'Endorsement',
-            max_length=5,
-            choices=ENDORSEMENT_CHOICES,
-            blank=True,
-            help_text='Select Recommendation')
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
@@ -394,12 +391,8 @@ class ReviewBook(models.Model):
     def __str__(self):
         return '%s' % (self.title)
 
-#     @property
-    # def star_display(self):
-        # return star_display_func(self)
 
-
-class ReviewMovie(models.Model):
+class Movie(models.Model):
     title = models.CharField(
             'Movie title',
             max_length=200,
@@ -409,28 +402,11 @@ class ReviewMovie(models.Model):
             'Movie website.',
             max_length=100,
             blank=True,)
-    url_review = models.URLField(
-            'Website full review.',
-            max_length=100,
-            blank=True,
-            help_text='Link to page if there is a full review.')
     language = models.CharField(
             'Language',
             max_length=5,
             choices=LANGUAGE_CHOICES,
             default='en-US')
-    rating = models.CharField(
-            'Rating',
-            max_length=3,
-            choices=RATING_CHOICES,
-            blank=True,
-            help_text='5 stars is best.')
-    endorsement = models.CharField(
-            'Endorsement',
-            max_length=5,
-            choices=ENDORSEMENT_CHOICES,
-            blank=True,
-            help_text='Select Recommendation')
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
@@ -438,22 +414,21 @@ class ReviewMovie(models.Model):
     def __str__(self):
         return '%s' % (self.title)
 
-#     @property
-    # def star_display(self):
-        # return star_display_func(self)
 
-
-class ReviewBusiness(models.Model):
+class LocalBusiness(models.Model):
+    bus_type = models.CharField(
+            'Business Type',
+            max_length=200,
+            blank=True,
+            help_text="Be specific eg. Restaurant, see schema.org 'types'")
     name = models.CharField(
             'Business name',
             max_length=200,
-            blank=True,
-            null=True)
+            blank=True)
     address_street = models.CharField(
             'Street Address',
             max_length=100,
-            blank=True,
-            null=True)
+            blank=True)
     address_city = models.CharField(
             'City',
             max_length=100,
@@ -499,12 +474,66 @@ class ReviewBusiness(models.Model):
             decimal_places=6,
             blank=True,
             null=True)
-    cost = models.CharField(
-            'Cost',
+    menu = models.URLField(
+            'Menu',
+            max_length=100,
+            blank=True,
+            help_text='Link to menu for restaurants.')
+    price_range = models.CharField(
+            'Price Range',
             max_length=4,
             choices=COST_CHOICES,
             blank=True,
             help_text='How expensive?')
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.name)
+
+
+class OpeningHours(models.Model):
+    business = models.ForeignKey(LocalBusiness, on_delete=models.CASCADE)
+    day_of_week = models.CharField(
+            'Day of Week',
+            max_length=3,
+            choices=DOW_CHOICES,
+            blank=True)
+    opens = models.TimeField(
+            'Opening Time',
+            blank=True,
+            null=True)
+    closes = models.TimeField(
+            'Closing Time',
+            blank=True,
+            null=True)
+    valid_from = models.DateField(
+            'Valid from',
+            blank=True,
+            null=True,
+            help_text="Use for special hours eg. holiday hours")
+    valid_to = models.DateField(
+            'Valid to',
+            blank=True,
+            null=True,
+            help_text="Use for special hours eg. holiday hours")
+
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return '%s' % (self.day_of_week)
+
+
+class Review(models.Model):
+    """The review summary, full-lenth review, link to review can all be
+    geneated from the linked item"""
+
+    business = models.OneToOneField(LocalBusiness, on_delete=models.CASCADE)
+    movie = models.OneToOneField(Movie, on_delete=models.CASCADE)
+    book = models.OneToOneField(Book, on_delete=models.CASCADE)
+
     rating = models.CharField(
             'Rating',
             max_length=3,
@@ -520,13 +549,6 @@ class ReviewBusiness(models.Model):
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
     timestamp_modified = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return '%s' % (self.name)
-
-#     @property
-    # def star_display(self):
-        # return star_display_func(self)
 
 
 class ReviewRestaurant(models.Model):
@@ -784,48 +806,47 @@ class Post(models.Model):
         ('DRAFT', 'Draft'),
         ('TRASH', 'Trash'),
     ]
-    locations = models.ManyToManyField(
-            Location,
-            blank=True,
-            related_name='posts')
+    locations = models.ManyToManyField(Location, blank=True)
     categories = models.ManyToManyField(
             Category,
-            blank=True,
-            related_name='posts')
+            related_name="categories",
+            blank=True)
     tags = models.ManyToManyField(
             Tag,
-            blank=True,
-            related_name='posts')
+            related_name="tags",
+            blank=True)
     author = models.ForeignKey(
             User,
             on_delete=models.SET_NULL,
             blank=True,
-            null=True,
-            related_name='posts')
+            null=True)
     parent = models.ForeignKey(
             'self',
             on_delete=models.CASCADE,
             blank=True,
             null=True,
-            related_name='children',
             help_text="Self-referencing field to nest menus.")
-    review_business = models.OneToOneField(
-            ReviewBusiness,
+    local_business = models.OneToOneField(
+            LocalBusiness,
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
+
+    #  #### delete review_restaurant replaced by local business
     review_restaurant = models.OneToOneField(
             ReviewRestaurant,
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
-    review_book = models.OneToOneField(
-            ReviewBook,
+    #  #### delete review_restaurant replaced by local business
+
+    book = models.OneToOneField(
+            Book,
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
-    review_movie = models.OneToOneField(
-            ReviewMovie,
+    movie = models.OneToOneField(
+            Movie,
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
@@ -858,7 +879,6 @@ class Post(models.Model):
             'Featured Post',
             default=False,
             help_text='Moves post to front page.')
-
     menu_order = models.IntegerField(
             'Menu Order',
             default=0,

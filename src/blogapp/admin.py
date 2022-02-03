@@ -2,7 +2,17 @@ from django.contrib import admin
 from .models import Location, Category, Tag
 from .models import Article, Doc, Page
 from .models import Recipe, Ingredient
-from .models import ReviewBusiness, ReviewRestaurant, ReviewBook, ReviewMovie
+from .models import LocalBusiness, Book, Movie, Review, OpeningHours
+from .models import ReviewRestaurant
+
+
+class ReviewInline(admin.TabularInline):
+    fields = ['rating', 'endorsement']
+    model = Review
+
+
+class HoursInline(admin.TabularInline):
+    model = OpeningHours
 
 
 class IngredientInline(admin.TabularInline):
@@ -13,8 +23,9 @@ class RecipeInline(admin.StackedInline):
     model = Recipe
 
 
-@admin.register(ReviewBusiness)
-class ReviewBusinessAdmin(admin.ModelAdmin):
+@admin.register(LocalBusiness)
+class LocalBusinessAdmin(admin.ModelAdmin):
+    inlines = [HoursInline, ReviewInline]
     pass
 
 
@@ -23,13 +34,15 @@ class ReviewRestaurantAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(ReviewBook)
+@admin.register(Book)
 class ReviewBookAdmin(admin.ModelAdmin):
+    inlines = [ReviewInline]
     pass
 
 
-@admin.register(ReviewMovie)
+@admin.register(Movie)
 class ReviewMovieAdmin(admin.ModelAdmin):
+    inlines = [ReviewInline]
     pass
 
 
@@ -82,7 +95,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
         "recipe",
-        ("review_business", "review_restaurant", "review_movie", "review_book")
+        ("local_business", "review_restaurant", "movie", "book"),
     ]
 
     list_display = ["title", "author", "date_published", "status"]
@@ -147,6 +160,3 @@ class PageAdmin(admin.ModelAdmin):
 
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ["locations", "categories", "tags"]
-
-
-
