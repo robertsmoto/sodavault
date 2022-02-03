@@ -1,7 +1,6 @@
 from django.views.generic import TemplateView
-from homeapp.mixins import Navigation # , MetaData
+from homeapp.mixins import Navigation
 from blogapp.models import Post
-import pickle
 
 
 class HomeView(Navigation, TemplateView):
@@ -12,9 +11,8 @@ class HomeView(Navigation, TemplateView):
         context["context"] = context
         slug = 'home'
         try:
-            post_q = Post.objects.get(slug=slug)        
+            post_q = Post.objects.get(slug=slug)
         except Post.DoesNotExist:
             post_q = None
         context["post"] = post_q
         return context
-

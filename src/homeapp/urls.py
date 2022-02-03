@@ -19,12 +19,12 @@ from .views import HomeView
 urlpatterns = [
     # using the blogapp to serve the homepage
     path(
-        '', 
+        '',
         HomeView.as_view(
             extra_context={
                 'doc_slug': 'home',
             }
-        ), 
+        ),
         name='home',
        )
 ]
