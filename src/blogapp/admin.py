@@ -3,7 +3,6 @@ from .models import Location, Category, Tag
 from .models import Article, Doc, Page
 from .models import Recipe, Ingredient
 from .models import LocalBusiness, Book, Movie, Review, OpeningHours
-from .models import ReviewRestaurant
 
 
 class ReviewInline(admin.TabularInline):
@@ -26,11 +25,6 @@ class RecipeInline(admin.StackedInline):
 @admin.register(LocalBusiness)
 class LocalBusinessAdmin(admin.ModelAdmin):
     inlines = [HoursInline, ReviewInline]
-    pass
-
-
-@admin.register(ReviewRestaurant)
-class ReviewRestaurantAdmin(admin.ModelAdmin):
     pass
 
 
@@ -95,7 +89,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
         "recipe",
-        ("local_business", "review_restaurant", "movie", "book"),
+        ("local_business", "movie", "book"),
     ]
 
     list_display = ["title", "author", "date_published", "status"]

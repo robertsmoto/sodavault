@@ -6,6 +6,63 @@ from sodavault.utils_logging import svlog_info
 from utilities import utils_images
 import datetime
 
+NOREC = (0, 'Not Recommended')
+RECOM = (1, 'Recommended')
+ENDORSEMENT_CHOICES = [
+    ('NOREC', 'Not Recommended'),
+    ('RECOM', 'Recommended'),
+]
+COUNTRY_CHOICES = [
+    ('AT', 'Austria'),
+    ('CZ', 'Czech Republic'),
+    ('DE', 'Germany'),
+    ('FR', 'France'),
+    ('IT', 'Italy'),
+    ('SK', 'Slovakia'),
+    ('US', 'United States of America'),
+]
+LANGUAGE_CHOICES = [
+    ('en-GB', 'English United Kingdom'),
+    ('en-IE', 'English Ireland'),
+    ('en-US', 'English United States'),
+    ('cs-CZ', 'Czech Czech Republic'),
+    ('de-DE', 'German Germany'),
+    ('fr-FR', 'French France'),
+    ('it-IT', 'Italian Italy'),
+    ('sk-SK', 'Slovak Slovakia')
+]
+RATING_CHOICES = [
+    ('1_0', '1.0 worst'),
+    ('1_5', '1.5'),
+    ('2_0', '2.0'),
+    ('2_5', '2.5'),
+    ('3_0', '3.0 average'),
+    ('3_5', '3.5'),
+    ('4_0', '4.0'),
+    ('4_5', '4.5'),
+    ('5_0', '5.0 best')
+]
+COST_CHOICES = [
+    ('FREE', 'Free'),
+    ('CHEA', 'Cheap'),
+    ('MODE', 'Moderate'),
+    ('EXPE', 'Expensive'),
+]
+RES_TYPE_CHOICES = [
+    ('CASU', 'Casual Dining'),
+    ('FINE', 'Fine Dining'),
+    ('FAST', 'Fast Service'),
+]
+DOW_CHOICES = [
+    ('MON', 'Monday'),
+    ('TUE', 'Tuesday'),
+    ('WED', 'Wednesday'),
+    ('THU', 'Thursday'),
+    ('FRI', 'Friday'),
+    ('SAT', 'Saturday'),
+    ('SUN', 'Sunday'),
+]
+
 
 class Location(models.Model):
     domain = models.CharField(
@@ -163,188 +220,6 @@ class Category(models.Model):
 class Tag(Category):
     class Meta:
         proxy = True
-
-# make tag a proxy model of Category
-# class Tag(models.Model):
-    # locations = models.ManyToManyField(
-            # Location,
-            # blank=True,
-            # related_name='tags')
-    # parent = models.ForeignKey(
-            # 'self',
-            # on_delete=models.CASCADE,
-            # blank=True,
-            # null=True,
-            # related_name='children',
-            # help_text="Self-referencing field to nest menus.")
-    # slug = models.SlugField('Slug',)  # <-- add autofill in admin
-    # name = models.CharField(
-            # 'Tag Name',
-            # max_length=100,
-            # blank=True)
-    # description = models.CharField(
-            # 'Tag Description',
-            # max_length=100,
-            # blank=True)
-    # menu_order = models.IntegerField(
-            # 'Menu Order',
-            # default=0,
-            # help_text="Use to order menu")
-    # is_primary_menu = models.BooleanField(
-            # default=False,
-            # help_text="Use if in primary menu.")
-    # is_secondary_menu = models.BooleanField(
-            # default=False,
-            # help_text="Use if in secondary menu.")
-    # is_footer_menu = models.BooleanField(
-            # default=False,
-            # help_text="Use if in footer menu.")
-    # kwd_list = models.CharField(
-            # 'Tag Keywords',
-            # max_length=100,
-            # blank=True,
-            # help_text="Comma-separated values.")
-    # image = models.ImageField(
-            # upload_to=utils_images.new_filename_blog_tag,
-            # null=True,
-            # blank=True,
-            # help_text="Recommended size 500px x 500px")
-    # image_191 = models.ImageField(
-            # upload_to=utils_images.new_filename_blog_tag,
-            # null=True,
-            # blank=True,
-            # help_text="1.9:1 ratio recommended size 1200px x 630px")
-    # image_21 = models.ImageField(
-            # upload_to=utils_images.new_filename_blog_tag,
-            # null=True,
-            # blank=True,
-            # help_text="Recommended size 1200px x 600px")
-
-    # """The following are automatically generated using the
-    # model's save method."""
-
-    # image_lg_square = models.CharField(
-            # max_length=200,
-            # blank=True,
-            # help_text="Automatic size: 500px x 500px")
-    # image_md_square = models.CharField(
-            # max_length=200,
-            # blank=True,
-            # help_text="Automatic size: 250px x 250px")
-    # image_sm_square = models.CharField(
-            # max_length=200,
-            # blank=True,
-            # help_text="Automatic size: 200px x 200px")
-
-    # timestamp_created = models.DateTimeField(auto_now_add=True)
-    # timestamp_modified = models.DateTimeField(auto_now=True)
-
-    # def __init__(self, *args, **kwargs):
-        # super(Tag, self).__init__(*args, **kwargs)
-        # self._orig_image = self.image
-
-    # def save(self, *args, **kwargs):
-        # """Creates new image sizes. Save new images directly to media server
-        # and save the url in a char field."""
-
-        # img_index = {}
-
-        # if self._orig_image != self.image and self.image:
-            # svlog_info("Creating blog tag image variations.")
-
-            # img_index['image_lg_square'] = [
-                    # utils_images.BannerLgSqWebp,
-                    # self.image,
-                    # (500, 500),
-                    # "blogapp/tag"]
-            # img_index['image_md_square'] = [
-                    # utils_images.BannerMdSqWebp,
-                    # self.image,
-                    # (250, 250),
-                    # "blogapp/tag"]
-            # img_index['image_sm_square'] = [
-                    # utils_images.BannerSmSqWebp,
-                    # self.image,
-                    # (200, 200),
-                    # "blogapp/tag"]
-
-        # for k, v in img_index.items():
-
-            # file_path = utils_images.process_images(k=k, v=v)
-
-            # if k == "image_lg_square":
-                # self.image_lg_square = file_path
-            # if k == "image_md_square":
-                # self.image_md_square = file_path
-            # if k == "image_sm_square":
-                # self.image_sm_square = file_path
-
-        # super(Tag, self).save(*args, **kwargs)
-
-    # class Meta:
-        # verbose_name_plural = "06. Tags"
-        # ordering = ['menu_order', 'name']
-
-    # def __str__(self):
-        # return '%s' % (self.name)
-
-
-NOREC = (0, 'Not Recommended')
-RECOM = (1, 'Recommended')
-ENDORSEMENT_CHOICES = [
-    ('NOREC', 'Not Recommended'),
-    ('RECOM', 'Recommended'),
-]
-COUNTRY_CHOICES = [
-    ('AT', 'Austria'),
-    ('CZ', 'Czech Republic'),
-    ('DE', 'Germany'),
-    ('FR', 'France'),
-    ('IT', 'Italy'),
-    ('SK', 'Slovakia'),
-    ('US', 'United States of America'),
-]
-LANGUAGE_CHOICES = [
-    ('en-GB', 'English United Kingdom'),
-    ('en-IE', 'English Ireland'),
-    ('en-US', 'English United States'),
-    ('cs-CZ', 'Czech Czech Republic'),
-    ('de-DE', 'German Germany'),
-    ('fr-FR', 'French France'),
-    ('it-IT', 'Italian Italy'),
-    ('sk-SK', 'Slovak Slovakia')
-]
-RATING_CHOICES = [
-    ('1_0', '1.0 worst'),
-    ('1_5', '1.5'),
-    ('2_0', '2.0'),
-    ('2_5', '2.5'),
-    ('3_0', '3.0 average'),
-    ('3_5', '3.5'),
-    ('4_0', '4.0'),
-    ('4_5', '4.5'),
-    ('5_0', '5.0 best')
-]
-COST_CHOICES = [
-    ('FREE', 'Free'),
-    ('CHEA', 'Cheap'),
-    ('MODE', 'Moderate'),
-    ('EXPE', 'Expensive'),
-]
-RES_TYPE_CHOICES = [
-    ('CASU', 'Casual Dining'),
-    ('FINE', 'Fine Dining'),
-    ('FAST', 'Fast Service'),
-]
-DOW_CHOICES = [
-    ('MON', 'Monday'),
-    ('TUE', 'Tuesday'),
-    ('WED', 'Wednesday'),
-    ('THU', 'Thursday'),
-    ('FRI', 'Friday'),
-    ('SAT', 'Saturday'),
-    ('SUN', 'Sunday'),
-]
 
 
 class Book(models.Model):
@@ -576,95 +451,95 @@ class Review(models.Model):
     timestamp_modified = models.DateTimeField(auto_now=True)
 
 
-class ReviewRestaurant(models.Model):
-    name = models.CharField(
-            'Restaurant name',
-            max_length=50,
-            blank=True,)
-    restaurant_type = models.CharField(
-            'Restaurant Type',
-            max_length=4,
-            choices=RES_TYPE_CHOICES,
-            blank=True,)
-    restaurant_cuisine = models.CharField(
-            'Cuisine Offered.',
-            max_length=100,
-            blank=True,
-            help_text='Cuisine')
-    address_street = models.CharField(
-            'Street Address',
-            max_length=100,
-            blank=True,
-            null=True)
-    address_city = models.CharField(
-            'City',
-            max_length=100,
-            blank=True,)
-    address_state = models.CharField(
-            'State',
-            max_length=100,
-            blank=True,
-            help_text='state or province')
-    address_zipcode = models.CharField(
-            'Zip Code',
-            max_length=20,
-            blank=True,)
-    address_country = models.CharField(
-            'Country',
-            choices=COUNTRY_CHOICES,
-            max_length=2,
-            default='CZ',)
-    phone = models.CharField(
-            'Phone Number',
-            max_length=20,
-            blank=True,
-            help_text='Including country code, only for businesses.')
-    website = models.URLField(
-            'Business website.',
-            max_length=100,
-            blank=True,
-            help_text='Use google maps link.')
-    map_link = models.URLField(
-            'Map link.',
-            max_length=100,
-            blank=True,
-            help_text='Use google maps link.')
-    latitude = models.DecimalField(
-            'Latitude',
-            max_digits=8,
-            decimal_places=6,
-            blank=True,
-            null=True)
-    longitude = models.DecimalField(
-            'Longitude',
-            max_digits=8,
-            decimal_places=6,
-            blank=True,
-            null=True)
-    cost = models.CharField(
-            'Cost',
-            max_length=4,
-            choices=COST_CHOICES,
-            blank=True,
-            help_text='How expensive?')
-    rating = models.CharField(
-            'Rating',
-            max_length=3,
-            choices=RATING_CHOICES,
-            blank=True,
-            help_text='5 stars is best.')
-    endorsement = models.CharField(
-            'Endorsement',
-            max_length=5,
-            choices=ENDORSEMENT_CHOICES,
-            blank=True,
-            help_text='Select Recommendation')
+# class ReviewRestaurant(models.Model):
+    # name = models.CharField(
+            # 'Restaurant name',
+            # max_length=50,
+            # blank=True,)
+    # restaurant_type = models.CharField(
+            # 'Restaurant Type',
+            # max_length=4,
+            # choices=RES_TYPE_CHOICES,
+            # blank=True,)
+    # restaurant_cuisine = models.CharField(
+            # 'Cuisine Offered.',
+            # max_length=100,
+            # blank=True,
+            # help_text='Cuisine')
+    # address_street = models.CharField(
+            # 'Street Address',
+            # max_length=100,
+            # blank=True,
+            # null=True)
+    # address_city = models.CharField(
+            # 'City',
+            # max_length=100,
+            # blank=True,)
+    # address_state = models.CharField(
+            # 'State',
+            # max_length=100,
+            # blank=True,
+            # help_text='state or province')
+    # address_zipcode = models.CharField(
+            # 'Zip Code',
+            # max_length=20,
+            # blank=True,)
+    # address_country = models.CharField(
+            # 'Country',
+            # choices=COUNTRY_CHOICES,
+            # max_length=2,
+            # default='CZ',)
+    # phone = models.CharField(
+            # 'Phone Number',
+            # max_length=20,
+            # blank=True,
+            # help_text='Including country code, only for businesses.')
+    # website = models.URLField(
+            # 'Business website.',
+            # max_length=100,
+            # blank=True,
+            # help_text='Use google maps link.')
+    # map_link = models.URLField(
+            # 'Map link.',
+            # max_length=100,
+            # blank=True,
+            # help_text='Use google maps link.')
+    # latitude = models.DecimalField(
+            # 'Latitude',
+            # max_digits=8,
+            # decimal_places=6,
+            # blank=True,
+            # null=True)
+    # longitude = models.DecimalField(
+            # 'Longitude',
+            # max_digits=8,
+            # decimal_places=6,
+            # blank=True,
+            # null=True)
+    # cost = models.CharField(
+            # 'Cost',
+            # max_length=4,
+            # choices=COST_CHOICES,
+            # blank=True,
+            # help_text='How expensive?')
+    # rating = models.CharField(
+            # 'Rating',
+            # max_length=3,
+            # choices=RATING_CHOICES,
+            # blank=True,
+            # help_text='5 stars is best.')
+    # endorsement = models.CharField(
+            # 'Endorsement',
+            # max_length=5,
+            # choices=ENDORSEMENT_CHOICES,
+            # blank=True,
+            # help_text='Select Recommendation')
 
-    timestamp_created = models.DateTimeField(auto_now_add=True)
-    timestamp_modified = models.DateTimeField(auto_now=True)
+    # timestamp_created = models.DateTimeField(auto_now_add=True)
+    # timestamp_modified = models.DateTimeField(auto_now=True)
 
-    def __str__(self):
-        return '%s' % (self.name)
+    # def __str__(self):
+#         return '%s' % (self.name)
 
 
 class Recipe(models.Model):
@@ -856,15 +731,6 @@ class Post(models.Model):
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
-
-    #  #### delete review_restaurant replaced by local business
-    review_restaurant = models.OneToOneField(
-            ReviewRestaurant,
-            on_delete=models.SET_NULL,
-            blank=True,
-            null=True,)
-    #  #### delete review_restaurant replaced by local business
-
     book = models.OneToOneField(
             Book,
             on_delete=models.SET_NULL,
