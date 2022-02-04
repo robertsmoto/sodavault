@@ -2,7 +2,6 @@ from blogapp.models import Category, Tag, Location, Post
 from blogapp.models import Ingredient, Recipe
 from blogapp.models import LocalBusiness, Book, Movie
 from blogapp.models import OpeningHours, Review
-from blogapp.models import ReviewRestaurant
 from configapp.models import Profile
 from decouple import config
 from django.contrib.auth.models import User
@@ -52,12 +51,6 @@ class ReviewBusinessNode(DjangoObjectType):
 class ReviewMovieNode(DjangoObjectType):
     class Meta:
         model = Movie
-        interfaces = (relay.Node, )
-
-
-class ReviewRestaurantNode(DjangoObjectType):
-    class Meta:
-        model = ReviewRestaurant
         interfaces = (relay.Node, )
 
 
