@@ -727,60 +727,60 @@ class Recipe(models.Model):
             max_length=50,
             blank=True,
             help_text='10 gram slice')
-    nutr_calories = models.IntegerField(
+    nutr_calories = models.CharField(
             'Number of calories per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_carbs = models.IntegerField(
+    nutr_carbs = models.CharField(
             'Grams of carbohydrates per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_choles = models.IntegerField(
+    nutr_choles = models.CharField(
             'Milligrams of cholesterol per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_fat = models.IntegerField(
+    nutr_fat = models.CharField(
             'Grams of fat per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_fiber = models.IntegerField(
+    nutr_fiber = models.CharField(
             'Grams of fiber per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_protein = models.IntegerField(
+    nutr_protein = models.CharField(
             'Grams of protein per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_sat_fat = models.IntegerField(
+    nutr_sat_fat = models.CharField(
             'Grams of staurated fat per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_sodium = models.IntegerField(
+    nutr_sodium = models.CharField(
             'Milligrams of sodium per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_sugar = models.IntegerField(
+    nutr_sugar = models.CharField(
             'Grams of sugar per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_trans_fat = models.IntegerField(
+    nutr_trans_fat = models.CharField(
             'Grams of trans fat per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
-    nutr_unsat_fat = models.IntegerField(
+    nutr_unsat_fat = models.CharField(
             'Grams of unstaurated fat per serving.',
+            max_length=10,
             blank=True,
-            null=True,
             help_text='100')
 
     timestamp_created = models.DateTimeField(auto_now_add=True)
