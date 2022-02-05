@@ -727,11 +727,6 @@ class Post(models.Model):
             null=True,
             blank=True,
             help_text="1.9:1 ratio recommended size 1200px x 630px")
-#     image_21 = models.ImageField(
-            # upload_to=utils_images.new_filename_blog_tag,
-            # null=True,
-            # blank=True,
-            # help_text="Recommended size 1200px x 600px")
     image_title = models.CharField(
             'Image Title',
             max_length=200,

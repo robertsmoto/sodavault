@@ -135,6 +135,9 @@ class PostNode(DjangoObjectType):
     def resolve_image_featured(self, info):
         return self.image_featured.url
 
+    def resolve_image_191(self, info):
+        return self.image_191.url
+
     def resolve_featured_lg(self, info):
         if self.featured_lg:
             return os.path.join(config('ENV_MEDIA_URL'), self.featured_lg)
