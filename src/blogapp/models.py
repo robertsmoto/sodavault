@@ -82,7 +82,7 @@ class Location(models.Model):
     timestamp_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
-        verbose_name_plural = "04. Locations"
+        verbose_name_plural = "01. Locations"
 
     def __str__(self):
         return '%s' % (self.name)
@@ -220,6 +220,8 @@ class Category(models.Model):
 class Tag(Category):
     class Meta:
         proxy = True
+        verbose_name_plural = "06. Tags"
+        ordering = ['menu_order', 'name']
 
 
 class Book(models.Model):
@@ -451,97 +453,6 @@ class Review(models.Model):
     timestamp_modified = models.DateTimeField(auto_now=True)
 
 
-# class ReviewRestaurant(models.Model):
-    # name = models.CharField(
-            # 'Restaurant name',
-            # max_length=50,
-            # blank=True,)
-    # restaurant_type = models.CharField(
-            # 'Restaurant Type',
-            # max_length=4,
-            # choices=RES_TYPE_CHOICES,
-            # blank=True,)
-    # restaurant_cuisine = models.CharField(
-            # 'Cuisine Offered.',
-            # max_length=100,
-            # blank=True,
-            # help_text='Cuisine')
-    # address_street = models.CharField(
-            # 'Street Address',
-            # max_length=100,
-            # blank=True,
-            # null=True)
-    # address_city = models.CharField(
-            # 'City',
-            # max_length=100,
-            # blank=True,)
-    # address_state = models.CharField(
-            # 'State',
-            # max_length=100,
-            # blank=True,
-            # help_text='state or province')
-    # address_zipcode = models.CharField(
-            # 'Zip Code',
-            # max_length=20,
-            # blank=True,)
-    # address_country = models.CharField(
-            # 'Country',
-            # choices=COUNTRY_CHOICES,
-            # max_length=2,
-            # default='CZ',)
-    # phone = models.CharField(
-            # 'Phone Number',
-            # max_length=20,
-            # blank=True,
-            # help_text='Including country code, only for businesses.')
-    # website = models.URLField(
-            # 'Business website.',
-            # max_length=100,
-            # blank=True,
-            # help_text='Use google maps link.')
-    # map_link = models.URLField(
-            # 'Map link.',
-            # max_length=100,
-            # blank=True,
-            # help_text='Use google maps link.')
-    # latitude = models.DecimalField(
-            # 'Latitude',
-            # max_digits=8,
-            # decimal_places=6,
-            # blank=True,
-            # null=True)
-    # longitude = models.DecimalField(
-            # 'Longitude',
-            # max_digits=8,
-            # decimal_places=6,
-            # blank=True,
-            # null=True)
-    # cost = models.CharField(
-            # 'Cost',
-            # max_length=4,
-            # choices=COST_CHOICES,
-            # blank=True,
-            # help_text='How expensive?')
-    # rating = models.CharField(
-            # 'Rating',
-            # max_length=3,
-            # choices=RATING_CHOICES,
-            # blank=True,
-            # help_text='5 stars is best.')
-    # endorsement = models.CharField(
-            # 'Endorsement',
-            # max_length=5,
-            # choices=ENDORSEMENT_CHOICES,
-            # blank=True,
-            # help_text='Select Recommendation')
-
-    # timestamp_created = models.DateTimeField(auto_now_add=True)
-    # timestamp_modified = models.DateTimeField(auto_now=True)
-
-    # def __str__(self):
-#         return '%s' % (self.name)
-
-
 class Recipe(models.Model):
     name = models.CharField(
             'Name',
@@ -766,7 +677,7 @@ class Post(models.Model):
             choices=STATUS_CHOICES,
             max_length=5,
             blank=True,)
-    featured = models.BooleanField(
+    is_featured = models.BooleanField(
             'Featured Post',
             default=False,
             help_text='Moves post to front page.')
@@ -805,7 +716,7 @@ class Post(models.Model):
             upload_to=utils_images.new_filename_blog_feat,
             null=True,
             blank=True,
-            help_text="Recommended size: 1600 x 800px")
+            help_text="Recommended size: 1200 x 600px")
     image_thumb = models.ImageField(
             upload_to=utils_images.new_filename_blog_thumb,
             null=True,
@@ -816,11 +727,11 @@ class Post(models.Model):
             null=True,
             blank=True,
             help_text="1.9:1 ratio recommended size 1200px x 630px")
-    image_21 = models.ImageField(
-            upload_to=utils_images.new_filename_blog_tag,
-            null=True,
-            blank=True,
-            help_text="Recommended size 1200px x 600px")
+#     image_21 = models.ImageField(
+            # upload_to=utils_images.new_filename_blog_tag,
+            # null=True,
+            # blank=True,
+            # help_text="Recommended size 1200px x 600px")
     image_title = models.CharField(
             'Image Title',
             max_length=200,
@@ -845,7 +756,7 @@ class Post(models.Model):
     featured_lg = models.CharField(
             max_length=200,
             blank=True,
-            help_text="Automatic size: 1600px x 800px")
+            help_text="Automatic size: 1200px x 600px")
     featured_md = models.CharField(
             max_length=200,
             blank=True,
@@ -899,7 +810,7 @@ class Post(models.Model):
             img_index['featured_lg'] = [
                     utils_images.FeaturedLgWebp,
                     self.image_featured,
-                    (1600, 800),
+                    (1200, 600),
                     "blogapp/featured"]
             img_index['featured_md'] = [
                     utils_images.FeaturedMdWebp,
@@ -969,13 +880,13 @@ class Post(models.Model):
         )
 
     class Meta:
-        ordering = ('-featured', '-date_published')
+        ordering = ('-is_featured', '-date_published')
         indexes = [
             models.Index(fields=[
                 'status',
                 'date_published',
                 'post_type',
-                'featured'
+                'is_featured'
             ]),
         ]
 
@@ -993,7 +904,7 @@ class Article(Post):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "01. Articles"
+        verbose_name_plural = "02. Articles"
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
@@ -1012,7 +923,7 @@ class Doc(Post):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "02. Docs"
+        verbose_name_plural = "04. Docs"
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing

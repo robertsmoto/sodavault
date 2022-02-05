@@ -215,11 +215,11 @@ class Item(models.Model):
 
     @property
     def is_bundle(self):
-        return True if self.bundle_parents.exists() else False 
+        return True if self.bundle_parents.exists() else False
 
     @property
     def is_variable(self):
-        return True if self.variation_parents.exists() else False 
+        return True if self.variation_parents.exists() else False
 
     @property
     def inv_stats(self):

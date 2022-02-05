@@ -122,7 +122,7 @@ class PostNode(DjangoObjectType):
                 'is_footer_menu': ['exact'],
                 'is_primary_menu': ['exact'],
                 'is_secondary_menu': ['exact'],
-                'featured': ['exact'],
+                'is_featured': ['exact'],
                 'post_type': ['exact'],
                 'slug': ['exact'],
                 'status': ['exact'],
