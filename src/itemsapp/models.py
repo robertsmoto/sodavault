@@ -3,16 +3,10 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from ckeditor.fields import RichTextField
 from configapp.models import Price
-from django.db.models import Sum
-from django.db.models import Prefetch
-import math
-from sodavault.utils_logging import svlog_info
-
-class SimpleProductManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().filter(
-                item_type="PROD", product_type="SIMP")
+# from django.db.models import Sum
+# from django.db.models import Prefetch
+# import math
+# from sodavault.utils_logging import svlog_info
 
 
 class Group(models.Model):
@@ -222,7 +216,7 @@ class Item(models.Model):
     # other model managers if needed
 
     # parts = PartManager()
-    simple_products = SimpleProductManager()
+    # simple_products = SimpleProductManager()
     # digital_products = DigitalProductManager()
     # bundle_products = BundleProductManager()
     # variable_products = VariableProductManager()
@@ -288,6 +282,8 @@ class Product(Item):
 
 class DigitalProduct(Item):
     """Is a multi-table inheritance model of Item."""
+    # put additional digital-related fields here
+
     # objects = DigitalProductManager()
 
     class Meta:
@@ -359,7 +355,6 @@ class Measurement(models.Model):
         return '{}'.format(self.item.name)
 
 
-
 # class ProductAttributeJoin(models.Model):
     # """Used for product attributes."""
     # items = models.ForeignKey(
@@ -382,21 +377,21 @@ class Measurement(models.Model):
         # return '{}'.format(self.attribute.name)
 
 
-class Variation(models.Model):
-    parent = models.ForeignKey(
-        Item,
-        related_name='variation_parents',
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
-    items = models.ForeignKey(
-        Item,
-        related_name='variation_products',
-        null=True,
-        on_delete=models.CASCADE)
+# class Variation(models.Model):
+    # parent = models.ForeignKey(
+        # Item,
+        # related_name='variation_parents',
+        # null=True,
+        # blank=True,
+        # on_delete=models.CASCADE)
+    # items = models.ForeignKey(
+        # Item,
+        # related_name='variation_products',
+        # null=True,
+        # on_delete=models.CASCADE)
 
-    def __str__(self):
-        return '{} : {}'.format(self.parent.sku, self.parent.name)
+    # def __str__(self):
+        # return '{} : {}'.format(self.parent.sku, self.parent.name)
 
 
 # class VariationAttribute(models.Model):
@@ -740,6 +735,13 @@ class VariableProductManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(
                 item_type="PROD", product_type="VARI")
+
+class SimpleProductManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+                item_type="PROD", product_type="SIMP")
+
 
 
 """

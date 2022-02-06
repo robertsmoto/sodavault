@@ -6,7 +6,7 @@ from ledgerapp.models import Entry
 from django.forms import ModelForm
 import datetime
 from django.contrib import admin
-from itemsapp.models import Product, Variation
+from itemsapp.models import Product  # , Variation
 from django.forms.models import ModelForm
 from django.db.models.query import Prefetch 
 

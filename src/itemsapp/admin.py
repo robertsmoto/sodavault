@@ -1,6 +1,7 @@
 from django.contrib import admin
 import nested_admin
-from .models import *
+import itemsapp.models as models
+# from .models import *
 from dal import autocomplete
 from django import forms
 from dal import forward
@@ -10,17 +11,18 @@ from ledgerapp.models import Entry
 from django.urls import resolve
 
 
-@admin.register(Department)
+@admin.register(models.Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
     ]
     search_fields = ['name']
-    exclude = ['cat_type',]
+    exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name', )}
 
-@admin.register(Category)
+
+@admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -30,23 +32,25 @@ class CategoryAdmin(admin.ModelAdmin):
         'name',
     ]
     search_fields = ['name']
-    exclude = ['cat_type',]
+    exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name', )}
 
-@admin.register(Tag)
+
+@admin.register(models.Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
     ]
     search_fields = ['name']
-    exclude = ['cat_type',]
+    exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name',)}
 
 
 class ProductInventoryInline(nested_admin.NestedTabularInline):
 
     model = Entry
+
     def get_parent_object_from_request(self, request):
         """
         Returns the parent object from the request or None.
@@ -69,9 +73,11 @@ class ProductInventoryInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "Inventory"
     exclude = ['parts']
 
+
 class PartInventoryInline(nested_admin.NestedTabularInline):
 
     model = Entry
+
     def get_parent_object_from_request(self, request):
         """
         Returns the parent object from the request or None.
@@ -95,6 +101,7 @@ class PartInventoryInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "Inventory"
     exclude = ['lots', 'products', 'account', 'note']
 
+
 class NotePartInline(nested_admin.NestedTabularInline):
     model = Note
     extra = 0
@@ -102,29 +109,35 @@ class NotePartInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "notes"
     exclude = ['pos', 'asns']
 
+
 class BidPartInline(nested_admin.NestedTabularInline):
     model = Bid
-    exclude = ['products',] 
+    exclude = ['products', ]
     extra = 0
     verbose_name = "bid"
     verbose_name_plural = "bids"
+
 
 class BidProductInline(nested_admin.NestedTabularInline):
     model = Bid
-    exclude = ['parts',] 
+    exclude = ['parts', ]
     extra = 0
     verbose_name = "bid"
     verbose_name_plural = "bids"
 
-class ProductPartJoinInline(nested_admin.NestedTabularInline):
-    model = ProductPartJoin
-    # readonly_fields = ['_ecpu', '_unit']
-    extra = 0
-    verbose_name = "part"
-    verbose_name_plural = "parts"
+
+# class ProductPartJoinInline(nested_admin.NestedTabularInline):
+
+    # model = ProductPartJoin
+    # # readonly_fields = ['_ecpu', '_unit']
+    # extra = 0
+    # verbose_name = "part"
+#     verbose_name_plural = "parts"
+
 
 class IdentifierInline(nested_admin.NestedTabularInline):
-    model = Identifier
+
+    model = models.Identifier
     fields = [
         ('gtin', 'isbn'),
         ('pid_i', 'pid_c')
@@ -135,7 +148,8 @@ class IdentifierInline(nested_admin.NestedTabularInline):
 
 
 class MeasurementInline(nested_admin.NestedTabularInline):
-    model = Measurement
+
+    model = models.Measurement
     fields = [
         'weight',
         ('length', 'width', 'height')
@@ -145,7 +159,8 @@ class MeasurementInline(nested_admin.NestedTabularInline):
 
 
 class MarketingOptionInline(nested_admin.NestedStackedInline):
-    model = Marketing
+
+    model = models.Marketing
     extra = 0
     verbose_name = "marketing options"
     fields = [
@@ -158,7 +173,8 @@ class MarketingOptionInline(nested_admin.NestedStackedInline):
 
 
 class ImageInline(nested_admin.NestedStackedInline):
-    model = Image
+
+    model = models.Image
     extra = 0
     verbose_name = "marketing options"
     fields = [
@@ -290,6 +306,7 @@ class ImageInline(nested_admin.NestedStackedInline):
     # verbose_name_plural = "variations"
 #     inlines = [VarAttrInline]
 
+
 class ProductTypesFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
@@ -336,7 +353,7 @@ class ProductTypesFilter(admin.SimpleListFilter):
 
 class PartAdmin(nested_admin.NestedModelAdmin):
 
-    model = Part
+    model = models.Part
 
     fields = (
         'sku',
@@ -385,12 +402,13 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         super().save_related(request, form, formsets, change)
         form.instance.save()
 
-admin.site.register(Part, PartAdmin)
+admin.site.register(models.Part, PartAdmin)
+
 
 # @admin.register(SimpleProduct)
 class SimpleProductAdmin(nested_admin.NestedModelAdmin):
 
-    model = Product
+    model = models.Product
 
     fields = (
         'product_type',
@@ -446,7 +464,7 @@ class SimpleProductAdmin(nested_admin.NestedModelAdmin):
     ordering = ['sku']
 
     inlines = (
-        ProductPartJoinInline,
+        # ProductPartJoinInline,
         BidProductInline,
         # ProductInventoryInline,
         IdentifierInline,
@@ -464,4 +482,3 @@ class SimpleProductAdmin(nested_admin.NestedModelAdmin):
         form.instance.save()
 
 # admin.site.register(SimpleProduct, SimpleProductAdmin)
-
