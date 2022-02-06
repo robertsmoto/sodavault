@@ -50,6 +50,7 @@ class DepartmentManager(models.Manager):
 
 
 class Department(Group):
+    """Is a proxy model of Group."""
     objects = DepartmentManager()
 
     class Meta:
@@ -67,6 +68,7 @@ class CategoryManager(models.Manager):
 
 
 class Category(Group):
+    """Is a proxy model of Group."""
     objects = CategoryManager()
 
     class Meta:
@@ -85,6 +87,7 @@ class TagManager(models.Manager):
 
 
 class Tag(Group):
+    """Is a proxy model of Group."""
     objects = TagManager()
 
     class Meta:
@@ -103,6 +106,7 @@ class AttributeManager(models.Manager):
 
 
 class Attribute(Group):
+    """Is a multi-table inheritance model of Group."""
     # new_field_two = models.CharField(max_length=200, blank=True)
     new_field = models.CharField(max_length=200, blank=True)
     objects = AttributeManager
@@ -124,6 +128,7 @@ class Term(models.Model):
         on_delete=models.CASCADE)
     name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=50)
+    # is this where images should be filed?
     img = ProcessedImageField(
         upload_to='product_images/%Y/%m/%d',
         # processors=[ResizeToFill(1000, 1000)],
@@ -236,6 +241,7 @@ class PartManager(models.Manager):
 
 
 class Part(Item):
+    """Is a proxy model of Item."""
     objects = PartManager()
 
     class Meta:
@@ -254,6 +260,7 @@ class ProductManager(models.Manager):
 
 
 class Product(Item):
+    """Is a proxy model of Item."""
     objects = ProductManager()
 
     class Meta:
@@ -280,6 +287,7 @@ class Product(Item):
 
 
 class DigitalProduct(Item):
+    """Is a multi-table inheritance model of Item."""
     # objects = DigitalProductManager()
 
     class Meta:
@@ -436,17 +444,17 @@ class Bundle(models.Model):
         return '{} : {}'.format(self.parent.sku, self.parent.name)
 
 
-class DigitalOption(models.Model):
-    item = models.OneToOneField(
-        Item,
-        related_name='digital_options',
-        null=True,
-        on_delete=models.CASCADE)
-    name = models.CharField(max_length=200, blank=True)
-    # other things like a download key, file, expiration date etc ...
+# class DigitalOption(models.Model):
+    # item = models.OneToOneField(
+        # Item,
+        # related_name='digital_options',
+        # null=True,
+        # on_delete=models.CASCADE)
+    # name = models.CharField(max_length=200, blank=True)
+    # # other things like a download key, file, expiration date etc ...
 
-    def __str__(self):
-        return '{}'.format(self.item.name)
+    # def __str__(self):
+        # return '{}'.format(self.item.name)
 
 
 class Promotion(models.Model):

@@ -172,11 +172,11 @@ class ImageInline(nested_admin.NestedStackedInline):
     verbose_name = "image"
     verbose_name_plural = "images"
 
-class DigitalOptionInline(nested_admin.NestedTabularInline):
-    model = DigitalOption
-    extra = 0
-    verbose_name = "option"
-    verbose_name_plural = "digital options"
+# class DigitalOptionInline(nested_admin.NestedTabularInline):
+    # model = DigitalOption
+    # extra = 0
+    # verbose_name = "option"
+#     verbose_name_plural = "digital options"
 
 
 class BundleInline(nested_admin.NestedTabularInline):
