@@ -96,24 +96,24 @@ class Tag(Group):
         super(Tag, self).save(*args, **kwargs)
 
 
-class AttributeManager(models.Manager):
+# class AttributeManager(models.Manager):
 
-    def get_queryset(self):
-        return super().get_queryset().filter(cat_type='ATT')
+    # def get_queryset(self):
+        # return super().get_queryset().filter(cat_type='ATT')
 
 
-class Attribute(Group):
-    # new_field_two = models.CharField(max_length=200, blank=True)
-    new_field = models.CharField(max_length=200, blank=True)
-    objects = AttributeManager
+# class Attribute(Group):
+    # # new_field_two = models.CharField(max_length=200, blank=True)
+    # new_field = models.CharField(max_length=200, blank=True)
+    # objects = AttributeManager
 
-    class Meta:
-        # proxy = True
-        verbose_name_plural = "07. Attributes"
+    # class Meta:
+        # # proxy = True
+        # verbose_name_plural = "07. Attributes"
 
-    def save(self, *args, **kwargs):
-        self.cat_type = 'ATT'
-        super(Tag, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.cat_type = 'ATT'
+#         super(Tag, self).save(*args, **kwargs)
 
 
 class Term(models.Model):
