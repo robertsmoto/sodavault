@@ -46,6 +46,11 @@ class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+class SubAttributeInline(nested_admin.NestedTabularInline):
+    model = models.Attribute
+    fk_name = 'terms'
+
+
 @admin.register(models.Attribute)
 class AttributeAdmin(admin.ModelAdmin):
     list_display = [
@@ -55,17 +60,7 @@ class AttributeAdmin(admin.ModelAdmin):
     search_fields = ['name']
     exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name',)}
-
-
-# @admin.register(models.Term)
-# class TermAdmin(admin.ModelAdmin):
-    # list_display = [
-        # 'name',
-        # 'slug',
-    # ]
-    # search_fields = ['name']
-    # prepopulated_fields = {'slug': ('name',)}
-
+    inlines = [SubAttributeInline, ]
 
 
 class ProductInventoryInline(nested_admin.NestedTabularInline):
@@ -145,15 +140,6 @@ class BidProductInline(nested_admin.NestedTabularInline):
     extra = 0
     verbose_name = "bid"
     verbose_name_plural = "bids"
-
-
-# class ProductPartJoinInline(nested_admin.NestedTabularInline):
-
-    # model = ProductPartJoin
-    # # readonly_fields = ['_ecpu', '_unit']
-    # extra = 0
-    # verbose_name = "part"
-#     verbose_name_plural = "parts"
 
 
 class IdentifierInline(nested_admin.NestedTabularInline):
