@@ -142,16 +142,6 @@ class AllProductManager(models.Manager):
         return super().get_queryset().filter(item_type='PROD')
 
 
-# class Collection(models.Model):
-    # """The base class for item collections."""
-    # price_regular = models.BigIntegerField(
-            # blank=True,
-            # null=True,
-            # help_text="Leave blank to sum price of children.")
-
-    # def __str__(self):
-#         return f"{self.name}"
-
 """
 kit: collection of items
     can be price separately, or a summation of items
@@ -169,7 +159,20 @@ kit is same as bundle, can call them a collection
 variation: collection of items
 with special attribute filters
 variation is a collection but uses variations to filter the subitems
+attr: need to know if a specific attr is_variation and display_order
 """
+
+
+class AttributeItemJoin(models.Model):
+    attribute = models.ForeignKey(
+            Attribute, blank=True, on_delete=models.CASCADE)
+    # this should filter based on the attribute selection
+    term = models.CharField(max_length=200, blank=True)
+    is_variation = models.BooleanField(default=False)
+    display_order = models.CharField(max_length=20, blank=True)
+
+    def __str__(self):
+        return f"{self.attribute.name}"
 
 
 class Item(models.Model):
@@ -205,17 +208,6 @@ class Item(models.Model):
         blank=True,
         choices=ITEM_TYPE_CHOICES,
     )
-#     PRODUCT_TYPE_CHOICES = [
-        # ('SIMP', 'Simple'),
-        # ('DIGI', 'Digital'),
-        # ('BUND', 'Bundled'),
-        # ('VARI', 'Variable'),
-    # ]
-    # product_type = models.CharField(
-        # max_length=4,
-        # blank=True,
-        # choices=PRODUCT_TYPE_CHOICES,
-#     )
     sku = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(
@@ -237,6 +229,9 @@ class Item(models.Model):
             max_length=100,
             blank=True,
             help_text="singlular unit")
+    use_parent_price = models.BooleanField(
+            default=False,
+            help_text="Used for collections.")
     price = models.DecimalField(
         max_digits=14, decimal_places=2, blank=True, null=True)
     price_override = models.DecimalField(
@@ -245,7 +240,14 @@ class Item(models.Model):
             max_length=100,
             blank=True,
             help_text="how price has been calculated")
-
+    order_min = models.IntegerField(
+            blank=True,
+            default=0,
+            help_text="Use to require minium order quantity.")
+    order_max = models.IntegerField(
+            blank=True,
+            default=0,
+            help_text="Use to limit order quantity.")
     objects = models.Manager()
     all_products = AllProductManager()
     # other model managers if needed
@@ -301,26 +303,12 @@ class Product(Item):
         super(Product, self).save(*args, **kwargs)
 
 
-# class SimpleProduct(Item):
-    # objects = SimpleProductManager()
-
-    # class Meta:
-        # proxy = True
-        # verbose_name_plural = "02b. Simple Products"
-
-    # def save(self, *args, **kwargs):
-        # self.item_type = "PROD"
-        # if self.product_type == "":
-            # self.product_type = "SIMP"
-#         super(Product, self).save(*args, **kwargs)
-
-
 class DigitalProduct(Item):
     """Is a multi-table inheritance model of Item."""
     # put additional digital-related fields here
+    test_field = models.CharField(max_length=200, blank=True)
 
     # objects = DigitalProductManager()
-
     class Meta:
         # proxy = True
         verbose_name_plural = "02c. Digital Products"
