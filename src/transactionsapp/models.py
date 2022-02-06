@@ -1,7 +1,7 @@
 from django.db import models
 from itemsapp.models import Item, Part # , ProductPartJoin
 #  SimpleProduct, BundleProduct, VariableProduct
-from itemsapp.models import Product, DigitalProduct
+from itemsapp.models import Product  # , DigitalProduct
 from contactapp.models import Company, Supplier, Location
 from django.db.models import Sum, Avg
 from django.db import models
@@ -32,12 +32,12 @@ class Bid(models.Model):
         # blank=True,
         # null=True,
 #         on_delete=models.CASCADE)
-    digital_products = models.ForeignKey(
-        DigitalProduct,
-        related_name = "bid_digital_products",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+#     digital_products = models.ForeignKey(
+        # DigitalProduct,
+        # related_name = "bid_digital_products",
+        # blank=True,
+        # null=True,
+#         on_delete=models.CASCADE)
 #     bundle_products = models.ForeignKey(
         # BundleProduct,
         # related_name = "bid_bundle_products",
