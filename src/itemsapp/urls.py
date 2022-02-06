@@ -14,8 +14,8 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import AttrAutocomplete, AttrTermAutocomplete
-from .views import VarAttrAutocomplete, VarTermAutocomplete
+# from .views import AttrAutocomplete, AttrTermAutocomplete
+# from .views import VarAttrAutocomplete, VarTermAutocomplete
 from .views import ProductHomeView
 from .views import ProductListView, ProductCreateView, ProductUpdateView, ProductDeleteView
 
@@ -33,10 +33,10 @@ urlpatterns = [
 
 
 
-    path('attr-autocomplete', AttrAutocomplete.as_view(), name='attr-autocomplete'), 
-    path('attr-term-autocomplete', AttrTermAutocomplete.as_view(), name='attr-term-autocomplete'), 
-    path('var-attr-autocomplete', VarAttrAutocomplete.as_view(), name='var-attr-autocomplete'), 
-    path('var-term-autocomplete', VarTermAutocomplete.as_view(), name='var-term-autocomplete'), 
+#     path('attr-autocomplete', AttrAutocomplete.as_view(), name='attr-autocomplete'), 
+    # path('attr-term-autocomplete', AttrTermAutocomplete.as_view(), name='attr-term-autocomplete'), 
+    # path('var-attr-autocomplete', VarAttrAutocomplete.as_view(), name='var-attr-autocomplete'), 
+#     path('var-term-autocomplete', VarTermAutocomplete.as_view(), name='var-term-autocomplete'), 
     path(
         'product-list/', 
         ProductListView.as_view(extra_context={'doc_slug': 'product-list',}), 

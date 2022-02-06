@@ -118,7 +118,7 @@ class BidProductInline(nested_admin.NestedTabularInline):
 
 class ProductPartJoinInline(nested_admin.NestedTabularInline):
     model = ProductPartJoin
-    readonly_fields = ['_ecpu', '_unit']
+    # readonly_fields = ['_ecpu', '_unit']
     extra = 0
     verbose_name = "part"
     verbose_name_plural = "parts"
@@ -186,66 +186,66 @@ class BundleInline(nested_admin.NestedTabularInline):
     verbose_name = "bundle"
     verbose_name_plural = "bundles"
 
-# used in Attribute admin
-class TermInline(admin.TabularInline):
-    model = Term
-    fields = ['name', 'slug', 'img']
-    extra = 0
-    verbose_name = "term"
-    verbose_name_plural = "terms"
-    prepopulated_fields = {'slug': ('name',)}
+# # used in Attribute admin
+# class TermInline(admin.TabularInline):
+    # model = Term
+    # fields = ['name', 'slug', 'img']
+    # extra = 0
+    # verbose_name = "term"
+    # verbose_name_plural = "terms"
+    # prepopulated_fields = {'slug': ('name',)}
 
 
 #### PRODUCT-ATTRIBUTES ####
 # I'm putting this form directly in Admin rather than in forms.py
 # since this is where it is used
-class ProdAttrJoinForm(forms.ModelForm):
-    class Meta:
-        model = ProductAttributeJoin
-        fields = ('attribute', 'term')
-        widgets = {
-            'attribute': autocomplete.ModelSelect2(
-                url='attr-autocomplete',
-                forward=('product',),
-                attrs={
-                    'data-placeholder': 'Autocomplete ...',
-                },
-            ),
-            'term': autocomplete.ModelSelect2Multiple(
-                url='attr-term-autocomplete',
-                forward=('attribute', forward.Self(),),
-                attrs={
-                    'data-placeholder': 'Autocomplete ...',
-                },
-            ),
-        }
+# class ProdAttrJoinForm(forms.ModelForm):
+    # class Meta:
+        # model = ProductAttributeJoin
+        # fields = ('attribute', 'term')
+        # widgets = {
+            # 'attribute': autocomplete.ModelSelect2(
+                # url='attr-autocomplete',
+                # forward=('product',),
+                # attrs={
+                    # 'data-placeholder': 'Autocomplete ...',
+                # },
+            # ),
+            # 'term': autocomplete.ModelSelect2Multiple(
+                # url='attr-term-autocomplete',
+                # forward=('attribute', forward.Self(),),
+                # attrs={
+                    # 'data-placeholder': 'Autocomplete ...',
+                # },
+            # ),
+        # }
 
-class ProdAttrJoinInline(nested_admin.NestedTabularInline):
-    form = ProdAttrJoinForm
-    model = ProductAttributeJoin
-    # fields = [
-        # 'attribute',
-        # 'term',
+# class ProdAttrJoinInline(nested_admin.NestedTabularInline):
+    # form = ProdAttrJoinForm
+    # model = ProductAttributeJoin
+    # # fields = [
+        # # 'attribute',
+        # # 'term',
+    # # ]
+    # extra = 0
+    # verbose_name = "attribute"
+    # verbose_name_plural = "attributes"
+
+# @admin.register(Attribute)
+# class AttributeAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
     # ]
-    extra = 0
-    verbose_name = "attribute"
-    verbose_name_plural = "attributes"
-
-@admin.register(Attribute)
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    list_display_links = [
-        'name'
-    ]
-    search_fields = ['name',]
-    fields = [
-        ('name', 'slug'),
-    ]
-    prepopulated_fields = {'slug': ('name',)}
-    inlines = [TermInline,]
+    # list_display_links = [
+        # 'name'
+    # ]
+    # search_fields = ['name',]
+    # fields = [
+        # ('name', 'slug'),
+    # ]
+    # prepopulated_fields = {'slug': ('name',)}
+    # # inlines = [TermInline,]
 
 
 
@@ -253,42 +253,42 @@ class AttributeAdmin(admin.ModelAdmin):
 # I'm putting this form directly in Admin rather than in forms.py
 # since this is where we are going to us it
 
-class VarAttrForm(forms.ModelForm):
-    class Meta:
-        model = VariationAttribute
-        fields = ('attributes', 'terms')
-        widgets = {
-            'attributes': autocomplete.ModelSelect2(
-                url='var-attr-autocomplete',
-                forward=('variation',),
-                attrs={
-                    'data-placeholder': 'Autocomplete ...',
-                },
-            ),
-            'terms': autocomplete.ModelSelect2(
-                url='var-term-autocomplete',
-                forward=('variation', 'attributes',),
-                attrs={
-                    'data-placeholder': 'Autocomplete ...',
-                },
-            ),
-        }
+# class VarAttrForm(forms.ModelForm):
+    # class Meta:
+        # model = VariationAttribute
+        # fields = ('attributes', 'terms')
+        # widgets = {
+            # 'attributes': autocomplete.ModelSelect2(
+                # url='var-attr-autocomplete',
+                # forward=('variation',),
+                # attrs={
+                    # 'data-placeholder': 'Autocomplete ...',
+                # },
+            # ),
+            # 'terms': autocomplete.ModelSelect2(
+                # url='var-term-autocomplete',
+                # forward=('variation', 'attributes',),
+                # attrs={
+                    # 'data-placeholder': 'Autocomplete ...',
+                # },
+            # ),
+#         }
 
-class VarAttrInline(nested_admin.NestedTabularInline):
-    form = VarAttrForm
-    model = VariationAttribute
-    extra = 0
-    fk_name='variations'
-    verbose_name = "variation attribute"
-    verbose_name_plural = "variation attributes"
+# class VarAttrInline(nested_admin.NestedTabularInline):
+    # form = VarAttrForm
+    # model = VariationAttribute
+    # extra = 0
+    # fk_name='variations'
+    # verbose_name = "variation attribute"
+    # verbose_name_plural = "variation attributes"
 
-class VariationInline(nested_admin.NestedTabularInline):
-    model = Variation
-    extra = 0
-    fk_name = 'parent'
-    verbose_name = "variation"
-    verbose_name_plural = "variations"
-    inlines = [VarAttrInline]
+# class VariationInline(nested_admin.NestedTabularInline):
+    # model = Variation
+    # extra = 0
+    # fk_name = 'parent'
+    # verbose_name = "variation"
+    # verbose_name_plural = "variations"
+#     inlines = [VarAttrInline]
 
 class ProductTypesFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
@@ -348,18 +348,18 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         'available_inventory',
         # 'stock_stats',
     )
-    readonly_fields = (
-        # 'calculated_cost',
-        'ecpu',
-        'unit',
-        'available_inventory',
-        # 'stock_stats',
-    )
+    # readonly_fields = (
+        # # 'calculated_cost',
+        # 'ecpu',
+        # 'unit',
+        # 'available_inventory',
+        # # 'stock_stats',
+    # )
     list_display = (
         'sku',
         'name',
-        'ecpu',
-        'available_inventory',
+    #     'ecpu',
+    #     'available_inventory',
     )
     list_display_links = (
         'sku',
@@ -406,26 +406,26 @@ class SimpleProductAdmin(nested_admin.NestedModelAdmin):
         'available_inventory',
         'max_new_inventory',
     )
-    readonly_fields = (
-        'ecpu',
-        'unit',
-        'ecpu_calc_from',
-        'available_inventory',
-        'max_new_inventory',
-        'price',
-        'price_calc_from',
-        'is_digital',
-        'is_variable',
-        'is_bundle',
-    )
+    # readonly_fields = (
+        # 'ecpu',
+        # 'unit',
+        # 'ecpu_calc_from',
+        # 'available_inventory',
+        # 'max_new_inventory',
+        # 'price',
+        # 'price_calc_from',
+        # 'is_digital',
+        # 'is_variable',
+        # 'is_bundle',
+    # )
     list_display = (
         'sku',
         'name',
-        'ecpu',
-        'available_inventory',
+    #     'ecpu',
+    #     'available_inventory',
         'price_class',
         'price',
-        'price_calc_from',
+        # 'price_calc_from',
     )
     list_filter = (
         ProductTypesFilter,
@@ -463,5 +463,5 @@ class SimpleProductAdmin(nested_admin.NestedModelAdmin):
         super().save_related(request, form, formsets, change)
         form.instance.save()
 
-admin.site.register(SimpleProduct, SimpleProductAdmin)
+# admin.site.register(SimpleProduct, SimpleProductAdmin)
 
