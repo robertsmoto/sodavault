@@ -142,6 +142,36 @@ class AllProductManager(models.Manager):
         return super().get_queryset().filter(item_type='PROD')
 
 
+# class Collection(models.Model):
+    # """The base class for item collections."""
+    # price_regular = models.BigIntegerField(
+            # blank=True,
+            # null=True,
+            # help_text="Leave blank to sum price of children.")
+
+    # def __str__(self):
+#         return f"{self.name}"
+
+"""
+kit: collection of items
+    can be price separately, or a summation of items
+
+bundle: collection of items, individual items may have sep configs
+    can be price separately, or summation of items
+    plus product can be incremented individually with thresholds
+    the increment is handled in the transaction, need a bool to tell to swich
+    on or off the increment.
+
+kit is same as bundle, can call them a collection
+"""
+
+"""
+variation: collection of items
+with special attribute filters
+variation is a collection but uses variations to filter the subitems
+"""
+
+
 class Item(models.Model):
     price_class = models.ForeignKey(
         Price,
@@ -161,6 +191,11 @@ class Item(models.Model):
         Tag,
         related_name='tag_item',
         blank=True)
+    subitem = models.ForeignKey(
+            'self',
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     ITEM_TYPE_CHOICES = [
         ('PART', 'Part'),
         ('PROD', 'Product'),
@@ -170,17 +205,17 @@ class Item(models.Model):
         blank=True,
         choices=ITEM_TYPE_CHOICES,
     )
-    PRODUCT_TYPE_CHOICES = [
-        ('SIMP', 'Simple'),
-        ('DIGI', 'Digital'),
-        ('BUND', 'Bundled'),
-        ('VARI', 'Variable'),
-    ]
-    product_type = models.CharField(
-        max_length=4,
-        blank=True,
-        choices=PRODUCT_TYPE_CHOICES,
-    )
+#     PRODUCT_TYPE_CHOICES = [
+        # ('SIMP', 'Simple'),
+        # ('DIGI', 'Digital'),
+        # ('BUND', 'Bundled'),
+        # ('VARI', 'Variable'),
+    # ]
+    # product_type = models.CharField(
+        # max_length=4,
+        # blank=True,
+        # choices=PRODUCT_TYPE_CHOICES,
+#     )
     sku = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(
