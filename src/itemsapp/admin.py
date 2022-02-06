@@ -10,6 +10,14 @@ from ledgerapp.models import Entry
 from django.urls import resolve
 
 
+class SubDepartmentInline(nested_admin.NestedTabularInline):
+    model = models.Group
+    exclude = ['cat_type']
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = "Sub-Department"
+    verbose_name_plural = "Sub-Departments"
+
+
 @admin.register(models.Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = [
@@ -17,8 +25,18 @@ class DepartmentAdmin(admin.ModelAdmin):
         'slug',
     ]
     search_fields = ['name']
-    exclude = ['cat_type', ]
+    # cat_type is automatically saved in model save method
+    exclude = ['cat_type', 'subgroup']
     prepopulated_fields = {'slug': ('name', )}
+    inlines = [SubDepartmentInline, ]
+
+
+class SubCategoryInline(nested_admin.NestedTabularInline):
+    model = models.Group
+    exclude = ['cat_type']
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = "Sub-Category"
+    verbose_name_plural = "Sub-Categories"
 
 
 @admin.register(models.Category)
@@ -33,6 +51,15 @@ class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
     exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name', )}
+    inlines = [SubCategoryInline, ]
+
+
+class SubTagInline(nested_admin.NestedTabularInline):
+    model = models.Group
+    exclude = ['cat_type']
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = "Sub-Tag"
+    verbose_name_plural = "Sub-Tags"
 
 
 @admin.register(models.Tag)
@@ -44,11 +71,16 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ['name']
     exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name',)}
+    inlines = [SubTagInline, ]
 
 
 class SubAttributeInline(nested_admin.NestedTabularInline):
     model = models.Attribute
     fk_name = 'terms'
+    exclude = ['cat_type', 'subgroup']
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = "Term"
+    verbose_name_plural = "Attribute Terms"
 
 
 @admin.register(models.Attribute)
@@ -58,9 +90,12 @@ class AttributeAdmin(admin.ModelAdmin):
         'slug',
     ]
     search_fields = ['name']
-    exclude = ['cat_type', ]
+    exclude = ['cat_type', 'subgroup', 'terms']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubAttributeInline, ]
+    verbose_name = "ATTR ADMIN"
+    verbose_name_plural = "Attribute ADMIN"
+
 
 
 class ProductInventoryInline(nested_admin.NestedTabularInline):
@@ -417,7 +452,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
 
 
 @admin.register(models.Product)
-class SimpleProductAdmin(nested_admin.NestedModelAdmin):
+class ProductAdmin(nested_admin.NestedModelAdmin):
 
     model = models.Product
 
@@ -491,3 +526,13 @@ class SimpleProductAdmin(nested_admin.NestedModelAdmin):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         form.instance.save()
+
+
+@admin.register(models.DigitalProduct)
+class DigitalProductAdmin(admin.ModelAdmin):
+    list_display = [
+        'name',
+        'slug',
+    ]
+    search_fields = ['name']
+    prepopulated_fields = {'slug': ('sku', 'name', )}

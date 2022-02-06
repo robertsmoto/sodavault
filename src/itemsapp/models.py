@@ -193,6 +193,7 @@ class Item(models.Model):
     )
     sku = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=100, blank=True)
+    slug = models.SlugField(max_length=50)
     description = models.TextField(
         blank=True,
         help_text="For internal and purchasing use.")
@@ -279,7 +280,7 @@ class Product(Item):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "02a. All Products"
+        verbose_name_plural = "02a. Products"
 
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
@@ -294,7 +295,7 @@ class DigitalProduct(Item):
     # objects = DigitalProductManager()
     class Meta:
         # proxy = True
-        verbose_name_plural = "02c. Digital Products"
+        verbose_name_plural = "02b. Digital Products"
 
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
