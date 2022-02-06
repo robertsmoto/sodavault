@@ -117,12 +117,11 @@ class Attribute(Group):
 
 
 class Term(models.Model):
-#     attribute = models.ForeignKey(
-        # Attribute,
-        # related_name='terms',
-        # null=True,
-        # blank=True,
-#         on_delete=models.CASCADE)
+    attribute = models.ForeignKey(
+        Attribute,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE)
     name = models.CharField(max_length=200, blank=True)
     slug = models.SlugField(max_length=50)
     img = ProcessedImageField(
