@@ -103,6 +103,11 @@ class Attribute(Group):
     """Is a multi-table inheritance model of Group."""
     # new_field_two = models.CharField(max_length=200, blank=True)
     new_field = models.CharField(max_length=200, blank=True)
+    term = models.ForeignKey(
+            'self',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
     objects = AttributeManager
 
     class Meta:
@@ -114,26 +119,30 @@ class Attribute(Group):
         super(Tag, self).save(*args, **kwargs)
 
 
-class Term(models.Model):
-    attribute = models.ForeignKey(
-        Attribute,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE)
-    name = models.CharField(max_length=200, blank=True)
-    slug = models.SlugField(max_length=50)
-    # is this where images should be filed?
-    img = ProcessedImageField(
-        upload_to='product_images/%Y/%m/%d',
-        # processors=[ResizeToFill(1000, 1000)],
-        format='WebP',
-        options={'quality': 80},
-        blank=True,
-        null=True,
-        help_text="converts image to .WebP")
+# class Term(models.Model):
+    # attribute = models.ForeignKey(
+        # Attribute,
+        # null=True,
+        # blank=True,
+        # on_delete=models.CASCADE)
+    # name = models.CharField(max_length=200, blank=True)
+    # slug = models.SlugField(max_length=50)
+    # # is this where images should be filed?
+    # img = ProcessedImageField(
+        # upload_to='product_images/%Y/%m/%d',
+        # # processors=[ResizeToFill(1000, 1000)],
+        # format='WebP',
+        # options={'quality': 80},
+        # blank=True,
+        # null=True,
+        # help_text="converts image to .WebP")
 
-    def __str__(self):
-        return '{}'.format(self.name)
+    # class Meta:
+        # # proxy = True
+        # verbose_name_plural = "07b. Terms"
+
+    # def __str__(self):
+        # return '{}'.format(self.name)
 
 
 class AllProductManager(models.Manager):

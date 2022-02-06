@@ -1,7 +1,6 @@
 from django.contrib import admin
 import nested_admin
 import itemsapp.models as models
-# from .models import *
 from dal import autocomplete
 from django import forms
 from dal import forward
@@ -45,6 +44,28 @@ class TagAdmin(admin.ModelAdmin):
     search_fields = ['name']
     exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name',)}
+
+
+@admin.register(models.Attribute)
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = [
+        'name',
+        'slug',
+    ]
+    search_fields = ['name']
+    exclude = ['cat_type', ]
+    prepopulated_fields = {'slug': ('name',)}
+
+
+# @admin.register(models.Term)
+# class TermAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
+    # ]
+    # search_fields = ['name']
+    # prepopulated_fields = {'slug': ('name',)}
+
 
 
 class ProductInventoryInline(nested_admin.NestedTabularInline):
@@ -351,6 +372,11 @@ class ProductTypesFilter(admin.SimpleListFilter):
             return queryset.filter(variation_parents__isnull=False).distinct()
 
 
+class SubItemInline(nested_admin.NestedTabularInline):
+    model = models.Item
+
+
+@admin.register(models.Part)
 class PartAdmin(nested_admin.NestedModelAdmin):
 
     model = models.Part
@@ -359,10 +385,10 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         'sku',
         'name',
         'description',
-        # ('categories', 'tags'),
+        ('categories', 'tags'),
         ('ecpu', 'unit'),
         ('ecpu_override', 'unit_override'),
-        'available_inventory',
+        # 'available_inventory',
         # 'stock_stats',
     )
     # readonly_fields = (
@@ -393,6 +419,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
     ordering = ['sku']
 
     inlines = [
+        SubItemInline,
         BidPartInline,
         NotePartInline,
         # PartInventoryInline,
@@ -402,10 +429,8 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         super().save_related(request, form, formsets, change)
         form.instance.save()
 
-admin.site.register(models.Part, PartAdmin)
 
-
-# @admin.register(SimpleProduct)
+@admin.register(models.Product)
 class SimpleProductAdmin(nested_admin.NestedModelAdmin):
 
     model = models.Product
@@ -480,5 +505,3 @@ class SimpleProductAdmin(nested_admin.NestedModelAdmin):
     def save_related(self, request, form, formsets, change):
         super().save_related(request, form, formsets, change)
         form.instance.save()
-
-# admin.site.register(SimpleProduct, SimpleProductAdmin)
