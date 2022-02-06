@@ -103,6 +103,7 @@ class AttributeManager(models.Manager):
 
 
 class Attribute(Group):
+    new_field_two = models.CharField(max_length=200, blank=True)
     new_field = models.CharField(max_length=200, blank=True)
     objects = AttributeManager
 
