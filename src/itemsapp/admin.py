@@ -462,10 +462,10 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         'name',
         'description',
         'departments',
+        'price_override',
         ('categories', 'tags'),
         ('ecpu', 'unit', 'ecpu_calc_from'),
-        ('ecpu_override', 'unit_override'), 
-        ('price_class', 'price_override'),
+        ('ecpu_override', 'unit_override'),
         ('price', 'price_calc_from'),
         'available_inventory',
         'max_new_inventory',
@@ -487,7 +487,6 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         'name',
     #     'ecpu',
     #     'available_inventory',
-        'price_class',
         'price',
         # 'price_calc_from',
     )
@@ -533,6 +532,11 @@ class DigitalProductAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
+    ]
+    autocomplete_fields = [
+        'departments',
+        'categories',
+        'tags',
     ]
     search_fields = ['name']
     prepopulated_fields = {'slug': ('sku', 'name', )}
