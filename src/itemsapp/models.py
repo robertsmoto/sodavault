@@ -102,16 +102,16 @@ class AttributeManager(models.Manager):
         return super().get_queryset().filter(cat_type='ATT')
 
 
-class Attribute(Group):
-    objects = AttributeManager
+# class Attribute(Group):
+    # objects = AttributeManager
 
-    class Meta:
-        proxy = True
-        verbose_name_plural = "07. Attributes"
+    # class Meta:
+        # proxy = True
+        # verbose_name_plural = "07. Attributes"
 
-    def save(self, *args, **kwargs):
-        self.cat_type = 'ATT'
-        super(Tag, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.cat_type = 'ATT'
+        # super(Tag, self).save(*args, **kwargs)
 
 
 class Term(models.Model):
