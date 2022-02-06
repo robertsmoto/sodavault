@@ -426,22 +426,22 @@ class Variation(models.Model):
         # return '{}'.format(self.variations.product.sku)
 
 
-class Bundle(models.Model):
-    parent = models.ForeignKey(
-        Item,
-        related_name='bundle_parents',
-        on_delete=models.CASCADE)
-    items = models.ForeignKey(
-        Item,
-        related_name='bundle_products',
-        null=True,
-        on_delete=models.CASCADE)
-    quantity_min = models.PositiveSmallIntegerField(default=1)
-    quantity_max = models.PositiveSmallIntegerField(blank=True, null=True)
-    is_optional = models.BooleanField(default=False)
+# class Bundle(models.Model):
+    # parent = models.ForeignKey(
+        # Item,
+        # related_name='bundle_parents',
+        # on_delete=models.CASCADE)
+    # items = models.ForeignKey(
+        # Item,
+        # related_name='bundle_products',
+        # null=True,
+        # on_delete=models.CASCADE)
+    # quantity_min = models.PositiveSmallIntegerField(default=1)
+    # quantity_max = models.PositiveSmallIntegerField(blank=True, null=True)
+    # is_optional = models.BooleanField(default=False)
 
-    def __str__(self):
-        return '{} : {}'.format(self.parent.sku, self.parent.name)
+    # def __str__(self):
+#         return '{} : {}'.format(self.parent.sku, self.parent.name)
 
 
 # class DigitalOption(models.Model):

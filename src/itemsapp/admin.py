@@ -179,12 +179,12 @@ class ImageInline(nested_admin.NestedStackedInline):
 #     verbose_name_plural = "digital options"
 
 
-class BundleInline(nested_admin.NestedTabularInline):
-    model = Bundle
-    fk_name = 'parent'
-    extra = 0
-    verbose_name = "bundle"
-    verbose_name_plural = "bundles"
+# class BundleInline(nested_admin.NestedTabularInline):
+    # model = Bundle
+    # fk_name = 'parent'
+    # extra = 0
+    # verbose_name = "bundle"
+    # verbose_name_plural = "bundles"
 
 # # used in Attribute admin
 # class TermInline(admin.TabularInline):
