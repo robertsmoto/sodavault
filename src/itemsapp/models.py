@@ -303,21 +303,19 @@ class Product(Item):
         super(Product, self).save(*args, **kwargs)
 
 
-# class DigitalProduct(Item):
-    # """Is a multi-table inheritance model of Item."""
-    # # put additional digital-related fields here
-    # test_field = models.CharField(max_length=200, blank=True)
+class DigitalProduct(Item):
+    """Is a multi-table inheritance model of Item."""
+    # put additional digital-related fields here
+    test_field = models.CharField(max_length=200, blank=True)
 
-    # # objects = DigitalProductManager()
-    # class Meta:
-        # # proxy = True
-        # verbose_name_plural = "02c. Digital Products"
+    # objects = DigitalProductManager()
+    class Meta:
+        # proxy = True
+        verbose_name_plural = "02c. Digital Products"
 
-    # def save(self, *args, **kwargs):
-        # self.item_type = "PROD"
-        # if self.product_type == "":
-            # self.product_type = "DIGI"
-        # super(Product, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.item_type = "PROD"
+        super(Product, self).save(*args, **kwargs)
 
 
 # class BundleProduct(Item):
