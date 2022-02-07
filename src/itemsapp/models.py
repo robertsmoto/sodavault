@@ -143,14 +143,20 @@ variation: collection of items
 with special attribute filters
 variation is a collection but uses variations to filter the subitems
 attr: need to know if a specific attr is_variation and display_order
+collection, but need to know which attributes are used for filtering sub-items
+parent
+    attr1 [list] used for variations, order 0
+    attr2 [list] used for variations, order 1
+    (check if certain attr are used or unused)
+    attr3 [list] not used for fitering
 """
 
 
 class AttributeItemJoin(models.Model):
-    attribute = models.ForeignKey(
+    attributes = models.ForeignKey(
             Attribute, blank=True, on_delete=models.CASCADE)
     # this should filter based on the attribute selection
-    term = models.CharField(max_length=200, blank=True)
+    terms = models.CharField(max_length=200, blank=True)
     is_variation = models.BooleanField(default=False)
     display_order = models.CharField(max_length=20, blank=True)
 
@@ -160,37 +166,40 @@ class AttributeItemJoin(models.Model):
 
 class Item(models.Model):
     departments = models.ManyToManyField(
-        Department,
-        related_name='departments',
-        blank=True)
+            Department,
+            related_name='departments',
+            blank=True)
     categories = models.ManyToManyField(
-        Category,
-        related_name='categories',
-        blank=True)
+            Category,
+            related_name='categories',
+            blank=True)
     tags = models.ManyToManyField(
-        Tag,
-        related_name='tags',
-        blank=True)
+            Tag,
+            related_name='tags',
+            blank=True)
+    attributes = models.ManyToManyField(
+            AttributeItemJoin,
+            blank=True)
     subitem = models.ForeignKey(
             'self',
             blank=True,
             null=True,
             on_delete=models.CASCADE)
     ITEM_TYPE_CHOICES = [
-        ('PART', 'Part'),
-        ('PROD', 'Product'),
+            ('PART', 'Part'),
+            ('PROD', 'Product'),
     ]
     item_type = models.CharField(
-        max_length=4,
-        blank=True,
-        choices=ITEM_TYPE_CHOICES,
+            max_length=4,
+            blank=True,
+            choices=ITEM_TYPE_CHOICES,
     )
     sku = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=100, blank=True)
-    slug = models.SlugField(max_length=50)
+    # slug = models.SlugField(max_length=50)
     description = models.TextField(
-        blank=True,
-        help_text="For internal and purchasing use.")
+            blank=True,
+            help_text="For internal and purchasing use.")
     use_calculated_quantity = models.BooleanField(
             default=False,
             help_text="Use quantity calculated from stock.")
@@ -244,11 +253,13 @@ class Item(models.Model):
     all_products = AllProductManager()
     # other model managers if needed
 
+    class Meta:
+        indexes = [
+            models.Index(fields=['sku', ]),
+        ]
+
     def __str__(self):
         return "{} {}".format(self.sku, self.name)
-
-    def save(self, *args, **kwargs):
-        super(Item, self).save(*args, **kwargs)
 
 
 class PartManager(models.Manager):

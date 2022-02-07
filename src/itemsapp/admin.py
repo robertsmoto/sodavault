@@ -457,7 +457,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
     model = models.Product
 
     fields = (
-        'product_type',
+        # 'product_type',
         'sku',
         'name',
         'description',
@@ -467,8 +467,8 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         ('ecpu', 'unit', 'ecpu_calc_from'),
         ('ecpu_override', 'unit_override'),
         ('price', 'price_calc_from'),
-        'available_inventory',
-        'max_new_inventory',
+        # 'available_inventory',
+        # 'max_new_inventory',
     )
     # readonly_fields = (
         # 'ecpu',
@@ -531,7 +531,6 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
 class DigitalProductAdmin(admin.ModelAdmin):
     list_display = [
         'name',
-        'slug',
     ]
     autocomplete_fields = [
         'departments',
@@ -539,4 +538,4 @@ class DigitalProductAdmin(admin.ModelAdmin):
         'tags',
     ]
     search_fields = ['name']
-    prepopulated_fields = {'slug': ('sku', 'name', )}
+    # prepopulated_fields = {'slug': ('sku', 'name', )}
