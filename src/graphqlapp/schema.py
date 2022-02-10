@@ -7,7 +7,7 @@ import configapp.schema
 class Query(
         advertisingapp.schema.Query,
         blogapp.schema.Query,
-        # configapp.schema.Query,
+        configapp.schema.Query,
         ):
     pass
 
