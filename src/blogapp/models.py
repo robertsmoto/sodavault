@@ -597,7 +597,6 @@ class Post(models.Model):
     locations = models.ManyToManyField(Location, blank=True)
     categories = models.ManyToManyField(
             Category,
-            related_name="categories",
             blank=True)
     tags = models.ManyToManyField(
             Tag,
