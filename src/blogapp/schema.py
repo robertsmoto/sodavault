@@ -1,6 +1,5 @@
 import blogapp.models
 from decouple import config
-from django.contrib.auth.models import User
 from graphene import relay, String
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
@@ -48,56 +47,6 @@ class ReviewMovieNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Movie
         interfaces = (relay.Node, )
-
-
-class UserNode(DjangoObjectType):
-    class Meta:
-        model = User
-        filter_fields = [
-                'username',
-                ]
-        interfaces = (relay.Node, )
-
-
-# class BlogLocationNode(DjangoObjectType):
-    # class Meta:
-        # model = blogapp.models.Location
-        # # filter_fields = [
-                # # 'domain',
-                # # 'name',
-        # #         ]
-        # interfaces = (relay.Node, )
-
-
-# class BlogCategoryNode(DjangoObjectType):
-    # class Meta:
-        # model = blogapp.models.Category
-# #         filter_fields = [
-                # # 'id',
-                # # 'slug',
-                # # 'name',
-                # # 'is_primary_menu',
-                # # 'is_secondary_menu',
-                # # 'is_footer_menu',
-                # # 'locations__domain',
-                # # ]
-
-#         interfaces = (relay.Node, )
-
-
-# class TagNode(DjangoObjectType):
-    # class Meta:
-        # model = Group
-        # filter_fields = [
-                # 'id',
-                # 'slug',
-                # 'name',
-                # 'is_primary_menu',
-                # 'is_secondary_menu',
-                # 'is_footer_menu',
-                # 'locations__domain',
-                # ]
-        # interfaces = (relay.Node, )
 
 
 class PostNode(DjangoObjectType):
@@ -197,14 +146,5 @@ class PostNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-#     blog_location = relay.Node.Field(BlogLocationNode)
-    # all_blog_locations = DjangoFilterConnectionField(BlogLocationNode)
-
-    # blog_category = relay.Node.Field(BlogCategoryNode)
-#     all_blog_categories = DjangoFilterConnectionField(BlogCategoryNode)
-
-#     tag = relay.Node.Field(TagNode)
-#     all_tags = DjangoFilterConnectionField(TagNode)
-
     posts = relay.Node.Field(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
