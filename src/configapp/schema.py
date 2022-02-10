@@ -46,7 +46,7 @@ class GroupNode(DjangoObjectType):
                 'is_primary_menu',
                 'is_secondary_menu',
                 'is_footer_menu',
-                'locations__domain',
+                # 'locations__domain',
                 ]
 
         interfaces = (relay.Node, )
