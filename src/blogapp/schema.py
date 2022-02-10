@@ -104,10 +104,10 @@ class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
         filter_fields = {
-                'categories__id': ['exact'],
-                'categories__slug': ['exact'],
-                'tags__id': ['exact'],
-                'tags__slug': ['exact'],
+                # 'categories__id': ['exact'],
+                # 'categories__slug': ['exact'],
+                # 'tags__id': ['exact'],
+                # 'tags__slug': ['exact'],
                 'locations__domain': ['exact'],
                 'is_footer_menu': ['exact'],
                 'is_primary_menu': ['exact'],
