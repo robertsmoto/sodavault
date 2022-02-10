@@ -36,20 +36,20 @@ class LocationNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-# class GroupNode(DjangoObjectType):
-    # class Meta:
-        # model = configapp.models.Group
-        # filter_fields = [
-                # 'id',
-                # 'slug',
-                # 'name',
-                # 'is_primary_menu',
-                # 'is_secondary_menu',
-                # 'is_footer_menu',
-                # # 'locations__domain',
-                # ]
+class GroupNode(DjangoObjectType):
+    class Meta:
+        model = configapp.models.Group
+        filter_fields = [
+                'id',
+                'slug',
+                'name',
+                'is_primary_menu',
+                'is_secondary_menu',
+                'is_footer_menu',
+                # 'locations__domain',
+                ]
 
-#         interfaces = (relay.Node, )
+        interfaces = (relay.Node, )
 
 
 class Query(graphene.ObjectType):
