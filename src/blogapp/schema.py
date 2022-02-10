@@ -13,7 +13,7 @@ import graphene
 import os
 
 
-class OpeningHooursNode(DjangoObjectType):
+class OpeningHoursNode(DjangoObjectType):
     class Meta:
         model = OpeningHours
         interfaces = (relay.Node, )
