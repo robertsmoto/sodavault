@@ -1,9 +1,4 @@
-from blogapp.models import Post  #, Category  #, Tag
-from configapp.models import Location, Group
-from blogapp.models import Ingredient, Recipe
-from blogapp.models import LocalBusiness, Book, Movie
-from blogapp.models import OpeningHours, Review
-from configapp.models import Profile
+import blogapp.models
 from decouple import config
 from django.contrib.auth.models import User
 from graphene import relay, String
@@ -15,53 +10,44 @@ import os
 
 class OpeningHoursNode(DjangoObjectType):
     class Meta:
-        model = OpeningHours
+        model = blogapp.models.OpeningHours
         interfaces = (relay.Node, )
 
 
 class ReviewNode(DjangoObjectType):
     class Meta:
-        model = Review
+        model = blogapp.models.Review
         interfaces = (relay.Node, )
 
 
 class IngredientNode(DjangoObjectType):
     class Meta:
-        model = Ingredient
+        model = blogapp.models.Ingredient
         interfaces = (relay.Node, )
 
 
 class RecipeNode(DjangoObjectType):
     class Meta:
-        model = Recipe
+        model = blogapp.models.Recipe
         interfaces = (relay.Node, )
 
 
 class ReviewBookNode(DjangoObjectType):
     class Meta:
-        model = Book
+        model = blogapp.models.Book
         interfaces = (relay.Node, )
 
 
 class ReviewBusinessNode(DjangoObjectType):
     class Meta:
-        model = LocalBusiness
+        model = blogapp.models.LocalBusiness
         interfaces = (relay.Node, )
 
 
 class ReviewMovieNode(DjangoObjectType):
     class Meta:
-        model = Movie
+        model = blogapp.models.Movie
         interfaces = (relay.Node, )
-
-
-class UserProfileNode(DjangoObjectType):
-    class Meta:
-        model = Profile
-        interfaces = (relay.Node, )
-
-    def resolve_avatar(self, info):
-        return self.avatar.url
 
 
 class UserNode(DjangoObjectType):
@@ -73,19 +59,19 @@ class UserNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-class LocationNode(DjangoObjectType):
+class BlogLocationNode(DjangoObjectType):
     class Meta:
-        model = Location
-        filter_fields = [
-                'domain',
-                'name',
-                ]
+        model = blogapp.models.Location
+        # filter_fields = [
+                # 'domain',
+                # 'name',
+        #         ]
         interfaces = (relay.Node, )
 
 
-class GroupNode(DjangoObjectType):
+class BlogCategoryNode(DjangoObjectType):
     class Meta:
-        model = Group
+        model = blogapp.models.Category
 #         filter_fields = [
                 # 'id',
                 # 'slug',
@@ -116,7 +102,7 @@ class GroupNode(DjangoObjectType):
 
 class PostNode(DjangoObjectType):
     class Meta:
-        model = Post
+        model = blogapp.models.Post
         filter_fields = {
                 # 'categories__id': ['exact'],
                 # 'categories__slug': ['exact'],
@@ -211,11 +197,11 @@ class PostNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    location = relay.Node.Field(LocationNode)
-    all_locations = DjangoFilterConnectionField(LocationNode)
+    blog_location = relay.Node.Field(BlogLocationNode)
+    all_blog_locations = DjangoFilterConnectionField(BlogLocationNode)
 
-    group = relay.Node.Field(GroupNode)
-    all_groups = DjangoFilterConnectionField(GroupNode)
+    blog_category = relay.Node.Field(BlogCategoryNode)
+    all_blog_categories = DjangoFilterConnectionField(BlogCategoryNode)
 
 #     tag = relay.Node.Field(TagNode)
 #     all_tags = DjangoFilterConnectionField(TagNode)
