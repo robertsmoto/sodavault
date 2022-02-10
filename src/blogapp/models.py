@@ -65,7 +65,15 @@ DOW_CHOICES = [
 ]
 
 
+class CategoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='BLOGCAT')
+
+
 class Category(Group):
+
+    objects = CategoryManager()
+
     class Meta:
         proxy = True
         # verbose_name_plural = "06. Tags"
@@ -76,7 +84,15 @@ class Category(Group):
         super(Category, self).save(*args, **kwargs)
 
 
+class TagManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='BLOGTAG')
+
+
 class Tag(Group):
+
+    objects = TagManager()
+
     class Meta:
         proxy = True
         # verbose_name_plural = "06. Tags"

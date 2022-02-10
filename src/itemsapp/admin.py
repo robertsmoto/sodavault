@@ -1,7 +1,7 @@
 from django.contrib import admin
 from configapp.models import Group
 import nested_admin
-import itemsapp.models as models
+import itemsapp.models
 from dal import autocomplete
 from django import forms
 from dal import forward
@@ -26,17 +26,20 @@ class SubDepartmentInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "Sub-Departments"
 
 
-@admin.register(models.Department)
+@admin.register(itemsapp.models.Department)
 class DepartmentAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
     ]
     search_fields = ['name']
-    # cat_type is automatically saved in model save method
-    exclude = ['cat_type', 'subgroup']
+    exclude = ['group_type']
     prepopulated_fields = {'slug': ('name', )}
     inlines = [SubDepartmentInline, ]
+
+    def get_queryset(self, request):
+        qs = super(DepartmentAdmin, self).get_queryset(request)
+        return qs.filter(group_type="ITEMDEP")
 
 
 class SubCategoryInline(nested_admin.NestedTabularInline):
@@ -47,7 +50,7 @@ class SubCategoryInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "Sub-Categories"
 
 
-@admin.register(models.Category)
+@admin.register(itemsapp.models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -70,7 +73,7 @@ class SubTagInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "Sub-Tags"
 
 
-@admin.register(models.Tag)
+@admin.register(itemsapp.models.Tag)
 class TagAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -82,27 +85,27 @@ class TagAdmin(admin.ModelAdmin):
     inlines = [SubTagInline, ]
 
 
-class SubAttributeInline(nested_admin.NestedTabularInline):
-    model = models.Attribute
-    fk_name = 'terms'
-    exclude = ['cat_type', 'subgroup']
-    prepopulated_fields = {'slug': ('name',)}
-    verbose_name = "Term"
-    verbose_name_plural = "Attribute Terms"
+# class SubAttributeInline(nested_admin.NestedTabularInline):
+    # model = itemsapp.models.Attribute
+    # fk_name = 'terms'
+    # exclude = ['cat_type', 'subgroup']
+    # prepopulated_fields = {'slug': ('name',)}
+    # verbose_name = "Term"
+    # verbose_name_plural = "Attribute Terms"
 
 
-@admin.register(models.Attribute)
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    search_fields = ['name']
-    exclude = ['cat_type', 'subgroup', 'terms']
-    prepopulated_fields = {'slug': ('name',)}
-    inlines = [SubAttributeInline, ]
-    verbose_name = "ATTR ADMIN"
-    verbose_name_plural = "Attribute ADMIN"
+# @admin.register(itemsapp.models.Attribute)
+# class AttributeAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
+    # ]
+    # search_fields = ['name']
+    # exclude = ['cat_type', 'subgroup', 'terms']
+    # prepopulated_fields = {'slug': ('name',)}
+    # inlines = [SubAttributeInline, ]
+    # verbose_name = "ATTR ADMIN"
+    # verbose_name_plural = "Attribute ADMIN"
 
 
 class ProductInventoryInline(nested_admin.NestedTabularInline):
@@ -186,7 +189,7 @@ class BidProductInline(nested_admin.NestedTabularInline):
 
 class IdentifierInline(nested_admin.NestedTabularInline):
 
-    model = models.Identifier
+    model = itemsapp.models.Identifier
     fields = [
         ('gtin', 'isbn'),
         ('pid_i', 'pid_c')
@@ -198,7 +201,7 @@ class IdentifierInline(nested_admin.NestedTabularInline):
 
 class MeasurementInline(nested_admin.NestedTabularInline):
 
-    model = models.Measurement
+    model = itemsapp.models.Measurement
     fields = [
         'weight',
         ('length', 'width', 'height')
@@ -209,7 +212,7 @@ class MeasurementInline(nested_admin.NestedTabularInline):
 
 class MarketingOptionInline(nested_admin.NestedStackedInline):
 
-    model = models.Marketing
+    model = itemsapp.models.Marketing
     extra = 0
     verbose_name = "marketing options"
     fields = [
@@ -223,7 +226,7 @@ class MarketingOptionInline(nested_admin.NestedStackedInline):
 
 class ImageInline(nested_admin.NestedStackedInline):
 
-    model = models.Image
+    model = itemsapp.models.Image
     extra = 0
     verbose_name = "marketing options"
     fields = [
@@ -401,13 +404,11 @@ class ProductTypesFilter(admin.SimpleListFilter):
 
 
 class SubItemInline(nested_admin.NestedTabularInline):
-    model = models.Item
+    model = itemsapp.models.Item
 
 
-@admin.register(models.Part)
+@admin.register(itemsapp.models.Part)
 class PartAdmin(nested_admin.NestedModelAdmin):
-
-    model = models.Part
 
     fields = (
         'sku',
@@ -458,10 +459,8 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         form.instance.save()
 
 
-@admin.register(models.Product)
+@admin.register(itemsapp.models.Product)
 class ProductAdmin(nested_admin.NestedModelAdmin):
-
-    model = models.Product
 
     fields = (
         # 'product_type',
@@ -535,7 +534,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         form.instance.save()
 
 
-@admin.register(models.DigitalProduct)
+@admin.register(itemsapp.models.DigitalProduct)
 class DigitalProductAdmin(admin.ModelAdmin):
     list_display = [
         'name',

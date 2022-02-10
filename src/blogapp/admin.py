@@ -1,73 +1,70 @@
 from django.contrib import admin
-from .models import Category, Tag
-from .models import Article, Doc, Page
-from .models import Recipe, Ingredient
-from .models import LocalBusiness, Book, Movie, Review, OpeningHours
+import blogapp.models
 
 
 class ReviewInline(admin.TabularInline):
     fields = ['rating', 'endorsement']
-    model = Review
+    model = blogapp.models.Review
 
 
 class HoursInline(admin.TabularInline):
-    model = OpeningHours
+    model = blogapp.models.OpeningHours
 
 
 class IngredientInline(admin.TabularInline):
-    model = Ingredient
+    model = blogapp.models.Ingredient
 
 
 class RecipeInline(admin.StackedInline):
-    model = Recipe
+    model = blogapp.models.Recipe
 
 
-@admin.register(Category)
+@admin.register(blogapp.models.Category)
 class CategoryAdmin(admin.ModelAdmin):
-    search_fields = ["topics"]
+    search_fields = ["categories"]
+    exclude = ["group_type"]
     autocomplete_fields = ["locations"]
     prepopulated_fields = {"slug": ("name",)}
-    pass
 
 
-@admin.register(Tag)
+@admin.register(blogapp.models.Tag)
 class TagAdmin(admin.ModelAdmin):
-    search_fields = ["interests"]
+    search_fields = ["tags"]
+    exclude = ["group_type"]
     autocomplete_fields = ["locations"]
     prepopulated_fields = {"slug": ("name",)}
-    pass
 
 
-@admin.register(LocalBusiness)
+@admin.register(blogapp.models.LocalBusiness)
 class LocalBusinessAdmin(admin.ModelAdmin):
     inlines = [HoursInline, ReviewInline]
     pass
 
 
-@admin.register(Book)
+@admin.register(blogapp.models.Book)
 class ReviewBookAdmin(admin.ModelAdmin):
     inlines = [ReviewInline]
     pass
 
 
-@admin.register(Movie)
+@admin.register(blogapp.models.Movie)
 class ReviewMovieAdmin(admin.ModelAdmin):
     inlines = [ReviewInline]
     pass
 
 
-@admin.register(Ingredient)
+@admin.register(blogapp.models.Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Recipe)
+@admin.register(blogapp.models.Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientInline, ]
     pass
 
 
-@admin.register(Article)
+@admin.register(blogapp.models.Article)
 class PostAdmin(admin.ModelAdmin):
 
     fields = [
@@ -93,7 +90,7 @@ class PostAdmin(admin.ModelAdmin):
     autocomplete_fields = ["locations", "categories", "tags"]
 
 
-@admin.register(Doc)
+@admin.register(blogapp.models.Doc)
 class DocAdmin(admin.ModelAdmin):
     fields = [
         ("locations"),
@@ -121,7 +118,7 @@ class DocAdmin(admin.ModelAdmin):
     autocomplete_fields = ["locations", "categories", "tags"]
 
 
-@admin.register(Page)
+@admin.register(blogapp.models.Page)
 class PageAdmin(admin.ModelAdmin):
     fields = [
         ("locations"),
