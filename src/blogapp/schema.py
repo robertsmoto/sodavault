@@ -7,13 +7,13 @@ import graphene
 import os
 
 
-class CategoryNode(DjangoObjectType):
+class PostCategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
         interfaces = (relay.Node, )
 
 
-class TagNode(DjangoObjectType):
+class PostTagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
         interfaces = (relay.Node, )
@@ -160,3 +160,9 @@ class PostNode(DjangoObjectType):
 class Query(graphene.ObjectType):
     posts = relay.Node.Field(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
+
+    post_categories = relay.Node.Field(PostCategoryNode)
+    all_post_categories = DjangoFilterConnectionField(PostCategoryNode)
+
+    post_tags = relay.Node.Field(PostTagNode)
+    all_post_tags = DjangoFilterConnectionField(PostTagNode)
