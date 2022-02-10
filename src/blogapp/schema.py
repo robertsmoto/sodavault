@@ -1,5 +1,5 @@
 from blogapp.models import Category, Tag, Post
-from configapp.models import Location
+# from configapp.models import Location
 from blogapp.models import Ingredient, Recipe
 from blogapp.models import LocalBusiness, Book, Movie
 from blogapp.models import OpeningHours, Review
@@ -73,14 +73,14 @@ class UserNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-class LocationNode(DjangoObjectType):
-    class Meta:
-        model = Location
-        filter_fields = [
-                'domain',
-                'name',
-                ]
-        interfaces = (relay.Node, )
+# class LocationNode(DjangoObjectType):
+    # class Meta:
+        # model = Location
+        # filter_fields = [
+                # 'domain',
+                # 'name',
+                # ]
+        # interfaces = (relay.Node, )
 
 
 class CategoryNode(DjangoObjectType):
@@ -93,7 +93,7 @@ class CategoryNode(DjangoObjectType):
                 'is_primary_menu',
                 'is_secondary_menu',
                 'is_footer_menu',
-                'locations__domain',
+                # 'locations__domain',
                 ]
 
         interfaces = (relay.Node, )
@@ -106,7 +106,7 @@ class TagNode(DjangoObjectType):
                 'id',
                 'slug',
                 'name',
-                'locations__domain',
+                # 'locations__domain',
                 ]
         interfaces = (relay.Node, )
 
@@ -119,7 +119,7 @@ class PostNode(DjangoObjectType):
                 'categories__slug': ['exact'],
                 'tags__id': ['exact'],
                 'tags__slug': ['exact'],
-                'locations__domain': ['exact'],
+                # 'locations__domain': ['exact'],
                 'is_footer_menu': ['exact'],
                 'is_primary_menu': ['exact'],
                 'is_secondary_menu': ['exact'],
@@ -208,8 +208,8 @@ class PostNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    location = relay.Node.Field(LocationNode)
-    all_locations = DjangoFilterConnectionField(LocationNode)
+    # location = relay.Node.Field(LocationNode)
+    # all_locations = DjangoFilterConnectionField(LocationNode)
 
     category = relay.Node.Field(CategoryNode)
     all_categories = DjangoFilterConnectionField(CategoryNode)
