@@ -17,7 +17,7 @@ class LocationAdmin(admin.ModelAdmin):
 @admin.register(configapp.models.Group)
 class GroupAdmin(admin.ModelAdmin):
     # inlines = [HoursInline, ReviewInline]
-    search_fields = ['name', 'description']
+    search_fields = ['group_type', 'name', 'description']
     autocomplete_fields = ['locations']
     pass
 
