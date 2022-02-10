@@ -63,28 +63,22 @@ class Tag(Group):
         super(Tag, self).save(*args, **kwargs)
 
 
-# class AttributeManager(models.Manager):
-    # def get_queryset(self):
-        # return super().get_queryset().filter(group_type='ITEMATT')
+class AttributeManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='ITEMATT')
 
 
-# class Attribute(Group):
-    # """Is a multi-table inheritance model of Group."""
+class Attribute(Group):
+    """Is a proxy model of Group."""
+    objects = AttributeManager()
 
-    # new_field = models.CharField(max_length=200, blank=True)
-    # terms = models.ForeignKey(
-            # 'self',
-            # on_delete=models.CASCADE,
-            # blank=True,
-            # null=True)
+    class Meta:
+        proxy = True
+        verbose_name_plural = "07. Attributes"
 
-    # class Meta:
-        # # proxy = True
-        # verbose_name_plural = "07. Attributes"
-
-    # def save(self, *args, **kwargs):
-        # self.group_type = 'ITEMATT'
-        # super(Attribute, self).save(*args, **kwargs)
+    def save(self, *args, **kwargs):
+        self.group_type = 'ITEMATT'
+        super(Attribute, self).save(*args, **kwargs)
 
 
 class AllProductManager(models.Manager):
