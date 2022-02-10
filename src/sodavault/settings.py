@@ -56,7 +56,7 @@ INSTALLED_APPS = [
     'blogapp',
     'configapp',
     'contactapp',
-    'coreapp',
+    # 'coreapp',
     'docsapp',
     'graphqlapp',
     'homeapp',

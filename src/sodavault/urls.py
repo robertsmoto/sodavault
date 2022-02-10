@@ -70,7 +70,7 @@ urlpatterns = [
         name='django-registration-register'),
     path('advertising/', include('advertisingapp.urls')),
     path('content/', include('blogapp.urls')),
-    path('core/', include('coreapp.urls')),
+    # path('core/', include('coreapp.urls')),
     path('config/', include('configapp.urls')),
     path('graphql/', include('graphqlapp.urls')),
     path('items/', include('itemsapp.urls')),

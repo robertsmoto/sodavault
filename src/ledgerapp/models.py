@@ -1,5 +1,5 @@
 from django.db import models
-from coreapp.models import Timestamps
+from configapp.models import Timestamps
 from contactapp.models import Location
 from itemsapp.models import Part, Product
 import datetime

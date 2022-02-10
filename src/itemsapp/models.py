@@ -2,40 +2,11 @@ from django.db import models
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from ckeditor.fields import RichTextField
-from configapp.models import Price
+from configapp.models import Group
 # from django.db.models import Sum
 # from django.db.models import Prefetch
 # import math
 # from sodavault.utils_logging import svlog_info
-
-
-class Group(models.Model):
-
-    CAT_TYPE_CHOICES = [
-        ('CAT', 'Category'),
-        ('TAG', 'Tag'),
-        ('DEP', 'Department'),
-        ('ATT', 'Attribute'),
-    ]
-    cat_type = models.CharField(
-        max_length=3,
-        blank=True,
-        choices=CAT_TYPE_CHOICES,
-    )
-    name = models.CharField(max_length=200, blank=True)
-    slug = models.SlugField(max_length=50, null=True, blank=True)
-    subgroup = models.ForeignKey(
-            'self', on_delete=models.CASCADE, blank=True, null=True)
-    is_primary = models.BooleanField(default=False)
-    is_secondary = models.BooleanField(default=False)
-    is_tertiary = models.BooleanField(default=False)
-    order = models.CharField(max_length=20, blank=True)
-
-    class Meta:
-        ordering = ['name', ]
-
-    def __str__(self):
-        return '{}'.format(self.name)
 
 
 class DepartmentManager(models.Manager):
@@ -108,7 +79,7 @@ class Attribute(Group):
             on_delete=models.CASCADE,
             blank=True,
             null=True)
-    objects = AttributeManager
+    # objects = AttributeManager
 
     class Meta:
         # proxy = True
@@ -116,7 +87,7 @@ class Attribute(Group):
 
     def save(self, *args, **kwargs):
         self.cat_type = 'ATT'
-        super(Tag, self).save(*args, **kwargs)
+        super(Attribute, self).save(*args, **kwargs)
 
 
 class AllProductManager(models.Manager):
@@ -153,8 +124,8 @@ parent
 
 
 class AttributeItemJoin(models.Model):
-    attributes = models.ForeignKey(
-            Attribute, blank=True, on_delete=models.CASCADE)
+    # attributes = models.ForeignKey(
+    #         Attribute, blank=True, on_delete=models.CASCADE)
     # this should filter based on the attribute selection
     terms = models.CharField(max_length=200, blank=True)
     is_variation = models.BooleanField(default=False)
@@ -164,19 +135,33 @@ class AttributeItemJoin(models.Model):
         return f"{self.attribute.name}"
 
 
+# class Price(models.Model):
+    # name = models.CharField(max_length=200, blank=True)
+    # is_flat = models.BooleanField(default=False)
+    # is_markup = models.BooleanField(default=False)
+    # is_margin = models.BooleanField(default=False)
+    # amount = models.DecimalField(decimal_places=2, max_digits=11, blank=True, null=True)
+
+    # def __str__(self):
+        # return self.name
+
+    # def Meta(self):
+        # ordering = ['name']
+
+
 class Item(models.Model):
-    departments = models.ManyToManyField(
-            Department,
-            related_name='departments',
-            blank=True)
-    categories = models.ManyToManyField(
-            Category,
-            related_name='categories',
-            blank=True)
-    tags = models.ManyToManyField(
-            Tag,
-            related_name='tags',
-            blank=True)
+    # departments = models.ManyToManyField(
+            # Department,
+            # related_name='departments',
+            # blank=True)
+    # categories = models.ManyToManyField(
+            # Category,
+            # related_name='categories',
+            # blank=True)
+    # tags = models.ManyToManyField(
+            # Tag,
+            # related_name='tags',
+    #         blank=True)
     attributes = models.ManyToManyField(
             AttributeItemJoin,
             blank=True)
@@ -200,6 +185,10 @@ class Item(models.Model):
     description = models.TextField(
             blank=True,
             help_text="For internal and purchasing use.")
+    keywords = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="comma, separated, list")
     use_calculated_quantity = models.BooleanField(
             default=False,
             help_text="Use quantity calculated from stock.")

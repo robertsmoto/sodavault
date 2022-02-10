@@ -10,91 +10,98 @@ from ledgerapp.models import Entry
 from django.urls import resolve
 
 
-class SubDepartmentInline(nested_admin.NestedTabularInline):
-    model = models.Group
-    exclude = ['cat_type']
-    prepopulated_fields = {'slug': ('name',)}
-    verbose_name = "Sub-Department"
-    verbose_name_plural = "Sub-Departments"
+# @admin.register(models.Price)
+# class PriceAdmin(admin.ModelAdmin):
+    # model = models.Price
+    # list_display = ['name', 'is_margin', 'is_markup', 'is_flat']
+#     list_filter = ['is_margin', 'is_markup', 'is_flat']
 
 
-@admin.register(models.Department)
-class DepartmentAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    search_fields = ['name']
-    # cat_type is automatically saved in model save method
-    exclude = ['cat_type', 'subgroup']
-    prepopulated_fields = {'slug': ('name', )}
-    inlines = [SubDepartmentInline, ]
+# class SubDepartmentInline(nested_admin.NestedTabularInline):
+    # model = models.Group
+    # exclude = ['cat_type']
+    # prepopulated_fields = {'slug': ('name',)}
+    # verbose_name = "Sub-Department"
+#     verbose_name_plural = "Sub-Departments"
 
 
-class SubCategoryInline(nested_admin.NestedTabularInline):
-    model = models.Group
-    exclude = ['cat_type']
-    prepopulated_fields = {'slug': ('name',)}
-    verbose_name = "Sub-Category"
-    verbose_name_plural = "Sub-Categories"
+# @admin.register(models.Department)
+# class DepartmentAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
+    # ]
+    # search_fields = ['name']
+    # # cat_type is automatically saved in model save method
+    # exclude = ['cat_type', 'subgroup']
+    # prepopulated_fields = {'slug': ('name', )}
+    # inlines = [SubDepartmentInline, ]
 
 
-@admin.register(models.Category)
-class CategoryAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    list_display_links = [
-        'name',
-    ]
-    search_fields = ['name']
-    exclude = ['cat_type', ]
-    prepopulated_fields = {'slug': ('name', )}
-    inlines = [SubCategoryInline, ]
+# class SubCategoryInline(nested_admin.NestedTabularInline):
+    # model = models.Group
+    # exclude = ['cat_type']
+    # prepopulated_fields = {'slug': ('name',)}
+    # verbose_name = "Sub-Category"
+    # verbose_name_plural = "Sub-Categories"
 
 
-class SubTagInline(nested_admin.NestedTabularInline):
-    model = models.Group
-    exclude = ['cat_type']
-    prepopulated_fields = {'slug': ('name',)}
-    verbose_name = "Sub-Tag"
-    verbose_name_plural = "Sub-Tags"
+# @admin.register(models.Category)
+# class CategoryAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
+    # ]
+    # list_display_links = [
+        # 'name',
+    # ]
+    # search_fields = ['name']
+    # exclude = ['cat_type', ]
+    # prepopulated_fields = {'slug': ('name', )}
+    # inlines = [SubCategoryInline, ]
 
 
-@admin.register(models.Tag)
-class TagAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    search_fields = ['name']
-    exclude = ['cat_type', ]
-    prepopulated_fields = {'slug': ('name',)}
-    inlines = [SubTagInline, ]
+# class SubTagInline(nested_admin.NestedTabularInline):
+    # model = models.Group
+    # exclude = ['cat_type']
+    # prepopulated_fields = {'slug': ('name',)}
+    # verbose_name = "Sub-Tag"
+    # verbose_name_plural = "Sub-Tags"
 
 
-class SubAttributeInline(nested_admin.NestedTabularInline):
-    model = models.Attribute
-    fk_name = 'terms'
-    exclude = ['cat_type', 'subgroup']
-    prepopulated_fields = {'slug': ('name',)}
-    verbose_name = "Term"
-    verbose_name_plural = "Attribute Terms"
+# @admin.register(models.Tag)
+# class TagAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
+    # ]
+    # search_fields = ['name']
+    # exclude = ['cat_type', ]
+    # prepopulated_fields = {'slug': ('name',)}
+    # inlines = [SubTagInline, ]
 
 
-@admin.register(models.Attribute)
-class AttributeAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    search_fields = ['name']
-    exclude = ['cat_type', 'subgroup', 'terms']
-    prepopulated_fields = {'slug': ('name',)}
-    inlines = [SubAttributeInline, ]
-    verbose_name = "ATTR ADMIN"
-    verbose_name_plural = "Attribute ADMIN"
+# class SubAttributeInline(nested_admin.NestedTabularInline):
+    # model = models.Attribute
+    # fk_name = 'terms'
+    # exclude = ['cat_type', 'subgroup']
+    # prepopulated_fields = {'slug': ('name',)}
+    # verbose_name = "Term"
+    # verbose_name_plural = "Attribute Terms"
+
+
+# @admin.register(models.Attribute)
+# class AttributeAdmin(admin.ModelAdmin):
+    # list_display = [
+        # 'name',
+        # 'slug',
+    # ]
+    # search_fields = ['name']
+    # exclude = ['cat_type', 'subgroup', 'terms']
+    # prepopulated_fields = {'slug': ('name',)}
+    # inlines = [SubAttributeInline, ]
+    # verbose_name = "ATTR ADMIN"
+#     verbose_name_plural = "Attribute ADMIN"
 
 
 
@@ -458,15 +465,16 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
 
     fields = (
         # 'product_type',
-        'sku',
-        'name',
+        ('sku', 'name'),
         'description',
-        'departments',
-        'price_override',
-        ('categories', 'tags'),
+        'keywords',
+        ('departments', 'categories', 'tags'),
+        ('quantity', 'use_calculated_quantity'),
+        ('price', 'use_calculated_price', 'use_parent_price'),
         ('ecpu', 'unit', 'ecpu_calc_from'),
         ('ecpu_override', 'unit_override'),
-        ('price', 'price_calc_from'),
+        # ('price', 'price_calc_from'),
+        'price_override',
         # 'available_inventory',
         # 'max_new_inventory',
     )
@@ -501,17 +509,17 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         'sku',
         'name',
     )
-    autocomplete_fields = [
-        'departments',
-        'categories',
-        'tags',
-    ]
+    # autocomplete_fields = [
+        # 'departments',
+        # 'categories',
+        # 'tags',
+    # ]
     ordering = ['sku']
 
     inlines = (
         # ProductPartJoinInline,
-        BidProductInline,
         # ProductInventoryInline,
+        BidProductInline,
         IdentifierInline,
         MeasurementInline,
         MarketingOptionInline,
@@ -532,10 +540,10 @@ class DigitalProductAdmin(admin.ModelAdmin):
     list_display = [
         'name',
     ]
-    autocomplete_fields = [
-        'departments',
-        'categories',
-        'tags',
-    ]
+    # autocomplete_fields = [
+        # 'departments',
+        # 'categories',
+        # 'tags',
+    # ]
     search_fields = ['name']
     # prepopulated_fields = {'slug': ('sku', 'name', )}
