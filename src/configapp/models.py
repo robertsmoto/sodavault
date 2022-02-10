@@ -4,6 +4,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.conf import settings
 from rest_framework.authtoken.models import Token
+from utilities import utils_images
+from sodavault.utils_logging import svlog_info
 
 
 class Timestamps(models.Model):
@@ -37,28 +39,117 @@ class Location(Timestamps, models.Model):
 
 class Group(Timestamps, models.Model):
 
-    CAT_TYPE_CHOICES = [
-        ('CAT', 'Category'),
-        ('TAG', 'Tag'),
-        ('DEP', 'Department'),
-        ('ATT', 'Attribute'),
+    GROUP_TYPE_CHOICES = [
+        ('BLOGCAT', 'Blog Category'),
+        ('BLOGTAG', 'Blog Tag'),
+        ('ITEMCAT', 'Item Category'),
+        ('ITEMTAG', 'Item Tag'),
+        ('ITEMDEP', 'Item Department'),
+        ('ITEMATT', 'Item Attribute'),
     ]
-    cat_type = models.CharField(
-        max_length=3,
+    group_type = models.CharField(
+        max_length=7,
         blank=True,
-        choices=CAT_TYPE_CHOICES,
+        choices=GROUP_TYPE_CHOICES,
     )
-    name = models.CharField(max_length=200, blank=True)
-    slug = models.SlugField(max_length=50, null=True, blank=True)
+    locations = models.ManyToManyField(
+            Location,
+            blank=True)
     subgroup = models.ForeignKey(
             'self', on_delete=models.CASCADE, blank=True, null=True)
+    slug = models.SlugField(max_length=50, null=True, blank=True)
+    name = models.CharField(max_length=200, blank=True)
+    description = models.CharField(
+            'Category Description',
+            max_length=100,
+            blank=True)
+    kwd_list = models.CharField(
+            'Category Keywords',
+            max_length=100,
+            blank=True,
+            help_text="Comma-separated values.")
+
     is_primary = models.BooleanField(default=False)
     is_secondary = models.BooleanField(default=False)
     is_tertiary = models.BooleanField(default=False)
     order = models.CharField(max_length=20, blank=True)
+    image_thumb = models.ImageField(
+            upload_to=utils_images.new_filename_config_group,
+            null=True,
+            blank=True,
+            help_text="Recommended size 500px x 500px")
+    image_191 = models.ImageField(
+            upload_to=utils_images.new_filename_config_group,
+            null=True,
+            blank=True,
+            help_text="1.9:1 ratio recommended size 1200px x 630px")
+    image_21 = models.ImageField(
+            upload_to=utils_images.new_filename_config_group,
+            null=True,
+            blank=True,
+            help_text="Recommended size 1200px x 600px")
+
+    # The following are automatically generated using the
+    # model's save method.
+
+    image_lg_square = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 500px x 500px")
+    image_md_square = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 250px x 250px")
+    image_sm_square = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 200px x 200px")
 
     class Meta:
-        ordering = ['name', ]
+        verbose_name_plural = "05. Groups"
+        # ordering = ['menu_order', 'name']
+
+    def __init__(self, *args, **kwargs):
+        super(Group, self).__init__(*args, **kwargs)
+        self._orig_image = self.image
+
+    def save(self, *args, **kwargs):
+        # Creates new image sizes. Save new images directly to media server
+        # and save the url in a char field.
+
+        img_index = {}
+
+        if self._orig_image_thumb != self.image_thumb and self.image_thumb:
+            svlog_info("Creating blog category image variations.")
+
+            img_index['image_lg_square'] = [
+                    utils_images.BannerLgSqWebp,
+                    self.image_thumb,
+                    (500, 500),
+                    "configapp/group"]
+            img_index['image_md_square'] = [
+                    utils_images.BannerMdSqWebp,
+                    self.image_thumb,
+                    (250, 250),
+                    "configapp/group"]
+            img_index['image_sm_square'] = [
+                    utils_images.BannerSmSqWebp,
+                    self.image_thumb,
+                    (200, 200),
+                    "configapp/group"]
+
+        for k, v in img_index.items():
+
+            file_path = utils_images.process_images(k=k, v=v)
+
+            if k == "image_lg_square":
+                self.image_lg_square = file_path
+            if k == "image_md_square":
+                self.image_md_square = file_path
+            if k == "image_sm_square":
+                self.image_sm_square = file_path
+
+        super(Group, self).save(*args, **kwargs)
 
     def __str__(self):
         return '{}'.format(self.name)

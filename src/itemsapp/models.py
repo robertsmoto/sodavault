@@ -11,7 +11,7 @@ from configapp.models import Group
 
 class DepartmentManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(cat_type='DEP')
+        return super().get_queryset().filter(group_type='DEP')
 
 
 class Department(Group):
@@ -23,13 +23,13 @@ class Department(Group):
         verbose_name_plural = "04. Departments"
 
     def save(self, *args, **kwargs):
-        self.cat_type = 'DEP'
+        self.group_type = 'DEP'
         super(Department, self).save(*args, **kwargs)
 
 
 class CategoryManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(cat_type='CAT')
+        return super().get_queryset().filter(group_type='CAT')
 
 
 class Category(Group):
@@ -41,14 +41,14 @@ class Category(Group):
         verbose_name_plural = "05. Categories"
 
     def save(self, *args, **kwargs):
-        self.cat_type = 'CAT'
+        self.group_type = 'CAT'
         super(Category, self).save(*args, **kwargs)
 
 
 class TagManager(models.Manager):
 
     def get_queryset(self):
-        return super().get_queryset().filter(cat_type='TAG')
+        return super().get_queryset().filter(group_type='TAG')
 
 
 class Tag(Group):
@@ -60,14 +60,14 @@ class Tag(Group):
         verbose_name_plural = "06. Tags"
 
     def save(self, *args, **kwargs):
-        self.cat_type = 'TAG'
+        self.group_type = 'TAG'
         super(Tag, self).save(*args, **kwargs)
 
 
 class AttributeManager(models.Manager):
 
     def get_queryset(self):
-        return super().get_queryset().filter(cat_type='ATT')
+        return super().get_queryset().filter(group_type='ATT')
 
 
 class Attribute(Group):
@@ -86,7 +86,7 @@ class Attribute(Group):
         verbose_name_plural = "07. Attributes"
 
     def save(self, *args, **kwargs):
-        self.cat_type = 'ATT'
+        self.group_type = 'ATT'
         super(Attribute, self).save(*args, **kwargs)
 
 

@@ -110,17 +110,17 @@ class Category(models.Model):
             blank=True,
             help_text="Comma-separated values.")
     image = models.ImageField(
-            upload_to=utils_images.new_filename_blog_cat,
+            upload_to=utils_images.new_filename_config_group,
             null=True,
             blank=True,
             help_text="Recommended size 500px x 500px")
     image_191 = models.ImageField(
-            upload_to=utils_images.new_filename_blog_cat,
+            upload_to=utils_images.new_filename_config_group,
             null=True,
             blank=True,
             help_text="1.9:1 ratio recommended size 1200px x 630px")
     image_21 = models.ImageField(
-            upload_to=utils_images.new_filename_blog_cat,
+            upload_to=utils_images.new_filename_config_group,
             null=True,
             blank=True,
             help_text="Recommended size 1200px x 600px")
@@ -161,17 +161,17 @@ class Category(models.Model):
                     utils_images.BannerLgSqWebp,
                     self.image,
                     (500, 500),
-                    "blogapp/category"]
+                    "configapp/group"]
             img_index['image_md_square'] = [
                     utils_images.BannerMdSqWebp,
                     self.image,
                     (250, 250),
-                    "blogapp/category"]
+                    "configapp/group"]
             img_index['image_sm_square'] = [
                     utils_images.BannerSmSqWebp,
                     self.image,
                     (200, 200),
-                    "blogapp/category"]
+                    "configapp/group"]
 
         for k, v in img_index.items():
 
