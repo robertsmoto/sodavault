@@ -111,7 +111,7 @@ class Group(Timestamps, models.Model):
 
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__(*args, **kwargs)
-        self._orig_image = self.image
+        self._orig_image_thumb = self.image_thumb
 
     def save(self, *args, **kwargs):
         # Creates new image sizes. Save new images directly to media server
