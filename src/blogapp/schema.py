@@ -1,4 +1,5 @@
-from blogapp.models import Category, Tag, Location, Post
+from blogapp.models import Category, Tag, Post
+from configapp.models import Location
 from blogapp.models import Ingredient, Recipe
 from blogapp.models import LocalBusiness, Book, Movie
 from blogapp.models import OpeningHours, Review

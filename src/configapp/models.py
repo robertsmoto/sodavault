@@ -107,7 +107,7 @@ class Group(Timestamps, models.Model):
 
     class Meta:
         verbose_name_plural = "05. Groups"
-        # ordering = ['menu_order', 'name']
+        ordering = ['order', 'name']
 
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__(*args, **kwargs)
