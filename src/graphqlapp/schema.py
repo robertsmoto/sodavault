@@ -1,7 +1,7 @@
 import graphene
 import advertisingapp.schema
 import blogapp.schema
-import configapp.schema
+# import configapp.schema
 
 
 class Query(
