@@ -7,16 +7,16 @@ import graphene
 import os
 
 
-# class PostCategoryNode(DjangoObjectType):
-    # class Meta:
-        # model = blogapp.models.Category
-        # interfaces = (relay.Node, )
+class PostCategoryNode(DjangoObjectType):
+    class Meta:
+        model = blogapp.models.Category
+        interfaces = (relay.Node, )
 
 
-# class PostTagNode(DjangoObjectType):
-    # class Meta:
-        # model = blogapp.models.Tag
-#         interfaces = (relay.Node, )
+class PostTagNode(DjangoObjectType):
+    class Meta:
+        model = blogapp.models.Tag
+        interfaces = (relay.Node, )
 
 
 class OpeningHoursNode(DjangoObjectType):

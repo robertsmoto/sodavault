@@ -40,7 +40,7 @@ class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
         filter_fields = [
-                'groupType',
+                # 'groupType',
                 'id',
                 'is_primary',
                 'is_secondary',
