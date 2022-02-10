@@ -160,9 +160,3 @@ class PostNode(DjangoObjectType):
 class Query(graphene.ObjectType):
     posts = relay.Node.Field(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
-
-#     post_categories = relay.Node.Field(PostCategoryNode)
-    # all_post_categories = DjangoFilterConnectionField(PostCategoryNode)
-
-    # post_tags = relay.Node.Field(PostTagNode)
-    # all_post_tags = DjangoFilterConnectionField(PostTagNode)
