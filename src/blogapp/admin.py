@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Tag, Location
+from .models import Location  #  Category, Tag,
 from .models import Article, Doc, Page
 from .models import Recipe, Ingredient
 from .models import LocalBusiness, Book, Movie, Review, OpeningHours
@@ -64,20 +64,20 @@ class RecipeAdmin(admin.ModelAdmin):
 #     pass
 
 
-@admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
-    search_fields = ["topics"]
-    autocomplete_fields = ["locations"]
-    prepopulated_fields = {"slug": ("name",)}
-    pass
+# @admin.register(Category)
+# class CategoryAdmin(admin.ModelAdmin):
+    # search_fields = ["topics"]
+    # autocomplete_fields = ["locations"]
+    # prepopulated_fields = {"slug": ("name",)}
+    # pass
 
 
-@admin.register(Tag)
-class TagAdmin(admin.ModelAdmin):
-    search_fields = ["interests"]
-    autocomplete_fields = ["locations"]
-    prepopulated_fields = {"slug": ("name",)}
-    pass
+# @admin.register(Tag)
+# class TagAdmin(admin.ModelAdmin):
+    # search_fields = ["interests"]
+    # autocomplete_fields = ["locations"]
+    # prepopulated_fields = {"slug": ("name",)}
+    # pass
 
 
 @admin.register(Article)
@@ -103,7 +103,7 @@ class PostAdmin(admin.ModelAdmin):
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    # autocomplete_fields = ["locations", "categories", "tags"]
 
 
 @admin.register(Doc)
@@ -131,7 +131,7 @@ class DocAdmin(admin.ModelAdmin):
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    # autocomplete_fields = ["locations", "categories", "tags"]
 
 
 @admin.register(Page)
@@ -158,4 +158,4 @@ class PageAdmin(admin.ModelAdmin):
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    # autocomplete_fields = ["locations", "categories", "tags"]

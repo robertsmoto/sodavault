@@ -65,140 +65,140 @@ DOW_CHOICES = [
 ]
 
 
-class Category(models.Model):
-    locations = models.ManyToManyField(
-            Location,
-            blank=True,
-            related_name='categories')
-    parent = models.ForeignKey(
-            'self',
-            on_delete=models.CASCADE,
-            blank=True,
-            null=True,
-            related_name='children',
-            help_text="Self-referencing field to nest menus.")
-    slug = models.SlugField('Slug',)
-    name = models.CharField(
-            'Category Name',
-            max_length=100,
-            blank=True)
-    description = models.CharField(
-            'Category Description',
-            max_length=100,
-            blank=True)
-    menu_order = models.IntegerField(
-            'Menu Order',
-            default=0,
-            help_text="Use to order menu")
-    is_primary_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in primary menu.")
-    is_secondary_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in secondary menu.")
-    is_footer_menu = models.BooleanField(
-            default=False,
-            help_text="Use if in footer menu.")
-    kwd_list = models.CharField(
-            'Category Keywords',
-            max_length=100,
-            blank=True,
-            help_text="Comma-separated values.")
-    kwd_list = models.CharField(
-            'Category Keywords',
-            max_length=100,
-            blank=True,
-            help_text="Comma-separated values.")
-    image = models.ImageField(
-            upload_to=utils_images.new_filename_config_group,
-            null=True,
-            blank=True,
-            help_text="Recommended size 500px x 500px")
-    image_191 = models.ImageField(
-            upload_to=utils_images.new_filename_config_group,
-            null=True,
-            blank=True,
-            help_text="1.9:1 ratio recommended size 1200px x 630px")
-    image_21 = models.ImageField(
-            upload_to=utils_images.new_filename_config_group,
-            null=True,
-            blank=True,
-            help_text="Recommended size 1200px x 600px")
+# class Category(models.Model):
+    # locations = models.ManyToManyField(
+            # Location,
+            # blank=True,
+            # related_name='categories')
+    # parent = models.ForeignKey(
+            # 'self',
+            # on_delete=models.CASCADE,
+            # blank=True,
+            # null=True,
+            # related_name='children',
+            # help_text="Self-referencing field to nest menus.")
+    # slug = models.SlugField('Slug',)
+    # name = models.CharField(
+            # 'Category Name',
+            # max_length=100,
+            # blank=True)
+    # description = models.CharField(
+            # 'Category Description',
+            # max_length=100,
+            # blank=True)
+    # menu_order = models.IntegerField(
+            # 'Menu Order',
+            # default=0,
+            # help_text="Use to order menu")
+    # is_primary_menu = models.BooleanField(
+            # default=False,
+            # help_text="Use if in primary menu.")
+    # is_secondary_menu = models.BooleanField(
+            # default=False,
+            # help_text="Use if in secondary menu.")
+    # is_footer_menu = models.BooleanField(
+            # default=False,
+            # help_text="Use if in footer menu.")
+    # kwd_list = models.CharField(
+            # 'Category Keywords',
+            # max_length=100,
+            # blank=True,
+            # help_text="Comma-separated values.")
+    # kwd_list = models.CharField(
+            # 'Category Keywords',
+            # max_length=100,
+            # blank=True,
+            # help_text="Comma-separated values.")
+    # image = models.ImageField(
+            # upload_to=utils_images.new_filename_config_group,
+            # null=True,
+            # blank=True,
+            # help_text="Recommended size 500px x 500px")
+    # image_191 = models.ImageField(
+            # upload_to=utils_images.new_filename_config_group,
+            # null=True,
+            # blank=True,
+            # help_text="1.9:1 ratio recommended size 1200px x 630px")
+    # image_21 = models.ImageField(
+            # upload_to=utils_images.new_filename_config_group,
+            # null=True,
+            # blank=True,
+            # help_text="Recommended size 1200px x 600px")
 
-    """The following are automatically generated using the
-    model's save method."""
+    # """The following are automatically generated using the
+    # model's save method."""
 
-    image_lg_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 500px x 500px")
-    image_md_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 250px x 250px")
-    image_sm_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 200px x 200px")
+    # image_lg_square = models.CharField(
+            # max_length=200,
+            # blank=True,
+            # help_text="Automatic size: 500px x 500px")
+    # image_md_square = models.CharField(
+            # max_length=200,
+            # blank=True,
+            # help_text="Automatic size: 250px x 250px")
+    # image_sm_square = models.CharField(
+            # max_length=200,
+            # blank=True,
+            # help_text="Automatic size: 200px x 200px")
 
-    timestamp_created = models.DateTimeField(auto_now_add=True)
-    timestamp_modified = models.DateTimeField(auto_now=True)
+    # timestamp_created = models.DateTimeField(auto_now_add=True)
+    # timestamp_modified = models.DateTimeField(auto_now=True)
 
-    def __init__(self, *args, **kwargs):
-        super(Category, self).__init__(*args, **kwargs)
-        self._orig_image = self.image
+    # def __init__(self, *args, **kwargs):
+        # super(Category, self).__init__(*args, **kwargs)
+        # self._orig_image = self.image
 
-    def save(self, *args, **kwargs):
-        """Creates new image sizes. Save new images directly to media server
-        and save the url in a char field."""
+    # def save(self, *args, **kwargs):
+        # """Creates new image sizes. Save new images directly to media server
+        # and save the url in a char field."""
 
-        img_index = {}
+        # img_index = {}
 
-        if self._orig_image != self.image and self.image:
-            svlog_info("Creating blog category image variations.")
+        # if self._orig_image != self.image and self.image:
+            # svlog_info("Creating blog category image variations.")
 
-            img_index['image_lg_square'] = [
-                    utils_images.BannerLgSqWebp,
-                    self.image,
-                    (500, 500),
-                    "configapp/group"]
-            img_index['image_md_square'] = [
-                    utils_images.BannerMdSqWebp,
-                    self.image,
-                    (250, 250),
-                    "configapp/group"]
-            img_index['image_sm_square'] = [
-                    utils_images.BannerSmSqWebp,
-                    self.image,
-                    (200, 200),
-                    "configapp/group"]
+            # img_index['image_lg_square'] = [
+                    # utils_images.BannerLgSqWebp,
+                    # self.image,
+                    # (500, 500),
+                    # "configapp/group"]
+            # img_index['image_md_square'] = [
+                    # utils_images.BannerMdSqWebp,
+                    # self.image,
+                    # (250, 250),
+                    # "configapp/group"]
+            # img_index['image_sm_square'] = [
+                    # utils_images.BannerSmSqWebp,
+                    # self.image,
+                    # (200, 200),
+                    # "configapp/group"]
 
-        for k, v in img_index.items():
+        # for k, v in img_index.items():
 
-            file_path = utils_images.process_images(k=k, v=v)
+            # file_path = utils_images.process_images(k=k, v=v)
 
-            if k == "image_lg_square":
-                self.image_lg_square = file_path
-            if k == "image_md_square":
-                self.image_md_square = file_path
-            if k == "image_sm_square":
-                self.image_sm_square = file_path
+            # if k == "image_lg_square":
+                # self.image_lg_square = file_path
+            # if k == "image_md_square":
+                # self.image_md_square = file_path
+            # if k == "image_sm_square":
+                # self.image_sm_square = file_path
 
-        super(Category, self).save(*args, **kwargs)
+        # super(Category, self).save(*args, **kwargs)
 
-    class Meta:
-        verbose_name_plural = "05. Categories"
-        ordering = ['menu_order', 'name']
+    # class Meta:
+        # verbose_name_plural = "05. Categories"
+        # ordering = ['menu_order', 'name']
 
-    def __str__(self):
-        return '%s' % (self.name)
+    # def __str__(self):
+        # return '%s' % (self.name)
 
 
-class Tag(Category):
-    class Meta:
-        proxy = True
-        verbose_name_plural = "06. Tags"
-        ordering = ['menu_order', 'name']
+# class Tag(Category):
+    # class Meta:
+        # proxy = True
+        # verbose_name_plural = "06. Tags"
+        # ordering = ['menu_order', 'name']
 
 
 class Book(models.Model):
@@ -595,13 +595,12 @@ class Post(models.Model):
         ('TRASH', 'Trash'),
     ]
     locations = models.ManyToManyField(Location, blank=True)
-    categories = models.ManyToManyField(
-            Category,
-            blank=True)
-    tags = models.ManyToManyField(
-            Tag,
-            related_name="tags",
-            blank=True)
+#     categories = models.ManyToManyField(
+            # Category,
+            # blank=True)
+    # tags = models.ManyToManyField(
+            # Tag,
+            # blank=True)
     author = models.ForeignKey(
             User,
             on_delete=models.SET_NULL,
