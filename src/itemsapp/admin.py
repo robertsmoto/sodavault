@@ -85,27 +85,30 @@ class TagAdmin(admin.ModelAdmin):
     inlines = [SubTagInline, ]
 
 
-# class SubAttributeInline(nested_admin.NestedTabularInline):
-    # model = itemsapp.models.Attribute
-    # fk_name = 'terms'
-    # exclude = ['cat_type', 'subgroup']
-    # prepopulated_fields = {'slug': ('name',)}
-    # verbose_name = "Term"
-    # verbose_name_plural = "Attribute Terms"
+class SubAttributeInline(nested_admin.NestedTabularInline):
+    model = itemsapp.models.Attribute
+    exclude = ['group_type']
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = "Term"
+    verbose_name_plural = "Attribute Terms"
+    autocomplete_fields = ['locations']
 
 
-# @admin.register(itemsapp.models.Attribute)
-# class AttributeAdmin(admin.ModelAdmin):
-    # list_display = [
-        # 'name',
-        # 'slug',
-    # ]
-    # search_fields = ['name']
-    # exclude = ['cat_type', 'subgroup', 'terms']
-    # prepopulated_fields = {'slug': ('name',)}
-    # inlines = [SubAttributeInline, ]
-    # verbose_name = "ATTR ADMIN"
-    # verbose_name_plural = "Attribute ADMIN"
+@admin.register(itemsapp.models.Attribute)
+class AttributeAdmin(admin.ModelAdmin):
+    list_display = [
+        'name',
+        'slug',
+    ]
+    search_fields = ['name']
+    exclude = ['group_type', 'subgroup']
+    prepopulated_fields = {'slug': ('name',)}
+    inlines = [SubAttributeInline, ]
+    autocomplete_fields = ['locations']
+
+    def get_queryset(self, request):
+        qs = super(AttributeAdmin, self).get_queryset(request)
+        return qs.filter(subgroup_id__isnull=True)
 
 
 class ProductInventoryInline(nested_admin.NestedTabularInline):

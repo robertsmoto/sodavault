@@ -172,7 +172,6 @@ class Item(models.Model):
     )
     sku = models.CharField(max_length=100, blank=True)
     name = models.CharField(max_length=100, blank=True)
-    # slug = models.SlugField(max_length=50)
     description = models.TextField(
             blank=True,
             help_text="For internal and purchasing use.")
@@ -180,10 +179,11 @@ class Item(models.Model):
             max_length=200,
             blank=True,
             help_text="comma, separated, list")
+    stock_quantity = models.BigIntegerField(blank=True, null=True)
     use_calculated_quantity = models.BooleanField(
             default=False,
             help_text="Use quantity calculated from stock.")
-    quantity = models.BigIntegerField(blank=True, null=True,)
+    calculated_stock_quantity = models.BigIntegerField(blank=True, null=True)
     unit = models.CharField(
             max_length=40,
             blank=True,
@@ -195,21 +195,26 @@ class Item(models.Model):
     unit_base = models.IntegerField(
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
-    order_min = models.IntegerField(
-            blank=True,
-            default=0,
-            help_text="Use to require minium order quantity.")
-    order_max = models.IntegerField(
-            blank=True,
-            default=0,
-            help_text="Use to limit order quantity.")
+    price = models.BigIntegerField(blank=True, null=True)
     use_calculated_price = models.BooleanField(
             default=False,
             help_text="Use price calculated from costs.")
-    use_parent_price = models.BooleanField(
+    calculated_price = models.BigIntegerField(blank=True, null=True)
+    use_subitem_sum = models.BooleanField(
             default=False,
-            help_text="Used for collections.")
-    price = models.BigIntegerField(blank=True, null=True)
+            help_text="Price is the summation of subitems.")
+    collection_quantity = models.IntegerField(
+            blank=True,
+            null=True,
+            help_text="How many items are included in the collection.")
+    order_min = models.IntegerField(
+            blank=True,
+            null=True,
+            help_text="Use to require minium order quantity.")
+    order_max = models.IntegerField(
+            blank=True,
+            null=True,
+            help_text="Use to limit order quantity.")
 
     ecpu = models.DecimalField(
         max_digits=14, decimal_places=4, blank=True, null=True)
