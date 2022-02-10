@@ -1,5 +1,5 @@
-from blogapp.models import Post, Category  #, Tag
-from configapp.models import Location  # , Group
+from blogapp.models import Post  #, Category  #, Tag
+from configapp.models import Location, Group
 from blogapp.models import Ingredient, Recipe
 from blogapp.models import LocalBusiness, Book, Movie
 from blogapp.models import OpeningHours, Review
@@ -83,9 +83,9 @@ class LocationNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-class CategoryNode(DjangoObjectType):
+class GroupNode(DjangoObjectType):
     class Meta:
-        model = Category
+        model = Group
 #         filter_fields = [
                 # 'id',
                 # 'slug',
@@ -214,8 +214,8 @@ class Query(graphene.ObjectType):
     location = relay.Node.Field(LocationNode)
     all_locations = DjangoFilterConnectionField(LocationNode)
 
-    category = relay.Node.Field(CategoryNode)
-    all_categories = DjangoFilterConnectionField(CategoryNode)
+    category = relay.Node.Field(GroupNode)
+    all_categories = DjangoFilterConnectionField(GroupNode)
 
 #     tag = relay.Node.Field(TagNode)
 #     all_tags = DjangoFilterConnectionField(TagNode)
