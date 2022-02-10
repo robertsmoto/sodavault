@@ -23,7 +23,7 @@ class Department(Group):
         verbose_name_plural = "04. Departments"
 
     def save(self, *args, **kwargs):
-        self.group_type = 'DEP'
+        self.group_type = 'ITEMDEP'
         super(Department, self).save(*args, **kwargs)
 
 
@@ -41,7 +41,7 @@ class Category(Group):
         verbose_name_plural = "05. Categories"
 
     def save(self, *args, **kwargs):
-        self.group_type = 'CAT'
+        self.group_type = 'ITEMCAT'
         super(Category, self).save(*args, **kwargs)
 
 
@@ -60,7 +60,7 @@ class Tag(Group):
         verbose_name_plural = "06. Tags"
 
     def save(self, *args, **kwargs):
-        self.group_type = 'TAG'
+        self.group_type = 'ITEMTAG'
         super(Tag, self).save(*args, **kwargs)
 
 
