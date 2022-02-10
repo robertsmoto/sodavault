@@ -39,22 +39,21 @@ class LocationNode(DjangoObjectType):
 class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
-        filter_fields = [
-                'id',
-                'slug',
-                'name',
-                'is_primary_menu',
-                'is_secondary_menu',
-                'is_footer_menu',
-                # 'locations__domain',
-                ]
-
         interfaces = (relay.Node, )
+#         filter_fields = [
+                # 'id',
+                # 'slug',
+                # 'name',
+                # 'is_primary_menu',
+                # 'is_secondary_menu',
+                # 'is_footer_menu',
+                # # 'locations__domain',
+#                 ]
 
 
 class Query(graphene.ObjectType):
     location = relay.Node.Field(LocationNode)
     all_locations = DjangoFilterConnectionField(LocationNode)
 
-    # group = relay.Node.Field(GroupNode)
-    # all_groups = DjangoFilterConnectionField(GroupNode)
+    group = relay.Node.Field(GroupNode)
+    all_groups = DjangoFilterConnectionField(GroupNode)
