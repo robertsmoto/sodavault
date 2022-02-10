@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Location, Category, Tag
+from .models import Category, Tag
 from .models import Article, Doc, Page
 from .models import Recipe, Ingredient
 from .models import LocalBusiness, Book, Movie, Review, OpeningHours
@@ -20,13 +20,6 @@ class IngredientInline(admin.TabularInline):
 
 class RecipeInline(admin.StackedInline):
     model = Recipe
-
-
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
-    # inlines = [HoursInline, ReviewInline]
-    search_fields = ['name', 'domain']
-    pass
 
 
 @admin.register(Category)

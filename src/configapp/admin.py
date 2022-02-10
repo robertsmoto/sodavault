@@ -1,10 +1,25 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from .models import Profile
 from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.admin import TokenAdmin
-from django.forms import models 
+from django.forms import models
+import configapp.models
+
+
+@admin.register(configapp.models.Location)
+class LocationAdmin(admin.ModelAdmin):
+    # inlines = [HoursInline, ReviewInline]
+    search_fields = ['name', 'domain']
+    pass
+
+
+@admin.register(configapp.models.Group)
+class GroupAdmin(admin.ModelAdmin):
+    # inlines = [HoursInline, ReviewInline]
+    search_fields = ['name', 'description']
+    autocomplete_fields = ['locations']
+    pass
 
 
 class TokenInline(admin.StackedInline):
@@ -22,7 +37,7 @@ class TokenInline(admin.StackedInline):
 # admin.site.unregister(TokenProxy)
 
 class ProfileInline(admin.StackedInline):
-    model = Profile
+    model = configapp.models.Profile
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'

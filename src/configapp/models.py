@@ -60,11 +60,9 @@ class Group(Timestamps, models.Model):
     slug = models.SlugField(max_length=50, null=True, blank=True)
     name = models.CharField(max_length=200, blank=True)
     description = models.CharField(
-            'Category Description',
             max_length=100,
             blank=True)
     kwd_list = models.CharField(
-            'Category Keywords',
             max_length=100,
             blank=True,
             help_text="Comma-separated values.")
