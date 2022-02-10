@@ -1,4 +1,4 @@
-from configapp.models import Timestamps, Group
+from configapp.models import Timestamps, Group, Location
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.db import models
@@ -65,12 +65,11 @@ DOW_CHOICES = [
 ]
 
 
-
 class Category(models.Model):
-    # locations = models.ManyToManyField(
-            # Location,
-            # blank=True,
-    #         related_name='categories')
+    locations = models.ManyToManyField(
+            Location,
+            blank=True,
+            related_name='categories')
     parent = models.ForeignKey(
             'self',
             on_delete=models.CASCADE,
@@ -595,7 +594,7 @@ class Post(models.Model):
         ('DRAFT', 'Draft'),
         ('TRASH', 'Trash'),
     ]
-    # locations = models.ManyToManyField(Location, blank=True)
+    locations = models.ManyToManyField(Location, blank=True)
     categories = models.ManyToManyField(
             Category,
             related_name="categories",
