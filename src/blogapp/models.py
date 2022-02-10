@@ -193,10 +193,16 @@ DOW_CHOICES = [
     # def __str__(self):
         # return '%s' % (self.name)
 
+class Category(Group):
+    class Meta:
+        proxy = True
+        # verbose_name_plural = "06. Tags"
+        # ordering = ['menu_order', 'name']
 
-# class Tag(Category):
-    # class Meta:
-        # proxy = True
+
+class Tag(Group):
+    class Meta:
+        proxy = True
         # verbose_name_plural = "06. Tags"
         # ordering = ['menu_order', 'name']
 
@@ -595,12 +601,14 @@ class Post(models.Model):
         ('TRASH', 'Trash'),
     ]
     locations = models.ManyToManyField(Location, blank=True)
-#     categories = models.ManyToManyField(
-            # Category,
-            # blank=True)
-    # tags = models.ManyToManyField(
-            # Tag,
-            # blank=True)
+    categories = models.ManyToManyField(
+            Category,
+            related_name="post_categories",
+            blank=True)
+    tags = models.ManyToManyField(
+            Tag,
+            related_name="post_tags",
+            blank=True)
     author = models.ForeignKey(
             User,
             on_delete=models.SET_NULL,
