@@ -14,28 +14,25 @@ class Timestamps(models.Model):
         abstract = True
 
 
-# class Location(models.Model):
-    # domain = models.CharField(
-            # 'Domain eg. example.com',
-            # max_length=200,
-            # blank=True)
-    # name = models.CharField(
-            # 'Location Name',
-            # max_length=200,
-            # blank=True)
-    # description = models.CharField(
-            # 'Location Description',
-            # max_length=200,
-            # blank=True)
+class Location(Timestamps, models.Model):
+    domain = models.CharField(
+            'Domain eg. example.com',
+            max_length=200,
+            blank=True)
+    name = models.CharField(
+            'Location Name',
+            max_length=200,
+            blank=True)
+    description = models.CharField(
+            'Location Description',
+            max_length=200,
+            blank=True)
 
-    # timestamp_created = models.DateTimeField(auto_now_add=True)
-    # timestamp_modified = models.DateTimeField(auto_now=True)
+    class Meta:
+        verbose_name_plural = "01. Locations"
 
-    # class Meta:
-        # verbose_name_plural = "01. Locations"
-
-    # def __str__(self):
-        # return '%s' % (self.name)
+    def __str__(self):
+        return '%s' % (self.name)
 
 
 class Group(Timestamps, models.Model):
