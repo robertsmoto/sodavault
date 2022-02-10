@@ -150,18 +150,18 @@ class AttributeItemJoin(models.Model):
 
 
 class Item(models.Model):
-    # departments = models.ManyToManyField(
-            # Department,
-            # related_name='departments',
-            # blank=True)
-    # categories = models.ManyToManyField(
-            # Category,
-            # related_name='categories',
-            # blank=True)
-    # tags = models.ManyToManyField(
-            # Tag,
-            # related_name='tags',
-    #         blank=True)
+    departments = models.ManyToManyField(
+            Department,
+            related_name='departments',
+            blank=True)
+    categories = models.ManyToManyField(
+            Category,
+            related_name='categories',
+            blank=True)
+    tags = models.ManyToManyField(
+            Tag,
+            related_name='tags',
+            blank=True)
     attributes = models.ManyToManyField(
             AttributeItemJoin,
             blank=True)
