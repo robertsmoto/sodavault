@@ -8,22 +8,22 @@ import graphene
 import os
 
 
-class UserNode(DjangoObjectType):
-    class Meta:
-        model = User
-        filter_fields = [
-                'username',
-                ]
-        interfaces = (relay.Node, )
+# class UserNode(DjangoObjectType):
+    # class Meta:
+        # model = User
+        # filter_fields = [
+                # 'username',
+                # ]
+        # interfaces = (relay.Node, )
 
 
-class UserProfileNode(DjangoObjectType):
-    class Meta:
-        model = configapp.models.Profile
-        interfaces = (relay.Node, )
+# class UserProfileNode(DjangoObjectType):
+    # class Meta:
+        # model = configapp.models.Profile
+        # interfaces = (relay.Node, )
 
-    def resolve_avatar(self, info):
-        return self.avatar.url
+    # def resolve_avatar(self, info):
+#         return self.avatar.url
 
 
 class LocationNode(DjangoObjectType):
