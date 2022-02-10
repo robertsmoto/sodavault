@@ -59,30 +59,30 @@ class UserNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
-class BlogLocationNode(DjangoObjectType):
-    class Meta:
-        model = blogapp.models.Location
-        # filter_fields = [
-                # 'domain',
-                # 'name',
-        #         ]
-        interfaces = (relay.Node, )
+# class BlogLocationNode(DjangoObjectType):
+    # class Meta:
+        # model = blogapp.models.Location
+        # # filter_fields = [
+                # # 'domain',
+                # # 'name',
+        # #         ]
+        # interfaces = (relay.Node, )
 
 
-class BlogCategoryNode(DjangoObjectType):
-    class Meta:
-        model = blogapp.models.Category
-#         filter_fields = [
-                # 'id',
-                # 'slug',
-                # 'name',
-                # 'is_primary_menu',
-                # 'is_secondary_menu',
-                # 'is_footer_menu',
-                # 'locations__domain',
-                # ]
+# class BlogCategoryNode(DjangoObjectType):
+    # class Meta:
+        # model = blogapp.models.Category
+# #         filter_fields = [
+                # # 'id',
+                # # 'slug',
+                # # 'name',
+                # # 'is_primary_menu',
+                # # 'is_secondary_menu',
+                # # 'is_footer_menu',
+                # # 'locations__domain',
+                # # ]
 
-        interfaces = (relay.Node, )
+#         interfaces = (relay.Node, )
 
 
 # class TagNode(DjangoObjectType):
@@ -104,10 +104,10 @@ class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
         filter_fields = {
-                # 'categories__id': ['exact'],
-                # 'categories__slug': ['exact'],
-                # 'tags__id': ['exact'],
-                # 'tags__slug': ['exact'],
+                'categories__id': ['exact'],
+                'categories__slug': ['exact'],
+                'tags__id': ['exact'],
+                'tags__slug': ['exact'],
                 'locations__domain': ['exact'],
                 'is_footer_menu': ['exact'],
                 'is_primary_menu': ['exact'],
@@ -197,11 +197,11 @@ class PostNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    blog_location = relay.Node.Field(BlogLocationNode)
-    all_blog_locations = DjangoFilterConnectionField(BlogLocationNode)
+#     blog_location = relay.Node.Field(BlogLocationNode)
+    # all_blog_locations = DjangoFilterConnectionField(BlogLocationNode)
 
-    blog_category = relay.Node.Field(BlogCategoryNode)
-    all_blog_categories = DjangoFilterConnectionField(BlogCategoryNode)
+    # blog_category = relay.Node.Field(BlogCategoryNode)
+#     all_blog_categories = DjangoFilterConnectionField(BlogCategoryNode)
 
 #     tag = relay.Node.Field(TagNode)
 #     all_tags = DjangoFilterConnectionField(TagNode)
