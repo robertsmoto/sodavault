@@ -214,8 +214,8 @@ class Query(graphene.ObjectType):
     location = relay.Node.Field(LocationNode)
     all_locations = DjangoFilterConnectionField(LocationNode)
 
-    category = relay.Node.Field(GroupNode)
-    all_categories = DjangoFilterConnectionField(GroupNode)
+    group = relay.Node.Field(GroupNode)
+    all_groups = DjangoFilterConnectionField(GroupNode)
 
 #     tag = relay.Node.Field(TagNode)
 #     all_tags = DjangoFilterConnectionField(TagNode)
