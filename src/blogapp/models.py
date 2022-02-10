@@ -1,3 +1,4 @@
+from configapp.models import Timestamps, Group
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.db import models
@@ -64,35 +65,12 @@ DOW_CHOICES = [
 ]
 
 
-class Location(models.Model):
-    domain = models.CharField(
-            'Domain eg. example.com',
-            max_length=200,
-            blank=True)
-    name = models.CharField(
-            'Location Name',
-            max_length=200,
-            blank=True)
-    description = models.CharField(
-            'Location Description',
-            max_length=200,
-            blank=True)
-
-    timestamp_created = models.DateTimeField(auto_now_add=True)
-    timestamp_modified = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        verbose_name_plural = "01. Locations"
-
-    def __str__(self):
-        return '%s' % (self.name)
-
 
 class Category(models.Model):
-    locations = models.ManyToManyField(
-            Location,
-            blank=True,
-            related_name='categories')
+    # locations = models.ManyToManyField(
+            # Location,
+            # blank=True,
+    #         related_name='categories')
     parent = models.ForeignKey(
             'self',
             on_delete=models.CASCADE,
@@ -617,7 +595,7 @@ class Post(models.Model):
         ('DRAFT', 'Draft'),
         ('TRASH', 'Trash'),
     ]
-    locations = models.ManyToManyField(Location, blank=True)
+    # locations = models.ManyToManyField(Location, blank=True)
     categories = models.ManyToManyField(
             Category,
             related_name="categories",

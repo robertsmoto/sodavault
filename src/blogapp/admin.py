@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Location, Category, Tag
+from .models import Category, Tag  #, Location
 from .models import Article, Doc, Page
 from .models import Recipe, Ingredient
 from .models import LocalBusiness, Book, Movie, Review, OpeningHours
@@ -51,16 +51,16 @@ class RecipeAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(Location)
-class LocationAdmin(admin.ModelAdmin):
-    search_fields = ["interests"]
-    pass
+# @admin.register(Location)
+# class LocationAdmin(admin.ModelAdmin):
+    # search_fields = ["interests"]
+#     pass
 
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["topics"]
-    autocomplete_fields = ["locations"]
+    # autocomplete_fields = ["locations"]
     prepopulated_fields = {"slug": ("name",)}
     pass
 
@@ -68,7 +68,7 @@ class CategoryAdmin(admin.ModelAdmin):
 @admin.register(Tag)
 class TagAdmin(admin.ModelAdmin):
     search_fields = ["interests"]
-    autocomplete_fields = ["locations"]
+    # autocomplete_fields = ["locations"]
     prepopulated_fields = {"slug": ("name",)}
     pass
 
@@ -77,7 +77,7 @@ class TagAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
 
     fields = [
-        ("locations", "author"),
+        # ("locations", "author"),
         ("title", "slug"),
         ("status", "is_featured"),
         ("date_published", "date_modified"),
@@ -92,17 +92,17 @@ class PostAdmin(admin.ModelAdmin):
     ]
 
     list_display = ["title", "author", "date_published", "status"]
-    list_filter = ["status", "locations__domain"]
+    # list_filter = ["status", "locations__domain"]
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    # autocomplete_fields = ["locations", "categories", "tags"]
 
 
 @admin.register(Doc)
 class DocAdmin(admin.ModelAdmin):
     fields = [
-        ("locations"),
+        # ("locations"),
         ("title", "slug"),
         (
             "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
@@ -120,17 +120,17 @@ class DocAdmin(admin.ModelAdmin):
     ]
 
     list_display = ["title", "author", "date_published", "status"]
-    list_filter = ["status", "locations__domain"]
+    # list_filter = ["status", "locations__domain"]
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    # autocomplete_fields = ["locations", "categories", "tags"]
 
 
 @admin.register(Page)
 class PageAdmin(admin.ModelAdmin):
     fields = [
-        ("locations"),
+        # ("locations"),
         ("title", "slug"),
         (
             "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
@@ -148,8 +148,8 @@ class PageAdmin(admin.ModelAdmin):
     ]
 
     list_display = ["title", "author", "date_published", "status"]
-    list_filter = ["status", "locations__domain"]
+    # list_filter = ["status", "locations__domain"]
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    # autocomplete_fields = ["locations", "categories", "tags"]
