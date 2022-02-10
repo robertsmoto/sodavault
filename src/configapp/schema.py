@@ -40,14 +40,15 @@ class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
         filter_fields = [
+                'groupType',
                 'id',
-                'slug',
-                'name',
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                'order',
                 'locations__domain',
+                'name',
+                'order',
+                'slug',
                 ]
         interfaces = (relay.Node, )
 
