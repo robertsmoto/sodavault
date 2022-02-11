@@ -3,7 +3,8 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 from ckeditor.fields import RichTextField
 from configapp.models import Group
-# from django.db.models import Sum
+from django.db.models import Sum, Count
+import configapp.models
 # from django.db.models import Prefetch
 # import math
 # from sodavault.utils_logging import svlog_info
@@ -140,6 +141,40 @@ class CostMultiplier(models.Model):
         ordering = ['multiplier_type', 'amount']
 
 
+class UnitInventoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(unit_type="INV")
+
+
+class UnitInventory(configapp.models.Unit):
+    """Is a proxy model of configapp.Unit"""
+
+    class Meta:
+        proxy = True
+        # verbose_name_plural = "05. Categories"
+
+    def save(self, *args, **kwargs):
+        self.unit_type = "INV"
+        super(UnitInventory, self).save(*args, **kwargs)
+
+
+class UnitDisplayManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(unit_type="DIS")
+
+
+class UnitDisplay(configapp.models.Unit):
+    """Is a proxy model of configapp.Unit"""
+
+    class Meta:
+        proxy = True
+        # verbose_name_plural = "05. Categories"
+
+    def save(self, *args, **kwargs):
+        self.unit_type = "DIS"
+        super(UnitInventory, self).save(*args, **kwargs)
+
+
 class Item(models.Model):
     departments = models.ManyToManyField(
             Department,
@@ -156,11 +191,15 @@ class Item(models.Model):
     attributes = models.ManyToManyField(
             AttributeItemJoin,
             blank=True)
-    subitem = models.ForeignKey(
+
+    #  parent_id is available
+    #  query parents --> Item.objects.filter(subitems__isnull=True)
+    parent = models.ForeignKey(
             'self',
-            blank=True,
             null=True,
-            on_delete=models.CASCADE)
+            on_delete=models.CASCADE,
+            related_name="subitems")
+
     ITEM_TYPE_CHOICES = [
             ('PART', 'Part'),
             ('PROD', 'Product'),
@@ -179,31 +218,26 @@ class Item(models.Model):
             max_length=200,
             blank=True,
             help_text="comma, separated, list")
-    # calculate the stock quantity with link to transaction
-    unit = models.CharField(
-            max_length=40,
-            blank=True,
-            help_text="singlular unit eg. piece")
-    unit_plural = models.CharField(
-            max_length=40,
-            blank=True,
-            help_text="plural unit eg. pieces")
+    unit_inventory = models.ManyToManyField(
+            UnitInventory,
+            related_name="unit_inventory",
+            blank=True)
+    unit_display = models.ManyToManyField(
+            UnitDisplay,
+            related_name="unit_display",
+            blank=True)
     unit_base = models.IntegerField(
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
-    # this is the manually entered price
-
     cost = models.BigIntegerField(blank=True, null=True)
-#     cost_multiplier = models.ForeignKey(
-            # CostMultiplier,
-            # blank=True,
-            # null=True,
-#             on_delete=models.CASCADE)
-
+    cost_shipping = models.BigIntegerField(blank=True, null=True)
+    cost_other = models.BigIntegerField(blank=True, null=True)
+    cost_multiplier = models.ForeignKey(
+            CostMultiplier,
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     price = models.BigIntegerField(blank=True, null=True)
-    # price class (used for calculated price, default to 50% GM)
-    # calculate prices, based on cost, sum of subitems, sale price
-
     order_min = models.IntegerField(
             blank=True,
             null=True,
@@ -217,7 +251,6 @@ class Item(models.Model):
             null=True,
             help_text="How many items are included in the collection.")
 
-
     class Meta:
         indexes = [
             models.Index(fields=['sku', ]),
@@ -227,9 +260,17 @@ class Item(models.Model):
         return "{} {}".format(self.sku, self.name)
 
 
+#  I'm using metods for the model annotations
+#  because they will be the same for both parts and products
+def annotate_subitems_cost(self, qs):
+    return qs.annotate(sum_subitems_cost=Sum('subitems__cost'))
+
+
 class PartManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(item_type='PART')
+        qs = Item.objects.filter(item_type="PART")
+        qs = annotate_subitems_cost(self, qs=qs)
+        return qs
 
 
 class Part(Item):
@@ -247,7 +288,9 @@ class Part(Item):
 
 class ProductManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(item_type='PROD')
+        qs = Item.objects.filter(parent_id__isnull=True, item_type="PROD")
+        # qs = calc_price(qs)
+        return qs
 
 
 class Product(Item):

@@ -153,6 +153,25 @@ class Group(Timestamps, models.Model):
         return '{}'.format(self.name)
 
 
+class Unit(models.Model):
+    """Used to describe Item units for inventory and for the front-end."""
+
+    UNIT_CHOICES = [
+            ('INV', 'Inventory Stock'),
+            ('DIS', 'Display')
+            ]
+
+    unit_type = models.CharField(
+            max_length=3,
+            choices=UNIT_CHOICES,
+            blank=True)
+    singular = models.CharField(max_length=100, default="piece")
+    plural = models.CharField(max_length=100, default="pieces")
+
+    def __str__(self):
+        return f"{self.singular} ({self.plural})"
+
+
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
     if created:

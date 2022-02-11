@@ -9,6 +9,7 @@ from django.utils.translation import gettext_lazy as _
 from transactionsapp.models import Note, Bid
 from ledgerapp.models import Entry
 from django.urls import resolve
+from django.db.models import Sum, Count, F
 
 
 # @admin.register(models.Price)
@@ -406,35 +407,33 @@ class ProductTypesFilter(admin.SimpleListFilter):
             return queryset.filter(variation_parents__isnull=False).distinct()
 
 
-class SubItemInline(nested_admin.NestedTabularInline):
+class ComponentInline(nested_admin.NestedStackedInline):
+    """Component is a Part subitem."""
     model = itemsapp.models.Item
+    exclude = ['item_type', 'departments', 'attributes']
+    verbose_name = 'Component'
+    verbose_name_plural = 'Components'
+    autocomplete_fields = ['categories', 'tags']
 
 
 @admin.register(itemsapp.models.Part)
 class PartAdmin(nested_admin.NestedModelAdmin):
 
     fields = (
-        'sku',
-        'name',
-        'description',
-        ('categories', 'tags'),
-        ('ecpu', 'unit'),
-        ('ecpu_override', 'unit_override'),
-        # 'available_inventory',
-        # 'stock_stats',
-    )
-    # readonly_fields = (
-        # # 'calculated_cost',
-        # 'ecpu',
-        # 'unit',
-        # 'available_inventory',
-        # # 'stock_stats',
-    # )
+            'sku',
+            'name',
+            'description',
+            ('categories', 'tags'),
+            'cost',
+            'sum_component_cost',
+            )
+    readonly_fields = (
+            'sum_component_cost',
+            )
     list_display = (
         'sku',
         'name',
-    #     'ecpu',
-    #     'available_inventory',
+        'sum_component_cost'
     )
     list_display_links = (
         'sku',
@@ -451,15 +450,17 @@ class PartAdmin(nested_admin.NestedModelAdmin):
     ordering = ['sku']
 
     inlines = [
-        SubItemInline,
+        ComponentInline,
         BidPartInline,
         NotePartInline,
-        # PartInventoryInline,
     ]
 
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-        form.instance.save()
+    def sum_component_cost(self, obj):
+        return obj.sum_subitems_cost
+
+    # def save_related(self, request, form, formsets, change):
+        # super().save_related(request, form, formsets, change)
+    #     form.instance.save()
 
 
 @admin.register(itemsapp.models.Product)

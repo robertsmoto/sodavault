@@ -1,4 +1,4 @@
-from configapp.models import Timestamps, Group, Location
+import configapp.models
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.db import models
@@ -70,7 +70,7 @@ class CategoryManager(models.Manager):
         return super().get_queryset().filter(group_type='BLOGCAT')
 
 
-class Category(Group):
+class Category(configapp.models.Group):
 
     objects = CategoryManager()
 
@@ -89,7 +89,7 @@ class TagManager(models.Manager):
         return super().get_queryset().filter(group_type='BLOGTAG')
 
 
-class Tag(Group):
+class Tag(configapp.models.Group):
 
     objects = TagManager()
 
@@ -496,7 +496,7 @@ class Post(models.Model):
         ('DRAFT', 'Draft'),
         ('TRASH', 'Trash'),
     ]
-    locations = models.ManyToManyField(Location, blank=True)
+    locations = models.ManyToManyField(configapp.models.Location, blank=True)
     categories = models.ManyToManyField(
             Category,
             related_name="post_categories",
