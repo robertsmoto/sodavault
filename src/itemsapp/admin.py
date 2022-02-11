@@ -466,19 +466,15 @@ class PartAdmin(nested_admin.NestedModelAdmin):
 class ProductAdmin(nested_admin.NestedModelAdmin):
 
     fields = (
-        # 'product_type',
         ('sku', 'name'),
         'description',
         'keywords',
         ('departments', 'categories', 'tags'),
-        ('quantity', 'use_calculated_quantity'),
-        ('price', 'use_calculated_price', 'use_parent_price'),
-        ('ecpu', 'unit', 'ecpu_calc_from'),
+        ('stock_quantity', 'use_calculated_quantity', 'calculated_stock_quantity'),
+        ('unit', 'unit_plural', 'unit_base'),
+        ('price', 'use_subitem_sum', 'use_calculated_price', 'calculated_price'),
+        ('ecpu', 'ecpu_calc_from'),
         ('ecpu_override', 'unit_override'),
-        # ('price', 'price_calc_from'),
-        'price_override',
-        # 'available_inventory',
-        # 'max_new_inventory',
     )
     # readonly_fields = (
         # 'ecpu',

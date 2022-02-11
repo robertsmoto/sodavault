@@ -179,11 +179,7 @@ class Item(models.Model):
             max_length=200,
             blank=True,
             help_text="comma, separated, list")
-    stock_quantity = models.BigIntegerField(blank=True, null=True)
-    use_calculated_quantity = models.BooleanField(
-            default=False,
-            help_text="Use quantity calculated from stock.")
-    calculated_stock_quantity = models.BigIntegerField(blank=True, null=True)
+    # calculate the stock quantity with link to transaction
     unit = models.CharField(
             max_length=40,
             blank=True,
@@ -195,14 +191,11 @@ class Item(models.Model):
     unit_base = models.IntegerField(
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
+    # this is the manually entered price
     price = models.BigIntegerField(blank=True, null=True)
-    use_calculated_price = models.BooleanField(
-            default=False,
-            help_text="Use price calculated from costs.")
-    calculated_price = models.BigIntegerField(blank=True, null=True)
-    use_subitem_sum = models.BooleanField(
-            default=False,
-            help_text="Price is the summation of subitems.")
+    # price class (used for calculated price, default to 50% GM)
+    # calculate prices, based on cost, sum of subitems, sale price
+
     collection_quantity = models.IntegerField(
             blank=True,
             null=True,
@@ -216,24 +209,6 @@ class Item(models.Model):
             null=True,
             help_text="Use to limit order quantity.")
 
-    ecpu = models.DecimalField(
-        max_digits=14, decimal_places=4, blank=True, null=True)
-    ecpu_override = models.DecimalField(
-        max_digits=14, decimal_places=4, blank=True, null=True)
-    ecpu_calc_from = models.CharField(
-            max_length=100,
-            blank=True,
-            help_text="how ecpu has been calculated")
-    unit_override = models.CharField(
-            max_length=100,
-            blank=True,
-            help_text="singlular unit")
-    price_override = models.DecimalField(
-        max_digits=14, decimal_places=2, blank=True, null=True)
-    price_calc_from = models.CharField(
-            max_length=100,
-            blank=True,
-            help_text="how price has been calculated")
     objects = models.Manager()
     all_products = AllProductManager()
     # other model managers if needed
