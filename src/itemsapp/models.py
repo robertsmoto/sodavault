@@ -81,12 +81,6 @@ class Attribute(Group):
         super(Attribute, self).save(*args, **kwargs)
 
 
-class AllProductManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().filter(item_type='PROD')
-
-
 """
 kit: collection of items
     can be price separately, or a summation of items
@@ -126,18 +120,24 @@ class AttributeItemJoin(models.Model):
         return f"{self.attribute.name}"
 
 
-# class Price(models.Model):
-    # name = models.CharField(max_length=200, blank=True)
-    # is_flat = models.BooleanField(default=False)
-    # is_markup = models.BooleanField(default=False)
-    # is_margin = models.BooleanField(default=False)
-    # amount = models.DecimalField(decimal_places=2, max_digits=11, blank=True, null=True)
+class CostMultiplier(models.Model):
+    MULTIPLIER_CHOICES = [
+            ('FL', 'Flat Rate'),
+            ('GM', 'Gross Margin'),
+            ('MU', 'Markup'),
+    ]
+    multiplier_type = models.CharField(
+            max_length=4,
+            blank=True,
+            choices=MULTIPLIER_CHOICES,
+    )
+    amount = models.DecimalField(decimal_places=2, max_digits=11, blank=True, null=True)
 
-    # def __str__(self):
-        # return self.name
+    def __str__(self):
+        return f"{self.amount} {self.multiplier_type}"
 
-    # def Meta(self):
-        # ordering = ['name']
+    class Meta:
+        ordering = ['multiplier_type', 'amount']
 
 
 class Item(models.Model):
@@ -192,14 +192,18 @@ class Item(models.Model):
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
     # this is the manually entered price
+
+    cost = models.BigIntegerField(blank=True, null=True)
+#     cost_multiplier = models.ForeignKey(
+            # CostMultiplier,
+            # blank=True,
+            # null=True,
+#             on_delete=models.CASCADE)
+
     price = models.BigIntegerField(blank=True, null=True)
     # price class (used for calculated price, default to 50% GM)
     # calculate prices, based on cost, sum of subitems, sale price
 
-    collection_quantity = models.IntegerField(
-            blank=True,
-            null=True,
-            help_text="How many items are included in the collection.")
     order_min = models.IntegerField(
             blank=True,
             null=True,
@@ -208,10 +212,11 @@ class Item(models.Model):
             blank=True,
             null=True,
             help_text="Use to limit order quantity.")
+    collection_quantity = models.IntegerField(
+            blank=True,
+            null=True,
+            help_text="How many items are included in the collection.")
 
-    objects = models.Manager()
-    all_products = AllProductManager()
-    # other model managers if needed
 
     class Meta:
         indexes = [
@@ -223,7 +228,6 @@ class Item(models.Model):
 
 
 class PartManager(models.Manager):
-
     def get_queryset(self):
         return super().get_queryset().filter(item_type='PART')
 
@@ -242,7 +246,6 @@ class Part(Item):
 
 
 class ProductManager(models.Manager):
-
     def get_queryset(self):
         return super().get_queryset().filter(item_type='PROD')
 
@@ -260,6 +263,7 @@ class Product(Item):
         super(Product, self).save(*args, **kwargs)
 
 
+# do I need to do this, or just add a related digital items relation?
 class DigitalProduct(Item):
     """Is a multi-table inheritance model of Item."""
     # put additional digital-related fields here
@@ -273,34 +277,6 @@ class DigitalProduct(Item):
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
         super(Product, self).save(*args, **kwargs)
-
-
-# class BundleProduct(Item):
-    # objects = BundleProductManager()
-
-    # class Meta:
-        # proxy = True
-        # verbose_name_plural = "02d. Bundle Products"
-
-    # def save(self, *args, **kwargs):
-        # self.item_type = "PROD"
-        # if self.product_type == "":
-            # self.product_type = "BUND"
-        # super(Product, self).save(*args, **kwargs)
-
-
-# class VariableProduct(Item):
-    # objects = VariableProductManager()
-
-    # class Meta:
-        # proxy = True
-        # verbose_name_plural = "02e. Varialbe Products"
-
-    # def save(self, *args, **kwargs):
-        # self.item_type = "PROD"
-        # if self.product_type == "":
-            # self.product_type = "VARI"
-#         super(Product, self).save(*args, **kwargs)
 
 
 class Identifier(models.Model):

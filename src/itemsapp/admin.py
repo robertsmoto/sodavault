@@ -470,11 +470,9 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         'description',
         'keywords',
         ('departments', 'categories', 'tags'),
-        ('stock_quantity', 'use_calculated_quantity', 'calculated_stock_quantity'),
+        'price',
         ('unit', 'unit_plural', 'unit_base'),
-        ('price', 'use_subitem_sum', 'use_calculated_price', 'calculated_price'),
-        ('ecpu', 'ecpu_calc_from'),
-        ('ecpu_override', 'unit_override'),
+        ('order_min', 'order_max')
     )
     # readonly_fields = (
         # 'ecpu',
