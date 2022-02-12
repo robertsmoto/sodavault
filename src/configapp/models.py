@@ -15,6 +15,36 @@ class Timestamps(models.Model):
     class Meta:
         abstract = True
 
+# class Note(models.Model):
+    # products = models.ForeignKey(
+        # Product,
+        # related_name = "note_products",
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # parts = models.ForeignKey(
+        # Part,
+        # related_name = "note_parts",
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # transactions = models.ForeignKey(
+        # Transaction,
+        # related_name = "note_asns",
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # date = models.DateField(
+        # blank=True,
+        # null=True)
+    # note = models.TextField(
+        # max_length=3000,
+        # blank=True)
+
+    # def __str__(self):
+#         return "{}".format(self.date.strftime("%Y-%m-%d"))
+
+
 
 class Currency(Timestamps, models.Model):
     """Config for currency and currency display."""

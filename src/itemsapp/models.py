@@ -83,6 +83,7 @@ class Attribute(Group):
         super(Attribute, self).save(*args, **kwargs)
 
 
+
 """
 kit: collection of items
     can be price separately, or a summation of items
@@ -267,11 +268,12 @@ class Item(models.Model):
 #  I'm using metods for the model annotations
 #  because they will be the same for both parts and products
 def annotate_subitems_cost(self, qs):
-    return qs.annotate(
+    qs = qs.annotate(
             sum_subitems_cost=Sum('subitems__cost'),
             sum_subitems_cost_shipping=Sum('subitems__cost_shipping'),
             sum_subitems_cost_other=Sum('subitems__cost_other'),
             )
+    return qs
 
 
 class PartManager(models.Manager):
@@ -312,6 +314,65 @@ class Product(Item):
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
         super(Product, self).save(*args, **kwargs)
+
+
+# class Bid(models.Model):
+    # parts = models.ForeignKey(
+        # Part,
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # products = models.ForeignKey(
+        # Product,
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # suppliers = models.ForeignKey(
+        # Supplier,
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # date_requested = models.DateField(
+        # blank=True,
+        # null=True)
+    # date_submitted = models.DateField(
+        # blank=True,
+        # null=True)
+    # cost = models.DecimalField(
+        # decimal_places=2,
+        # max_digits=11,
+        # blank=True,
+        # null=True)
+    # shipping = models.DecimalField(
+        # decimal_places=2,
+        # max_digits=11,
+        # blank=True,
+        # null=True)
+    # quantity = models.IntegerField(
+            # blank=True,
+            # null=True,
+            # default=1,
+            # help_text="Divides by this number. 1 box if used by box, " \
+                # "or 24 pcs per box if used by piece"
+                # )
+    # units = models.CharField(
+            # max_length=100,
+            # blank=True)
+    # is_winning_bid = models.BooleanField(default=False)
+
+    # @property
+    # def cost_per_unit(self):
+        # cost = self.cost if self.cost is not None else 0
+        # shipping = self.shipping if self.shipping is not None else 0
+        # quantity = self.quantity if self.quantity is not None else 1
+        # return round((cost + shipping) / quantity, 4) 
+
+    # def __str__(self):
+        # if self.parts:
+            # return "{} {}".format(self.suppliers, self.parts)
+        # else:
+#             return "{} {}".format(self.suppliers, self.products)
+
 
 
 # do I need to do this, or just add a related digital items relation?

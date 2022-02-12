@@ -1,5 +1,5 @@
 from django.contrib import admin
-from transactionsapp.models import Note, Bid
+# from transactionsapp.models import Note, Bid
 from transactionsapp.models import Transaction, TransactionDetails 
 from transactionsapp.models import ASN, Transfer
 from ledgerapp.models import Entry
@@ -11,11 +11,11 @@ from django.forms.models import ModelForm
 from django.db.models.query import Prefetch 
 
 
-class NoteInline(admin.TabularInline):
-    model = Note
-    extra = 0
-    verbose_name = "note"
-    verbose_name_plural = "notes"
+# class NoteInline(admin.TabularInline):
+    # model = Note
+    # extra = 0
+    # verbose_name = "note"
+#     verbose_name_plural = "notes"
 
 class TransactionDetailsInline(admin.TabularInline):
     model = TransactionDetails
@@ -47,7 +47,7 @@ class TransactionAdmin(admin.ModelAdmin):
 
     inlines = [
         TransactionDetailsInline,
-        NoteInline,
+        # NoteInline,
     ]
 
 class TransactionDetailsInline(admin.TabularInline):
@@ -82,7 +82,7 @@ class ASNAdmin(admin.ModelAdmin):
 
     inlines = [
         TransactionDetailsInline,
-        NoteInline,
+        # NoteInline,
     ]
 
 @admin.register(Transfer)
@@ -99,6 +99,5 @@ class TransferAdmin(admin.ModelAdmin):
 
     inlines = [
         TransactionDetailsInline,
-        NoteInline,
+        # NoteInline,
     ]
-

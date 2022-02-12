@@ -1,12 +1,12 @@
+# from transactionsapp.models import Note, Bid
 from django.contrib import admin
-from configapp.models import Group
+import configapp.models
 import nested_admin
 import itemsapp.models
 from dal import autocomplete
 from django import forms
 from dal import forward
 from django.utils.translation import gettext_lazy as _
-from transactionsapp.models import Note, Bid
 from ledgerapp.models import Entry
 from django.urls import resolve
 from django.db.models import Sum, Count, F
@@ -20,7 +20,7 @@ from django.db.models import Sum, Count, F
 
 
 class SubDepartmentInline(nested_admin.NestedTabularInline):
-    model = Group
+    model = configapp.models.Group
     exclude = ['cat_type']
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Sub-Department"
@@ -44,7 +44,7 @@ class DepartmentAdmin(admin.ModelAdmin):
 
 
 class SubCategoryInline(nested_admin.NestedTabularInline):
-    model = Group
+    model = configapp.models.Group
     exclude = ['cat_type']
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Sub-Category"
@@ -67,7 +67,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class SubTagInline(nested_admin.NestedTabularInline):
-    model = Group
+    model = configapp.models.Group
     exclude = ['cat_type']
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Sub-Tag"
@@ -164,31 +164,31 @@ class PartInventoryInline(nested_admin.NestedTabularInline):
     extra = 0
     verbose_name = "Inventory"
     verbose_name_plural = "Inventory"
-    exclude = ['lots', 'products', 'account', 'note']
+    exclude = ['lots', 'products', 'account']  # , 'note'
 
 
-class NotePartInline(nested_admin.NestedTabularInline):
-    model = Note
-    extra = 0
-    verbose_name = "note"
-    verbose_name_plural = "notes"
-    exclude = ['pos', 'asns']
+# class NotePartInline(nested_admin.NestedTabularInline):
+    # model = Note
+    # extra = 0
+    # verbose_name = "note"
+    # verbose_name_plural = "notes"
+    # exclude = ['pos', 'asns']
 
 
-class BidPartInline(nested_admin.NestedTabularInline):
-    model = Bid
-    exclude = ['products', ]
-    extra = 0
-    verbose_name = "bid"
-    verbose_name_plural = "bids"
+# class BidPartInline(nested_admin.NestedTabularInline):
+    # model = Bid
+    # exclude = ['products', ]
+    # extra = 0
+    # verbose_name = "bid"
+    # verbose_name_plural = "bids"
 
 
-class BidProductInline(nested_admin.NestedTabularInline):
-    model = Bid
-    exclude = ['parts', ]
-    extra = 0
-    verbose_name = "bid"
-    verbose_name_plural = "bids"
+# class BidProductInline(nested_admin.NestedTabularInline):
+    # model = Bid
+    # exclude = ['parts', ]
+    # extra = 0
+    # verbose_name = "bid"
+    # verbose_name_plural = "bids"
 
 
 class IdentifierInline(nested_admin.NestedTabularInline):
@@ -410,10 +410,18 @@ class ProductTypesFilter(admin.SimpleListFilter):
 class ComponentInline(nested_admin.NestedStackedInline):
     """Component is a Part subitem."""
     model = itemsapp.models.Item
-    exclude = ['item_type', 'departments', 'attributes']
+    fields = [
+            'sku',
+            'name',
+            'description',
+            ('categories', 'tags'),
+            ('cost', 'cost_shipping', 'cost_other', 'unit_inventory'),
+    ]
+
+    extra = 0
     verbose_name = 'Component'
     verbose_name_plural = 'Components'
-    autocomplete_fields = ['categories', 'tags']
+    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
 
 
 @admin.register(itemsapp.models.UnitInventory)
@@ -436,7 +444,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
             'name',
             'description',
             ('categories', 'tags'),
-            ('cost', 'unit_inventory'),
+            ('cost', 'cost_shipping', 'cost_other', 'unit_inventory'),
             'sum_component_cost',
     ]
     readonly_fields = (
@@ -445,7 +453,8 @@ class PartAdmin(nested_admin.NestedModelAdmin):
     list_display = (
         'sku',
         'name',
-        'sum_component_cost'
+        # should put final inventory avail, cost here not details
+        # 'sum_component_cost'
     )
     list_display_links = (
         'sku',
@@ -464,8 +473,8 @@ class PartAdmin(nested_admin.NestedModelAdmin):
 
     inlines = [
         ComponentInline,
-        BidPartInline,
-        NotePartInline,
+        # BidPartInline,
+        # NotePartInline,
     ]
 
     def sum_component_cost(self, obj):
@@ -533,7 +542,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
     inlines = (
         # ProductPartJoinInline,
         # ProductInventoryInline,
-        BidProductInline,
+        # BidProductInline,
         IdentifierInline,
         MeasurementInline,
         MarketingOptionInline,
