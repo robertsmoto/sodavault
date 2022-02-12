@@ -415,7 +415,7 @@ class ComponentInline(nested_admin.NestedStackedInline):
             'name',
             'description',
             ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'unit_inventory'),
+            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
     ]
 
     extra = 0
@@ -444,11 +444,13 @@ class PartAdmin(nested_admin.NestedModelAdmin):
             'name',
             'description',
             ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'unit_inventory'),
-            'sum_component_cost',
+            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
+            'ecpu',
+            # 'sum_component_cost',
     ]
     readonly_fields = (
-            'sum_component_cost',
+            'ecpu',
+            # 'sum_component_cost',
             )
     list_display = (
         'sku',
@@ -472,8 +474,8 @@ class PartAdmin(nested_admin.NestedModelAdmin):
     ordering = ['sku']
 
     inlines = [
-        ComponentInline,
         BidPartInline,
+        ComponentInline,
         # NotePartInline,
     ]
 

@@ -237,8 +237,8 @@ class Item(models.Model):
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
 
     # from this calculate ecpu
-    cost = models.BigIntegerField(blank=True, null=True)
-    cost_shipping = models.BigIntegerField(blank=True, null=True)
+    cost = models.BigIntegerField(default=0)
+    cost_shipping = models.BigIntegerField(default=0)
     cost_quantity = models.IntegerField(default=1)
 
     # used for parts
@@ -263,7 +263,32 @@ class Item(models.Model):
 
     @property
     def ecpu(self):
-        return (self.cost + self.cost_shipping) / self.cost_quantity
+        ecpu = 0
+        # priority 1 item cost override
+        if (self.cost + self.cost_shipping) / self.cost_quantity > 0:
+            print("in priority 1")
+            return {
+                    'ecpu': (
+                        self.cost + self.cost_shipping) / self.cost_quantity,
+                    'ecpu_display': '',
+                    'ecpu_from': 'item cost override'}
+
+        # priority 2 winning bid
+        winning_bids = self.bid_parts.filter(is_winning_bid=True)
+        if winning_bids:
+            return {
+                    'ecpu': winning_bids[0].ecpu,
+                    'ecpu_display': '',
+                    'ecpu_from': 'item winning bid'}
+        # priority 3 subitems ecpu
+        secpu = self.subitems.annotate(
+                item_ecpu=(Sum('cost') + Sum('cost_shipping'))
+                / Sum('cost_quantity')).aggregate(Sum('item_ecpu'))
+        if secpu['item_ecpu__sum'] > 0:
+            return {
+                    'ecpu': secpu['item_ecpu__sum'],
+                    'ecpu_display': '',
+                    'ecpu_from': 'sub subitem ecpu'}
 
     class Meta:
         indexes = [
@@ -274,61 +299,9 @@ class Item(models.Model):
         return "{} {}".format(self.sku, self.name)
 
 
-#  I'm using metods for the model annotations
-#  because they will be the same for both parts and products
-#  regular=Count('pk', filter=Q(account_type=Client.REGULAR))
-"""
-discount=Case(
-...         When(account_type=Client.GOLD, then=Value('5%')),
-...         When(account_type=Client.PLATINUM, then=Value('10%')),
-...         default=Value('0%'),
-...     ),
-"""
-
-
-def annotate_subitems_cost(self, qs):
-    """
-    qs = qs.annotate(
-            sum_subitems_cost=Sum(
-                Case(
-                    When(
-                        'subitems__bid__is_winning_bid' > 0,
-                        then='subitems__bid__cost'),
-
-                ),
-            sum_subitems_cost_shipping=Sum('subitems__cost_shipping'),
-            sum_subitems_cost_total=Sum('subitems__cost') +
-            Sum('subitems__cost_shipping')
-            )
-    """
-    return qs
-
-
-def prefetch_part_subitems(self, qs):
-    qs = qs.prefetch_related('subitems', 'bid_parts')
-    return qs
-
-
-"""
-# priority
-1. cost override of parent
-2. cost bids of parent
-3. sum of components (override, bids)
-"""
-
-
-# def annotate_winning_bid(self, qs):
-    # qs = qs.annoatat(bid_winning
-    # return qs
-
-
 class PartManager(models.Manager):
     def get_queryset(self):
-        qs = Item.objects.filter(item_type="PART")
-        qs = prefetch_part_subitems(self, qs=qs)
-        qs = annotate_subitems_cost(self, qs=qs)
-        # qs = annotate_winning_bids(self, qs=qs)
-        return qs
+        return Item.objects.filter(item_type="PART")
 
 
 class Part(Item):
@@ -347,7 +320,6 @@ class Part(Item):
 class ProductManager(models.Manager):
     def get_queryset(self):
         qs = Item.objects.filter(parent_id__isnull=True, item_type="PROD")
-        # qs = calc_price(qs)
         return qs
 
 
@@ -388,25 +360,14 @@ class Bid(models.Model):
     date_submitted = models.DateField(
         blank=True,
         null=True)
-    cost = models.DecimalField(
-        decimal_places=2,
-        max_digits=11,
-        blank=True,
-        null=True)
-    cost_shipping = models.DecimalField(
-        decimal_places=2,
-        max_digits=11,
-        blank=True,
-        null=True)
+    cost = models.BigIntegerField(default=0)
+    cost_shipping = models.BigIntegerField(default=0)
     cost_quantity = models.IntegerField(
-            blank=True,
-            null=True,
             default=1,
-            help_text="Divides by this number. 1 box if used by box, "
-            "or 24 pcs per box if used by piece"
+            help_text="Divides total cost by this number to return ecpu."
             )
-    units = models.CharField(
-            max_length=100,
+    unit_inventory = models.ManyToManyField(
+            UnitInventory,
             blank=True)
     is_winning_bid = models.BooleanField(default=False)
 
