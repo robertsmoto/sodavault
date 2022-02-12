@@ -1,7 +1,7 @@
 from ckeditor.fields import RichTextField
 from configapp.models import Group
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, F, Prefetch
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import configapp.models
@@ -235,9 +235,13 @@ class Item(models.Model):
     unit_base = models.IntegerField(
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
+
+    # from this calculate ecpu
     cost = models.BigIntegerField(blank=True, null=True)
     cost_shipping = models.BigIntegerField(blank=True, null=True)
-    cost_other = models.BigIntegerField(blank=True, null=True)
+    cost_quantity = models.IntegerField(default=1)
+
+    # used for parts
     cost_multiplier = models.ForeignKey(
             CostMultiplier,
             blank=True,
@@ -257,6 +261,10 @@ class Item(models.Model):
             null=True,
             help_text="How many items are included in the collection.")
 
+    @property
+    def ecpu(self):
+        return (self.cost + self.cost_shipping) / self.cost_quantity
+
     class Meta:
         indexes = [
             models.Index(fields=['sku', ]),
@@ -268,19 +276,58 @@ class Item(models.Model):
 
 #  I'm using metods for the model annotations
 #  because they will be the same for both parts and products
+#  regular=Count('pk', filter=Q(account_type=Client.REGULAR))
+"""
+discount=Case(
+...         When(account_type=Client.GOLD, then=Value('5%')),
+...         When(account_type=Client.PLATINUM, then=Value('10%')),
+...         default=Value('0%'),
+...     ),
+"""
+
+
 def annotate_subitems_cost(self, qs):
+    """
     qs = qs.annotate(
-            sum_subitems_cost=Sum('subitems__cost'),
+            sum_subitems_cost=Sum(
+                Case(
+                    When(
+                        'subitems__bid__is_winning_bid' > 0,
+                        then='subitems__bid__cost'),
+
+                ),
             sum_subitems_cost_shipping=Sum('subitems__cost_shipping'),
-            sum_subitems_cost_other=Sum('subitems__cost_other'),
+            sum_subitems_cost_total=Sum('subitems__cost') +
+            Sum('subitems__cost_shipping')
             )
+    """
     return qs
+
+
+def prefetch_part_subitems(self, qs):
+    qs = qs.prefetch_related('subitems', 'bid_parts')
+    return qs
+
+
+"""
+# priority
+1. cost override of parent
+2. cost bids of parent
+3. sum of components (override, bids)
+"""
+
+
+# def annotate_winning_bid(self, qs):
+    # qs = qs.annoatat(bid_winning
+    # return qs
 
 
 class PartManager(models.Manager):
     def get_queryset(self):
         qs = Item.objects.filter(item_type="PART")
+        qs = prefetch_part_subitems(self, qs=qs)
         qs = annotate_subitems_cost(self, qs=qs)
+        # qs = annotate_winning_bids(self, qs=qs)
         return qs
 
 
@@ -319,25 +366,25 @@ class Product(Item):
 
 class Bid(models.Model):
     parts = models.ForeignKey(
-        Part,
-        related_name="bid_parts",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            Part,
+            related_name="bid_parts",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     products = models.ForeignKey(
-        Product,
-        related_name="bid_products",
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            Product,
+            related_name="bid_products",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     suppliers = models.ForeignKey(
-        contactapp.models.Supplier,
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+            contactapp.models.Supplier,
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     date_requested = models.DateField(
-        blank=True,
-        null=True)
+            blank=True,
+            null=True)
     date_submitted = models.DateField(
         blank=True,
         null=True)
@@ -346,29 +393,26 @@ class Bid(models.Model):
         max_digits=11,
         blank=True,
         null=True)
-    shipping = models.DecimalField(
+    cost_shipping = models.DecimalField(
         decimal_places=2,
         max_digits=11,
         blank=True,
         null=True)
-    quantity = models.IntegerField(
+    cost_quantity = models.IntegerField(
             blank=True,
             null=True,
             default=1,
-            help_text="Divides by this number. 1 box if used by box, " \
-                "or 24 pcs per box if used by piece"
-                )
+            help_text="Divides by this number. 1 box if used by box, "
+            "or 24 pcs per box if used by piece"
+            )
     units = models.CharField(
             max_length=100,
             blank=True)
     is_winning_bid = models.BooleanField(default=False)
 
     @property
-    def cost_per_unit(self):
-        cost = self.cost if self.cost is not None else 0
-        shipping = self.shipping if self.shipping is not None else 0
-        quantity = self.quantity if self.quantity is not None else 1
-        return round((cost + shipping) / quantity, 4) 
+    def ecpu(self):
+        return (self.cost + self.cost_shipping) / self.cost_quantity
 
     def __str__(self):
         if self.parts:

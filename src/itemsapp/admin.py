@@ -175,20 +175,20 @@ class PartInventoryInline(nested_admin.NestedTabularInline):
     # exclude = ['pos', 'asns']
 
 
-# class BidPartInline(nested_admin.NestedTabularInline):
-    # model = Bid
-    # exclude = ['products', ]
-    # extra = 0
-    # verbose_name = "bid"
-    # verbose_name_plural = "bids"
+class BidPartInline(nested_admin.NestedTabularInline):
+    model = itemsapp.models.Bid
+    exclude = ['products', ]
+    extra = 0
+    verbose_name = "bid"
+    verbose_name_plural = "bids"
 
 
-# class BidProductInline(nested_admin.NestedTabularInline):
-    # model = Bid
-    # exclude = ['parts', ]
-    # extra = 0
-    # verbose_name = "bid"
-    # verbose_name_plural = "bids"
+class BidProductInline(nested_admin.NestedTabularInline):
+    model = itemsapp.models.Bid
+    exclude = ['parts', ]
+    extra = 0
+    verbose_name = "bid"
+    verbose_name_plural = "bids"
 
 
 class IdentifierInline(nested_admin.NestedTabularInline):
@@ -415,7 +415,7 @@ class ComponentInline(nested_admin.NestedStackedInline):
             'name',
             'description',
             ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'cost_other', 'unit_inventory'),
+            ('cost', 'cost_shipping', 'unit_inventory'),
     ]
 
     extra = 0
@@ -444,7 +444,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
             'name',
             'description',
             ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'cost_other', 'unit_inventory'),
+            ('cost', 'cost_shipping', 'unit_inventory'),
             'sum_component_cost',
     ]
     readonly_fields = (
@@ -473,7 +473,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
 
     inlines = [
         ComponentInline,
-        # BidPartInline,
+        BidPartInline,
         # NotePartInline,
     ]
 
@@ -481,7 +481,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         return {
                 'cost': obj.sum_subitems_cost,
                 'cost_shipping': obj.sum_subitems_cost_shipping,
-                'cost_other': obj.sum_subitems_cost_other
+                'cost_total': obj.sum_subitems_cost_total
                 }
 
     # def save_related(self, request, form, formsets, change):
@@ -542,7 +542,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
     inlines = (
         # ProductPartJoinInline,
         # ProductInventoryInline,
-        # BidProductInline,
+        BidProductInline,
         IdentifierInline,
         MeasurementInline,
         MarketingOptionInline,
