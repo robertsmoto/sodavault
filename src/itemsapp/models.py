@@ -6,6 +6,7 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import configapp.models
 import utilities.utils as utils
+import contactapp.models
 # from django.db.models import Prefetch
 # import math
 # from sodavault.utils_logging import svlog_info
@@ -316,62 +317,64 @@ class Product(Item):
         super(Product, self).save(*args, **kwargs)
 
 
-# class Bid(models.Model):
-    # parts = models.ForeignKey(
-        # Part,
-        # blank=True,
-        # null=True,
-        # on_delete=models.CASCADE)
-    # products = models.ForeignKey(
-        # Product,
-        # blank=True,
-        # null=True,
-        # on_delete=models.CASCADE)
-    # suppliers = models.ForeignKey(
-        # Supplier,
-        # blank=True,
-        # null=True,
-        # on_delete=models.CASCADE)
-    # date_requested = models.DateField(
-        # blank=True,
-        # null=True)
-    # date_submitted = models.DateField(
-        # blank=True,
-        # null=True)
-    # cost = models.DecimalField(
-        # decimal_places=2,
-        # max_digits=11,
-        # blank=True,
-        # null=True)
-    # shipping = models.DecimalField(
-        # decimal_places=2,
-        # max_digits=11,
-        # blank=True,
-        # null=True)
-    # quantity = models.IntegerField(
-            # blank=True,
-            # null=True,
-            # default=1,
-            # help_text="Divides by this number. 1 box if used by box, " \
-                # "or 24 pcs per box if used by piece"
-                # )
-    # units = models.CharField(
-            # max_length=100,
-            # blank=True)
-    # is_winning_bid = models.BooleanField(default=False)
+class Bid(models.Model):
+    parts = models.ForeignKey(
+        Part,
+        related_name="bid_parts",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    products = models.ForeignKey(
+        Product,
+        related_name="bid_products",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    suppliers = models.ForeignKey(
+        contactapp.models.Supplier,
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    date_requested = models.DateField(
+        blank=True,
+        null=True)
+    date_submitted = models.DateField(
+        blank=True,
+        null=True)
+    cost = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+        blank=True,
+        null=True)
+    shipping = models.DecimalField(
+        decimal_places=2,
+        max_digits=11,
+        blank=True,
+        null=True)
+    quantity = models.IntegerField(
+            blank=True,
+            null=True,
+            default=1,
+            help_text="Divides by this number. 1 box if used by box, " \
+                "or 24 pcs per box if used by piece"
+                )
+    units = models.CharField(
+            max_length=100,
+            blank=True)
+    is_winning_bid = models.BooleanField(default=False)
 
-    # @property
-    # def cost_per_unit(self):
-        # cost = self.cost if self.cost is not None else 0
-        # shipping = self.shipping if self.shipping is not None else 0
-        # quantity = self.quantity if self.quantity is not None else 1
-        # return round((cost + shipping) / quantity, 4) 
+    @property
+    def cost_per_unit(self):
+        cost = self.cost if self.cost is not None else 0
+        shipping = self.shipping if self.shipping is not None else 0
+        quantity = self.quantity if self.quantity is not None else 1
+        return round((cost + shipping) / quantity, 4) 
 
-    # def __str__(self):
-        # if self.parts:
-            # return "{} {}".format(self.suppliers, self.parts)
-        # else:
-#             return "{} {}".format(self.suppliers, self.products)
+    def __str__(self):
+        if self.parts:
+            return "{} {}".format(self.suppliers, self.parts)
+        else:
+            return "{} {}".format(self.suppliers, self.products)
 
 
 
