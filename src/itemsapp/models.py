@@ -1,10 +1,11 @@
-from django.db import models
-from imagekit.models import ProcessedImageField
-from imagekit.processors import ResizeToFill
 from ckeditor.fields import RichTextField
 from configapp.models import Group
-from django.db.models import Sum, Count
+from django.db import models
+from django.db.models import Sum
+from imagekit.models import ProcessedImageField
+from imagekit.processors import ResizeToFill
 import configapp.models
+import utilities.utils as utils
 # from django.db.models import Prefetch
 # import math
 # from sodavault.utils_logging import svlog_info
@@ -209,7 +210,10 @@ class Item(models.Model):
             blank=True,
             choices=ITEM_TYPE_CHOICES,
     )
-    sku = models.CharField(max_length=100, blank=True)
+    sku = models.CharField(
+            max_length=100,
+            unique=True,
+            default=f"SKU-{utils.uuid_str()}")
     name = models.CharField(max_length=100, blank=True)
     description = models.TextField(
             blank=True,
@@ -263,7 +267,11 @@ class Item(models.Model):
 #  I'm using metods for the model annotations
 #  because they will be the same for both parts and products
 def annotate_subitems_cost(self, qs):
-    return qs.annotate(sum_subitems_cost=Sum('subitems__cost'))
+    return qs.annotate(
+            sum_subitems_cost=Sum('subitems__cost'),
+            sum_subitems_cost_shipping=Sum('subitems__cost_shipping'),
+            sum_subitems_cost_other=Sum('subitems__cost_other'),
+            )
 
 
 class PartManager(models.Manager):

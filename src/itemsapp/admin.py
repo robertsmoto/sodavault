@@ -416,17 +416,29 @@ class ComponentInline(nested_admin.NestedStackedInline):
     autocomplete_fields = ['categories', 'tags']
 
 
+@admin.register(itemsapp.models.UnitInventory)
+class UnitInventoryAdmin(admin.ModelAdmin):
+    search_fields = ['singular']
+    pass
+
+
+# @admin.register(itemsapp.models.UnitDisplay)
+# class UnitDisplayAdmin(admin.ModelAdmin):
+    # search_fields = ['singular']
+#     pass
+
+
 @admin.register(itemsapp.models.Part)
 class PartAdmin(nested_admin.NestedModelAdmin):
 
-    fields = (
+    fields = [
             'sku',
             'name',
             'description',
             ('categories', 'tags'),
-            'cost',
+            ('cost', 'unit_inventory'),
             'sum_component_cost',
-            )
+    ]
     readonly_fields = (
             'sum_component_cost',
             )
@@ -445,7 +457,8 @@ class PartAdmin(nested_admin.NestedModelAdmin):
     )
     autocomplete_fields = [
         'categories',
-        'tags'
+        'tags',
+        'unit_inventory',
     ]
     ordering = ['sku']
 
@@ -456,7 +469,11 @@ class PartAdmin(nested_admin.NestedModelAdmin):
     ]
 
     def sum_component_cost(self, obj):
-        return obj.sum_subitems_cost
+        return {
+                'cost': obj.sum_subitems_cost,
+                'cost_shipping': obj.sum_subitems_cost_shipping,
+                'cost_other': obj.sum_subitems_cost_other
+                }
 
     # def save_related(self, request, form, formsets, change):
         # super().save_related(request, form, formsets, change)

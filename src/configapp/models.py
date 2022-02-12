@@ -16,6 +16,63 @@ class Timestamps(models.Model):
         abstract = True
 
 
+class Currency(Timestamps, models.Model):
+    """Config for currency and currency display."""
+    # currency (smallest denomination plus symbol)
+    territory = models.CharField(
+            max_length=100,
+            blank=True)
+    currency = models.CharField(
+            max_length=100,
+            blank=True)
+    symbol = models.CharField(
+            max_length=50,
+            blank=True)
+    iso_code = models.CharField(
+            max_length=50,
+            blank=True)
+    fractional_unit = models.CharField(
+            max_length=50,
+            blank=True)
+    number_basic = models.IntegerField(default=100)
+
+    def __str__(self):
+        return f"{self.territory} {self.symbol} {self.currency}"
+
+
+class CurrencyConfig(Timestamps, models.Model):
+    """Config for currency and currency display."""
+    # currency (smallest denomination plus symbol)
+    SEPARATOR_CHOICES = [
+            ('DEC', '.'),
+            ('COM', ',')
+            ]
+    currency = models.ForeignKey(
+            Currency,
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE
+            )
+    symbol_location = models.CharField(
+            max_length=200,
+            blank=True)
+    is_space_separation = models.BooleanField(
+            default=True,
+            help_text="Provides a space between the currency symbol and price."
+            )
+    fractional_separator = models.CharField(
+            max_length=3,
+            blank=True,
+            choices=SEPARATOR_CHOICES)
+    thousands_separator = models.CharField(
+            max_length=3,
+            blank=True,
+            choices=SEPARATOR_CHOICES)
+
+    def __str__(self):
+        return f"{self.currency}"
+
+
 class Location(Timestamps, models.Model):
     domain = models.CharField(
             'Domain eg. example.com',
