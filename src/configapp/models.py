@@ -148,7 +148,7 @@ class Group(Timestamps, models.Model):
     is_primary = models.BooleanField(default=False)
     is_secondary = models.BooleanField(default=False)
     is_tertiary = models.BooleanField(default=False)
-    order = models.CharField(max_length=20, blank=True, null=True)
+    order = models.IntegerField(blank=True, null=True)
     image_thumb = models.ImageField(
             upload_to=utils_images.new_filename_config_group,
             null=True,
