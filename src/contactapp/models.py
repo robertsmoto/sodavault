@@ -15,6 +15,10 @@ class Company(models.Model):
         max_length=4, blank=True)
     name = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=200, blank=True)
+    domain = models.CharField(
+            'Domain eg. example.com',
+            max_length=200,
+            blank=True)
     website = models.CharField(max_length=200, blank=True)
     address_01 = models.CharField(max_length=200, blank=True)
     address_02 = models.CharField(max_length=200, blank=True)
