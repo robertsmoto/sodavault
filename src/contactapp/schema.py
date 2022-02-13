@@ -5,14 +5,14 @@ import configapp.models
 import graphene
 
 
-class LocationNode(DjangoObjectType):
-    class Meta:
-        model = configapp.models.Location
-        filter_fields = [
-                'domain',
-                'name',
-                ]
-        interfaces = (relay.Node, )
+# class LocationNode(DjangoObjectType):
+    # class Meta:
+        # model = configapp.models.Location
+        # filter_fields = [
+                # 'domain',
+                # 'name',
+                # ]
+        # interfaces = (relay.Node, )
 
 
 # class CompanyNode(DjangoObjectType):
@@ -55,9 +55,9 @@ class LocationNode(DjangoObjectType):
 #         interfaces = (relay.Node, )
 
 
-class Query(graphene.ObjectType):
-    location = relay.Node.Field(LocationNode)
-    all_locations = DjangoFilterConnectionField(LocationNode)
+# class Query(graphene.ObjectType):
+    # location = relay.Node.Field(LocationNode)
+    # all_locations = DjangoFilterConnectionField(LocationNode)
 #     company = relay.Node.Field(CompanyNode)
     # all_companies = DjangoFilterConnectionField(CompanyNode)
     # store = relay.Node.Field(StoreNode)

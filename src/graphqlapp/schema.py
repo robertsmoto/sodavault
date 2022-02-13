@@ -9,7 +9,7 @@ class Query(
         advertisingapp.schema.Query,
         blogapp.schema.Query,
         configapp.schema.Query,
-        contactapp.schema.Query,
+        # contactapp.schema.Query,
         ):
     pass
 
