@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
 import contactapp.models
+import uuid
 
 
 class Timestamps(models.Model):
@@ -108,8 +109,7 @@ class Group(Timestamps, models.Model):
     group_type = models.CharField(
         max_length=7,
         blank=True,
-        choices=GROUP_TYPE_CHOICES,
-    )
+        choices=GROUP_TYPE_CHOICES)
     companies = models.ManyToManyField(
             contactapp.models.Company,
             related_name="group_companies",
@@ -128,7 +128,10 @@ class Group(Timestamps, models.Model):
             blank=True)
     subgroup = models.ForeignKey(
             'self', on_delete=models.CASCADE, blank=True, null=True)
-    slug = models.SlugField(max_length=50, null=True, blank=True)
+    slug = models.SlugField(
+            max_length=50,
+            unique=True,
+            default=f"{str(uuid.uuid4())[0:23]}")
     name = models.CharField(max_length=200, blank=True)
     description = models.CharField(
             max_length=100,

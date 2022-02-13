@@ -7,6 +7,7 @@ from django.urls import reverse
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
 import datetime
+import uuid
 
 NOREC = (0, 'Not Recommended')
 RECOM = (1, 'Recommended')
