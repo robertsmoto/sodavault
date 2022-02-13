@@ -9,6 +9,8 @@ import contactapp.models
 import utilities.utils as utils
 
 
+# comment
+
 class DepartmentManager(models.Manager):
     def get_queryset(self):
         return super().get_queryset().filter(group_type='DEP')
