@@ -9,7 +9,7 @@ class Navigation(ContextMixin):
         context["navigation"] = {}
         navigation = context["navigation"]
         pages_q = Post.objects.filter(
-            locations__domain="sodavault.com",
+            websites__domain="sodavault.com",
             status="PUBLI",
             post_type="PAGE",
             is_primary_menu=True

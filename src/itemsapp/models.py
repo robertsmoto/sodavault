@@ -272,7 +272,7 @@ class Item(models.Model):
                 item_ecpu=(Sum('cost') + Sum('cost_shipping'))
                 / Sum('cost_quantity')).aggregate(Sum('item_ecpu'))
         # priority 1 item cost override
-        if (self.cost + self.cost_shipping) / self.cost_quantity > 0:
+        if (self.cost + self.cost_shipping) / self.cost_quantity is not None:
             print("in priority 1")
             return {
                     'ecpu': (
@@ -294,13 +294,13 @@ class Item(models.Model):
         else:
             return {'ecpu': 0, 'ecpu_from': 'not calculated'}
 
-    # class Meta:
-        # indexes = [
-            # models.Index(fields=['sku', ]),
-    #     ]
+    class Meta:
+        indexes = [
+            models.Index(fields=['sku', ]),
+        ]
 
     def __str__(self):
-        return f"{self.name}"  # .format(self.sku, self.name)
+        return f"{self.sku} {self.name}"  # .format(self.sku, self.name)
 
 
 class PartManager(models.Manager):

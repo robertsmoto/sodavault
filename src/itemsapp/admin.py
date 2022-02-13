@@ -454,7 +454,7 @@ class UnitDisplayAdmin(admin.ModelAdmin):
 class PartAdmin(nested_admin.NestedModelAdmin):
 
     fields = [
-            # ('sku', 'name'),
+            ('sku', 'name'),
             'description',
             ('categories', 'tags', 'keywords'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
@@ -464,19 +464,19 @@ class PartAdmin(nested_admin.NestedModelAdmin):
             'ecpu',
             )
     list_display = (
-        # 'sku',
+        'sku',
         'name',
     )
     list_display_links = (
-        # 'sku',
+        'sku',
         'name',
     )
     search_fields = (
-        # 'sku',
+        'sku',
         'name',
     )
     autocomplete_fields = ['categories', 'tags', 'unit_inventory']
-    # ordering = ['sku']
+    ordering = ['sku']
 
     inlines = [
         BidPartInline,
