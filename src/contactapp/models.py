@@ -1,16 +1,17 @@
 from django.db import models
 
-# Create your models here.
+
 class Company(models.Model):
 
-    COMPANY_TYPE_CHOICES = [ 
-        ('BLOG', 'Blog'), 
-        ('LOCA', 'Location'), 
-        ('SUPP', 'Suppplier'), 
+    COMPANY_TYPE_CHOICES = [
+        ('BLOG', 'Blog'),
+        ('LOCA', 'Location'),
+        ('SUPP', 'Suppplier'),
         ('CUST', 'Customer'),
     ]
+
     company_type = models.CharField(
-        choices = COMPANY_TYPE_CHOICES,
+        choices=COMPANY_TYPE_CHOICES,
         max_length=4, blank=True)
     name = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=200, blank=True)
@@ -28,44 +29,43 @@ class Company(models.Model):
 
     class Meta():
         verbose_name_plural = "companies"
+        ordering = ['name']
 
     def __str__(self):
         return '{}'.format(self.name)
 
-"""
-Think about using expanded location mangers:
-    1. ecommerce
-    2. warehouse
-    3. retail
-"""
 
 class LocationManager(models.Manager):
     def get_queryset(self):
-        return super(LocationManager, self).get_queryset().filter(
-            company_type='LOCA').order_by('name')
+        return super().get_queryset().filter(company_type="LOCA")
 
-    def create(self, **kwargs):
-        kwargs.update({'company_type': 'LOCA'})
-        return super(LocationManager, self).create(**kwargs)
 
 class Location(Company):
     objects = LocationManager()
+
     class Meta:
         proxy = True
+
+    def save(self, *args, **kwargs):
+        self.company_type = "LOCA"
+        super(Supplier, self).save(*args, **kwargs)
+
 
 class SupplierManager(models.Manager):
     def get_queryset(self):
-        return super(SupplierManager, self).get_queryset().filter(
-            company_type='SUPP').order_by('name')
+        return super().get_queryset().filter(company_type="SUPP")
 
-    def create(self, **kwargs):
-        kwargs.update({'company_type': 'SUPP'})
-        return super(SupplierManager, self).create(**kwargs)
 
 class Supplier(Company):
     objects = SupplierManager()
+
     class Meta:
         proxy = True
+
+    def save(self, *args, **kwargs):
+        self.company_type = "SUPP"
+        super(Supplier, self).save(*args, **kwargs)
+
 
 class Person(models.Model):
     company = models.ForeignKey(
@@ -73,12 +73,12 @@ class Person(models.Model):
         blank=True,
         null=True,
         on_delete=models.CASCADE)
-    PERSON_TYPE_CHOICES = [ 
+    PERSON_TYPE_CHOICES = [
         ('CUST', 'Customer'),
-        ('SUPP', 'Suppplier'), 
+        ('SUPP', 'Suppplier'),
     ]
     person_type = models.CharField(
-        choices = PERSON_TYPE_CHOICES,
+        choices=PERSON_TYPE_CHOICES,
         max_length=4, blank=True)
     firstname = models.CharField(max_length=200, blank=True)
     lastname = models.CharField(max_length=200, blank=True)
@@ -103,5 +103,3 @@ class Person(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.firstname, self.lastname)
-
-

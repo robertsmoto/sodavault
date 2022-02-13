@@ -1,26 +1,27 @@
 from django.contrib import admin
-from .models import Entry, Lot, Batch
+import ledgerapp.models
 
 
-@admin.register(Lot)
+@admin.register(ledgerapp.models.Lot)
 class LotAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(Batch)
-class LotAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ['identification']
 
 
-@admin.register(Entry)
+@admin.register(ledgerapp.models.Batch)
+class BatchAdmin(admin.ModelAdmin):
+    search_fields = ['identification']
+
+
+@admin.register(ledgerapp.models.Entry)
 class LedgerAdmin(admin.ModelAdmin):
     list_display = [
         'date',
         'account',
         'part_sku',
         'product_sku',
-        'locations',
-        'lots',
-        'batches',
+        'location',
+        'lot',
+        'batch',
         'debit_quantity',
         'debit_amount',
         'credit_quantity',
@@ -31,7 +32,7 @@ class LedgerAdmin(admin.ModelAdmin):
         'part_sku',
         'product_sku',
     ]
-    pass
+    autocomplete_fields = ['location', 'lot', 'batch']
 
 # class LedgerInline(admin.TabularInline):
     # model = Ledger

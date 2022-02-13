@@ -16,19 +16,6 @@ class Timestamps(models.Model):
         abstract = True
 
 
-class Note(models.Model):
-    # add to parts, products, transactionso
-    date = models.DateField(
-        blank=True,
-        null=True)
-    note = models.TextField(
-        max_length=3000,
-        blank=True)
-
-    class Meta:
-        abstract = True
-
-
 class Currency(Timestamps, models.Model):
     """Config for currency and currency display."""
     # currency (smallest denomination plus symbol)

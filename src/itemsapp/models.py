@@ -1,15 +1,12 @@
 from ckeditor.fields import RichTextField
 from configapp.models import Group
 from django.db import models
-from django.db.models import Sum, F, Prefetch
+from django.db.models import Sum
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import configapp.models
-import utilities.utils as utils
 import contactapp.models
-# from django.db.models import Prefetch
-# import math
-# from sodavault.utils_logging import svlog_info
+import utilities.utils as utils
 
 
 class DepartmentManager(models.Manager):
@@ -217,29 +214,33 @@ class Item(models.Model):
             unique=True,
             default=f"SKU-{utils.uuid_str()}")
     name = models.CharField(max_length=100, blank=True)
-    description = models.TextField(
+    description = models.CharField(
+            max_length=200,
             blank=True,
             help_text="For internal and purchasing use.")
     keywords = models.CharField(
             max_length=200,
             blank=True,
             help_text="comma, separated, list")
-    unit_inventory = models.ManyToManyField(
-            UnitInventory,
-            related_name="unit_inventory",
-            blank=True)
-    unit_display = models.ManyToManyField(
-            UnitDisplay,
-            related_name="unit_display",
-            blank=True)
-    unit_base = models.IntegerField(
-            default=1,
-            help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
-
     # from this calculate ecpu
     cost = models.BigIntegerField(default=0)
     cost_shipping = models.BigIntegerField(default=0)
     cost_quantity = models.IntegerField(default=1)
+    unit_inventory = models.ForeignKey(
+            UnitInventory,
+            related_name="unit_inventory",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
+    unit_display = models.ForeignKey(
+            UnitDisplay,
+            related_name="unit_display",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
+    unit_base = models.IntegerField(
+            default=1,
+            help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
 
     # used for parts
     cost_multiplier = models.ForeignKey(
@@ -263,7 +264,10 @@ class Item(models.Model):
 
     @property
     def ecpu(self):
-        ecpu = 0
+        winning_bids = self.bid_parts.filter(is_winning_bid=True)
+        secpu = self.subitems.annotate(
+                item_ecpu=(Sum('cost') + Sum('cost_shipping'))
+                / Sum('cost_quantity')).aggregate(Sum('item_ecpu'))
         # priority 1 item cost override
         if (self.cost + self.cost_shipping) / self.cost_quantity > 0:
             print("in priority 1")
@@ -272,23 +276,20 @@ class Item(models.Model):
                         self.cost + self.cost_shipping) / self.cost_quantity,
                     'ecpu_display': '',
                     'ecpu_from': 'item cost override'}
-
         # priority 2 winning bid
-        winning_bids = self.bid_parts.filter(is_winning_bid=True)
-        if winning_bids:
+        elif winning_bids:
             return {
                     'ecpu': winning_bids[0].ecpu,
                     'ecpu_display': '',
                     'ecpu_from': 'item winning bid'}
         # priority 3 subitems ecpu
-        secpu = self.subitems.annotate(
-                item_ecpu=(Sum('cost') + Sum('cost_shipping'))
-                / Sum('cost_quantity')).aggregate(Sum('item_ecpu'))
-        if secpu['item_ecpu__sum'] > 0:
+        elif secpu['item_ecpu__sum'] > 0:
             return {
                     'ecpu': secpu['item_ecpu__sum'],
                     'ecpu_display': '',
                     'ecpu_from': 'sub subitem ecpu'}
+        else:
+            return {'ecpu': 0, 'ecpu_from': 'not calculated'}
 
     class Meta:
         indexes = [
@@ -337,19 +338,19 @@ class Product(Item):
 
 
 class Bid(models.Model):
-    parts = models.ForeignKey(
+    part = models.ForeignKey(
             Part,
             related_name="bid_parts",
             blank=True,
             null=True,
             on_delete=models.CASCADE)
-    products = models.ForeignKey(
+    product = models.ForeignKey(
             Product,
             related_name="bid_products",
             blank=True,
             null=True,
             on_delete=models.CASCADE)
-    suppliers = models.ForeignKey(
+    supplier = models.ForeignKey(
             contactapp.models.Supplier,
             blank=True,
             null=True,
@@ -366,9 +367,11 @@ class Bid(models.Model):
             default=1,
             help_text="Divides total cost by this number to return ecpu."
             )
-    unit_inventory = models.ManyToManyField(
+    unit_inventory = models.ForeignKey(
             UnitInventory,
-            blank=True)
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     is_winning_bid = models.BooleanField(default=False)
 
     @property
@@ -376,10 +379,10 @@ class Bid(models.Model):
         return (self.cost + self.cost_shipping) / self.cost_quantity
 
     def __str__(self):
-        if self.parts:
-            return "{} {}".format(self.suppliers, self.parts)
+        if self.part:
+            return "{} {}".format(self.supplier, self.part)
         else:
-            return "{} {}".format(self.suppliers, self.products)
+            return "{} {}".format(self.supplier, self.product)
 
 
 
@@ -773,6 +776,25 @@ class ProductPartJoin(models.Model):
     def _unit(self):
         return self.parts._unit
 
+
+class Note(models.Model):
+    item = models.ForeignKey(
+            Item,
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
+    date = models.DateField(
+            blank=True,
+            null=True)
+    note = models.TextField(
+            max_length=3000,
+            blank=True)
+
+    class Meta:
+        ordering = ['-date']
+
+    def __str__(self):
+        return self.date.isoformat()
 
 
 """
