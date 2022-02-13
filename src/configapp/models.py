@@ -126,12 +126,16 @@ class Group(Timestamps, models.Model):
             contactapp.models.Website,
             related_name="group_websites",
             blank=True)
-    subgroup = models.ForeignKey(
-            'self', on_delete=models.CASCADE, blank=True, null=True)
+    parent = models.ForeignKey(
+            'self',
+            related_name="subgroups",
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
     slug = models.SlugField(
             max_length=50,
             unique=True,
-            default=f"{str(uuid.uuid4())[0:23]}")
+            help_text="Is required and must be unique.")
     name = models.CharField(max_length=200, blank=True)
     description = models.CharField(
             max_length=100,
@@ -144,7 +148,7 @@ class Group(Timestamps, models.Model):
     is_primary = models.BooleanField(default=False)
     is_secondary = models.BooleanField(default=False)
     is_tertiary = models.BooleanField(default=False)
-    order = models.CharField(max_length=20, blank=True)
+    order = models.CharField(max_length=20, blank=True, null=True)
     image_thumb = models.ImageField(
             upload_to=utils_images.new_filename_config_group,
             null=True,

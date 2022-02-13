@@ -7,7 +7,6 @@ from django.urls import reverse
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
 import datetime
-import uuid
 
 NOREC = (0, 'Not Recommended')
 RECOM = (1, 'Recommended')
@@ -538,7 +537,9 @@ class Post(models.Model):
             on_delete=models.SET_NULL,
             blank=True,
             null=True,)
-    slug = models.SlugField('Slug',)  # <-- add autofill in admin
+    slug = models.SlugField(
+            unique=True,
+            help_text="Is required, must be unique.")
     title = models.CharField(
             'Title',
             max_length=200,

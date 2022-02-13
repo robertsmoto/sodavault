@@ -21,16 +21,32 @@ class RecipeInline(admin.StackedInline):
 
 @admin.register(blogapp.models.Category)
 class CategoryAdmin(admin.ModelAdmin):
+    fields = [
+            ('websites', 'parent'),
+            ('name', 'slug'),
+            ('description', 'kwd_list'),
+            ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
+            ('image_thumb', 'image_21', 'image_191'),
+            ('image_lg_square', 'image_md_square', 'image_sm_square')
+            ]
     search_fields = ["categories"]
-    exclude = ["group_type"]
+    readonly_fields = ['image_lg_square', 'image_md_square', 'image_sm_square']
     autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(blogapp.models.Tag)
 class TagAdmin(admin.ModelAdmin):
+    fields = [
+            ('websites', 'parent'),
+            ('name', 'slug'),
+            ('description', 'kwd_list'),
+            ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
+            ('image_thumb', 'image_21', 'image_191'),
+            ('image_lg_square', 'image_md_square', 'image_sm_square')
+            ]
     search_fields = ["tags"]
-    exclude = ["group_type"]
+    readonly_fields = ['image_lg_square', 'image_md_square', 'image_sm_square']
     autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
 
@@ -68,18 +84,19 @@ class RecipeAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
 
     fields = [
-        ("websites", "author"),
+        ("websites", "parent"),
         ("title", "slug"),
-        ("status", "is_featured"),
+        (
+            "menu_order", "is_primary_menu", "is_secondary_menu",
+            "is_footer_menu"),
+        ("author", "status", "is_featured"),
         ("date_published", "date_modified"),
         "excerpt",
         "body",
         "footer",
-        ("image_featured", "image_191", "image_thumb"),
+        ("image_featured", "image_thumb", "image_191"),
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
-        "recipe",
-        ("local_business", "movie", "book"),
     ]
 
     list_display = ["title", "author", "date_published", "status"]
@@ -93,19 +110,17 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(blogapp.models.Doc)
 class DocAdmin(admin.ModelAdmin):
     fields = [
-        ("websites"),
+        ("websites", "parent"),
         ("title", "slug"),
         (
-            "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
+            "menu_order", "is_primary_menu", "is_secondary_menu",
             "is_footer_menu"),
-        ("author"),
-        ("status", "featured"),
+        ("author", "status", "is_featured"),
         ("date_published", "date_modified"),
         "excerpt",
         "body",
         "footer",
-        ("image_featured", "image_thumb"),
-        ("image_191", "image_21"),
+        ("image_featured", "image_thumb", "image_191"),
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
     ]
@@ -121,13 +136,12 @@ class DocAdmin(admin.ModelAdmin):
 @admin.register(blogapp.models.Page)
 class PageAdmin(admin.ModelAdmin):
     fields = [
-        ("websites"),
+        ("websites", "parent"),
         ("title", "slug"),
         (
-            "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
+            "menu_order", "is_primary_menu", "is_secondary_menu",
             "is_footer_menu"),
-        ("author"),
-        ("status", "is_featured"),
+        ("author", "status", "is_featured"),
         ("date_published", "date_modified"),
         "excerpt",
         "body",
