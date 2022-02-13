@@ -7,7 +7,7 @@ from imagekit.processors import ResizeToFill
 import configapp.models
 import contactapp.models
 import utilities.utils as utils
-
+import uuid
 
 # comment
 
@@ -211,10 +211,11 @@ class Item(models.Model):
             blank=True,
             choices=ITEM_TYPE_CHOICES,
     )
-#     sku = models.CharField(
-            # max_length=100,
-            # unique=True,
-            # default=f"SKU-{utils.uuid_str()}")
+    sku = models.CharField(
+            max_length=100,
+            unique=True,
+            default=f"SKU-{str(uuid.uuid4())[0:23]}"
+            )
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(
             max_length=200,
