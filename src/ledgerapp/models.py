@@ -8,14 +8,14 @@ import configapp.models
 import contactapp.models
 import datetime
 import itemsapp.models
-import utilities.utils as utils
+# import utilities.utils as utils
 
 
 class Lot(configapp.models.Timestamps, models.Model):
-    identification = models.CharField(
-            max_length=100,
-            unique=True,
-            default=f"LOT-{utils.uuid_str()}")
+    # identification = models.CharField(
+            # max_length=100,
+            # unique=True,
+    #         default=f"LOT-{utils.uuid_str()}")
     created = models.DateField(default=datetime.date.today)
     expires = models.DateField(
         blank=True, null=True)
@@ -28,10 +28,10 @@ class Lot(configapp.models.Timestamps, models.Model):
 
 
 class Batch(configapp.models.Timestamps, models.Model):
-    identification = models.CharField(
-        max_length=100,
-        unique=True,
-        default=f"BATCH-{utils.uuid_str()}")
+    # identification = models.CharField(
+        # max_length=100,
+        # unique=True,
+    #     default=f"BATCH-{utils.uuid_str()}")
     created = models.DateField(default=datetime.date.today)
     expires = models.DateField(
         blank=True, null=True)
