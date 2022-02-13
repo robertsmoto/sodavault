@@ -211,10 +211,10 @@ class Item(models.Model):
             blank=True,
             choices=ITEM_TYPE_CHOICES,
     )
-    sku = models.CharField(
-            max_length=100,
-            unique=True,
-            default=f"SKU-{utils.uuid_str()}")
+#     sku = models.CharField(
+            # max_length=100,
+            # unique=True,
+            # default=f"SKU-{utils.uuid_str()}")
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(
             max_length=200,
@@ -293,13 +293,13 @@ class Item(models.Model):
         else:
             return {'ecpu': 0, 'ecpu_from': 'not calculated'}
 
-    class Meta:
-        indexes = [
-            models.Index(fields=['sku', ]),
-        ]
+    # class Meta:
+        # indexes = [
+            # models.Index(fields=['sku', ]),
+    #     ]
 
     def __str__(self):
-        return "{} {}".format(self.sku, self.name)
+        return f"{self.name}"  # .format(self.sku, self.name)
 
 
 class PartManager(models.Manager):

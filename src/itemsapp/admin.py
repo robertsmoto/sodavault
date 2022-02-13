@@ -424,7 +424,7 @@ class ComponentInline(nested_admin.NestedStackedInline):
     """Component is a Part subitem."""
     model = itemsapp.models.Item
     fields = [
-            'sku',
+            # 'sku',
             'name',
             'description',
             ('categories', 'tags'),
@@ -454,7 +454,7 @@ class UnitDisplayAdmin(admin.ModelAdmin):
 class PartAdmin(nested_admin.NestedModelAdmin):
 
     fields = [
-            ('sku', 'name'),
+            # ('sku', 'name'),
             'description',
             ('categories', 'tags', 'keywords'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
@@ -464,19 +464,19 @@ class PartAdmin(nested_admin.NestedModelAdmin):
             'ecpu',
             )
     list_display = (
-        'sku',
+        # 'sku',
         'name',
     )
     list_display_links = (
-        'sku',
+        # 'sku',
         'name',
     )
     search_fields = (
-        'sku',
+        # 'sku',
         'name',
     )
     autocomplete_fields = ['categories', 'tags', 'unit_inventory']
-    ordering = ['sku']
+    # ordering = ['sku']
 
     inlines = [
         BidPartInline,
@@ -500,7 +500,7 @@ class PartAdmin(nested_admin.NestedModelAdmin):
 class ProductAdmin(nested_admin.NestedModelAdmin):
 
     fields = (
-        ('sku', 'name'),
+        # ('sku', 'name'),
         'description',
         'keywords',
         ('departments', 'categories', 'tags'),
@@ -521,7 +521,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         # 'is_bundle',
     # )
     list_display = (
-        'sku',
+        # 'sku',
         'name',
     #     'ecpu',
     #     'available_inventory',
@@ -532,11 +532,11 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         ProductTypesFilter,
     )
     list_display_links = (
-        'sku',
+        # 'sku',
         'name',
     )
     search_fields = (
-        'sku',
+        # 'sku',
         'name',
     )
     autocomplete_fields = [
@@ -544,7 +544,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         'categories',
         'tags',
     ]
-    ordering = ['sku']
+    # ordering = ['sku']
 
     inlines = (
         # ProductPartJoinInline,
