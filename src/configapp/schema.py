@@ -35,7 +35,7 @@ class GroupNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                # 'locations__domain',
+                'websites__domain',
                 'name',
                 'order',
                 'slug',
