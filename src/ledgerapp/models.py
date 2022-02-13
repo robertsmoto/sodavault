@@ -95,8 +95,21 @@ class Entry(configapp.models.Timestamps, models.Model):
         blank=True,
         null=True,
         on_delete=models.CASCADE)
-    location = models.ForeignKey(
-        contactapp.models.Location,
+    company = models.ForeignKey(
+        contactapp.models.Company,
+        related_name="entry_companies",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    store = models.ForeignKey(
+        contactapp.models.Store,
+        related_name="entry_store",
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE)
+    warehouse = models.ForeignKey(
+        contactapp.models.Warehouse,
+        related_name="entry_warehouse",
         blank=True,
         null=True,
         on_delete=models.CASCADE)

@@ -19,7 +19,9 @@ class LedgerAdmin(admin.ModelAdmin):
         'account',
         'part_sku',
         'product_sku',
-        'location',
+        'company',
+        'store',
+        'warehouse',
         'lot',
         'batch',
         'debit_quantity',
@@ -32,7 +34,7 @@ class LedgerAdmin(admin.ModelAdmin):
         'part_sku',
         'product_sku',
     ]
-    autocomplete_fields = ['location', 'lot', 'batch']
+    autocomplete_fields = ['company', 'store', 'warehouse', 'lot', 'batch']
 
 # class LedgerInline(admin.TabularInline):
     # model = Ledger

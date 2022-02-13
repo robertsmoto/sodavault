@@ -5,21 +5,13 @@ from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.admin import TokenAdmin
 from django.forms import models
 import configapp.models
-import contactapp.models
-
-
-@admin.register(contactapp.models.Location)
-class LocationAdmin(admin.ModelAdmin):
-    # inlines = [HoursInline, ReviewInline]
-    search_fields = ['name', 'domain']
-    pass
 
 
 @admin.register(configapp.models.Group)
 class GroupAdmin(admin.ModelAdmin):
     # inlines = [HoursInline, ReviewInline]
     search_fields = ['group_type', 'name', 'description']
-    autocomplete_fields = ['locations']
+    # autocomplete_fields = ['locations']
     pass
 
 

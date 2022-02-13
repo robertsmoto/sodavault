@@ -110,9 +110,17 @@ class Group(Timestamps, models.Model):
         blank=True,
         choices=GROUP_TYPE_CHOICES,
     )
-    locations = models.ManyToManyField(
-            contactapp.models.Location,
-            related_name="group_locations",
+    companies = models.ManyToManyField(
+            contactapp.models.Company,
+            related_name="group_companies",
+            blank=True)
+    stores = models.ManyToManyField(
+            contactapp.models.Store,
+            related_name="group_stores",
+            blank=True)
+    warehouses = models.ManyToManyField(
+            contactapp.models.Warehouse,
+            related_name="group_warehouses",
             blank=True)
     websites = models.ManyToManyField(
             contactapp.models.Website,

@@ -97,7 +97,7 @@ class SubAttributeInline(nested_admin.NestedTabularInline):
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Term"
     verbose_name_plural = "Attribute Terms"
-    autocomplete_fields = ['locations']
+    autocomplete_fields = ['stores', 'warehouses']
 
 
 @admin.register(itemsapp.models.Attribute)
@@ -110,7 +110,7 @@ class AttributeAdmin(admin.ModelAdmin):
     exclude = ['group_type', 'subgroup']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubAttributeInline, ]
-    autocomplete_fields = ['locations']
+    autocomplete_fields = ['stores', 'warehouses']
 
     def get_queryset(self, request):
         qs = super(AttributeAdmin, self).get_queryset(request)

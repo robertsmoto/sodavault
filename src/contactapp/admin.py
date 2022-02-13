@@ -8,11 +8,16 @@ class PersonInline(admin.StackedInline):
     verbose_name = "people"
 
 
+# @admin.register(contactapp.models.Location)
+# class LocationAdmin(admin.ModelAdmin):
+    # search_fields = ['name', 'domain']
+    # pass
+
+
 @admin.register(contactapp.models.Company)
-class CategoryAdmin(admin.ModelAdmin):
+class CompanyAdmin(admin.ModelAdmin):
     search_fields = ['name']
     inlines = [PersonInline, ]
-    verbose_name = "companies"
 
 
 @admin.register(contactapp.models.Store)

@@ -68,7 +68,7 @@ class RecipeAdmin(admin.ModelAdmin):
 class PostAdmin(admin.ModelAdmin):
 
     fields = [
-        ("locations", "author"),
+        ("websites", "author"),
         ("title", "slug"),
         ("status", "is_featured"),
         ("date_published", "date_modified"),
@@ -93,7 +93,7 @@ class PostAdmin(admin.ModelAdmin):
 @admin.register(blogapp.models.Doc)
 class DocAdmin(admin.ModelAdmin):
     fields = [
-        ("locations"),
+        ("websites"),
         ("title", "slug"),
         (
             "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
@@ -121,7 +121,7 @@ class DocAdmin(admin.ModelAdmin):
 @admin.register(blogapp.models.Page)
 class PageAdmin(admin.ModelAdmin):
     fields = [
-        ("locations"),
+        ("websites"),
         ("title", "slug"),
         (
             "parent", "menu_order", "is_primary_menu", "is_secondary_menu",
