@@ -26,16 +26,6 @@ class UserProfileNode(DjangoObjectType):
         return self.avatar.url
 
 
-class LocationNode(DjangoObjectType):
-    class Meta:
-        model = configapp.models.Location
-        filter_fields = [
-                'domain',
-                'name',
-                ]
-        interfaces = (relay.Node, )
-
-
 class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
@@ -54,8 +44,5 @@ class GroupNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    location = relay.Node.Field(LocationNode)
-    all_locations = DjangoFilterConnectionField(LocationNode)
-
     group = relay.Node.Field(GroupNode)
     all_groups = DjangoFilterConnectionField(GroupNode)

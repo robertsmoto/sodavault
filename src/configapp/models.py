@@ -1,11 +1,12 @@
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.conf import settings
 from rest_framework.authtoken.models import Token
-from utilities import utils_images
 from sodavault.utils_logging import svlog_info
+from utilities import utils_images
+import contactapp.models
 
 
 class Timestamps(models.Model):
@@ -73,25 +74,25 @@ class CurrencyConfig(Timestamps, models.Model):
         return f"{self.currency}"
 
 
-class Location(Timestamps, models.Model):
-    domain = models.CharField(
-            'Domain eg. example.com',
-            max_length=200,
-            blank=True)
-    name = models.CharField(
-            'Location Name',
-            max_length=200,
-            blank=True)
-    description = models.CharField(
-            'Location Description',
-            max_length=200,
-            blank=True)
+# class Location(Timestamps, models.Model):
+    # domain = models.CharField(
+            # 'Domain eg. example.com',
+            # max_length=200,
+            # blank=True)
+    # name = models.CharField(
+            # 'Location Name',
+            # max_length=200,
+            # blank=True)
+    # description = models.CharField(
+            # 'Location Description',
+            # max_length=200,
+            # blank=True)
 
-    class Meta:
-        verbose_name_plural = "01. Locations"
+    # class Meta:
+        # verbose_name_plural = "01. Locations"
 
-    def __str__(self):
-        return '%s' % (self.name)
+    # def __str__(self):
+        # return '%s' % (self.name)
 
 
 class Group(Timestamps, models.Model):
@@ -110,7 +111,12 @@ class Group(Timestamps, models.Model):
         choices=GROUP_TYPE_CHOICES,
     )
     locations = models.ManyToManyField(
-            Location,
+            contactapp.models.Location,
+            related_name="group_locations",
+            blank=True)
+    websites = models.ManyToManyField(
+            contactapp.models.Website,
+            related_name="group_websites",
             blank=True)
     subgroup = models.ForeignKey(
             'self', on_delete=models.CASCADE, blank=True, null=True)

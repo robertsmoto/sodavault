@@ -23,7 +23,7 @@ class RecipeInline(admin.StackedInline):
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ["categories"]
     exclude = ["group_type"]
-    autocomplete_fields = ["locations"]
+    autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -31,7 +31,7 @@ class CategoryAdmin(admin.ModelAdmin):
 class TagAdmin(admin.ModelAdmin):
     search_fields = ["tags"]
     exclude = ["group_type"]
-    autocomplete_fields = ["locations"]
+    autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
 
 
@@ -83,11 +83,11 @@ class PostAdmin(admin.ModelAdmin):
     ]
 
     list_display = ["title", "author", "date_published", "status"]
-    list_filter = ["status", "locations__domain"]
+    list_filter = ["status", "websites__domain"]
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    autocomplete_fields = ["websites", "categories", "tags"]
 
 
 @admin.register(blogapp.models.Doc)
@@ -111,11 +111,11 @@ class DocAdmin(admin.ModelAdmin):
     ]
 
     list_display = ["title", "author", "date_published", "status"]
-    list_filter = ["status", "locations__domain"]
+    list_filter = ["status", "websites__domain"]
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    autocomplete_fields = ["websites", "categories", "tags"]
 
 
 @admin.register(blogapp.models.Page)
@@ -138,8 +138,8 @@ class PageAdmin(admin.ModelAdmin):
     ]
 
     list_display = ["title", "author", "date_published", "status"]
-    list_filter = ["status", "locations__domain"]
+    list_filter = ["status", "websites__domain"]
     list_editable = ["author", "status"]
 
     prepopulated_fields = {"slug": ("title",)}
-    autocomplete_fields = ["locations", "categories", "tags"]
+    autocomplete_fields = ["websites", "categories", "tags"]

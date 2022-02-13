@@ -5,9 +5,10 @@ from rest_framework.authtoken.models import Token, TokenProxy
 from rest_framework.authtoken.admin import TokenAdmin
 from django.forms import models
 import configapp.models
+import contactapp.models
 
 
-@admin.register(configapp.models.Location)
+@admin.register(contactapp.models.Location)
 class LocationAdmin(admin.ModelAdmin):
     # inlines = [HoursInline, ReviewInline]
     search_fields = ['name', 'domain']

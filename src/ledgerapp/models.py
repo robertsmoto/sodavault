@@ -96,7 +96,7 @@ class Entry(configapp.models.Timestamps, models.Model):
         null=True,
         on_delete=models.CASCADE)
     location = models.ForeignKey(
-        configapp.models.Location,
+        contactapp.models.Location,
         blank=True,
         null=True,
         on_delete=models.CASCADE)
@@ -150,4 +150,4 @@ class Entry(configapp.models.Timestamps, models.Model):
         verbose_name_plural = "entries"
 
     def __str__(self):
-        return self.date.strftime("%Y %m %d")
+        return self.date.isoformat()
