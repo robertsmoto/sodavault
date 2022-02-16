@@ -1,7 +1,7 @@
 from ckeditor.fields import RichTextField
 from configapp.models import Group
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, F
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import configapp.models
@@ -177,6 +177,33 @@ class UnitDisplay(configapp.models.Unit):
         super(UnitInventory, self).save(*args, **kwargs)
 
 
+class ItemQueries(models.QuerySet):
+
+    def components(self):
+        return self.filter(item_type="COMP") \
+                .prefetch_related('components', 'bid_components') \
+                .order_by('sku')
+
+    def parts(self):
+        return self.filter(item_type="PART") \
+                .prefetch_related('components', 'bid_parts') \
+                .order_by('sku')
+
+    def products(self):
+        return self.filter(item_type="PROD") \
+                .prefetch_related('components', 'bid_products') \
+                .order_by('sku')
+
+    def with_ecpu(self):
+        return
+
+    # should stock go here in the manager, or above on the model?
+    def with_stock(self):
+        return self.annotate(
+                Sum('subitems__unit_base'),
+                )
+
+
 class Item(models.Model):
     departments = models.ManyToManyField(
             Department,
@@ -193,16 +220,8 @@ class Item(models.Model):
     attributes = models.ManyToManyField(
             AttributeItemJoin,
             blank=True)
-
-    #  parent_id is available
-    #  query parents --> Item.objects.filter(subitems__isnull=True)
-    parent = models.ForeignKey(
-            'self',
-            null=True,
-            on_delete=models.CASCADE,
-            related_name="subitems")
-
     ITEM_TYPE_CHOICES = [
+            ('COMP', 'Component'),
             ('PART', 'Part'),
             ('PROD', 'Product'),
     ]
@@ -213,9 +232,7 @@ class Item(models.Model):
     )
     sku = models.CharField(
             max_length=100,
-            unique=True,
-            default=f"SKU-{str(uuid.uuid4())[0:23]}"
-            )
+            unique=True)
     name = models.CharField(max_length=100, blank=True)
     description = models.CharField(
             max_length=200,
@@ -225,10 +242,13 @@ class Item(models.Model):
             max_length=200,
             blank=True,
             help_text="comma, separated, list")
-    # from this calculate ecpu
+
     cost = models.BigIntegerField(default=0)
     cost_shipping = models.BigIntegerField(default=0)
     cost_quantity = models.IntegerField(default=1)
+
+    # units, may use (centimeter, centimeters) for inventory
+    # but then use (meter, meters) for the front-end display
     unit_inventory = models.ForeignKey(
             UnitInventory,
             related_name="unit_inventory",
@@ -245,54 +265,115 @@ class Item(models.Model):
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
 
-    # used for parts
+    # used to calculate price
     cost_multiplier = models.ForeignKey(
             CostMultiplier,
             blank=True,
             null=True,
             on_delete=models.CASCADE)
     price = models.BigIntegerField(blank=True, null=True)
-    order_min = models.IntegerField(
-            blank=True,
+
+    #  used for cost estimating
+    components = models.ManyToManyField(
+            'self',
+            through='ComponentJoin',
+            blank=True)
+
+    # used for collections
+    product_parent = models.ForeignKey(
+            'self',
             null=True,
+            on_delete=models.CASCADE,
+            related_name="products")
+    collection_quantity = models.IntegerField(
+            default=1,
+            help_text="How many items are included.")
+    order_min = models.IntegerField(
+            default=0,
             help_text="Use to require minium order quantity.")
     order_max = models.IntegerField(
-            blank=True,
-            null=True,
+            default=0,
             help_text="Use to limit order quantity.")
-    collection_quantity = models.IntegerField(
-            blank=True,
-            null=True,
-            help_text="How many items are included in the collection.")
+
+    objects = ItemQueries.as_manager()
 
     @property
     def ecpu(self):
-        winning_bids = self.bid_parts.filter(is_winning_bid=True)
-        secpu = self.subitems.annotate(
-                item_ecpu=(Sum('cost') + Sum('cost_shipping'))
-                / Sum('cost_quantity')).aggregate(Sum('item_ecpu'))
+        winning_bids = []
+        if self.bid_components.exists():
+            winning_bids = self.bid_components.filter(is_winning_bid=True)
+        if self.bid_parts.exists():
+            winning_bids = self.bid_parts.filter(is_winning_bid=True)
+        if self.bid_products.exists():
+            winning_bids = self.bid_components.filter(is_winning_bid=True)
+
+        components = ComponentJoin.objects \
+            .filter(from_item_id=self.id)
+            # \
+            # .annotate(comp_ecpu=(to_item__quantity * to_item__ecpu['cost']))
+
         # priority 1 item cost override
-        if (self.cost + self.cost_shipping) / self.cost_quantity is not None:
+        if (self.cost + self.cost_shipping) / self.cost_quantity > 0:
             print("in priority 1")
             return {
                     'ecpu': (
                         self.cost + self.cost_shipping) / self.cost_quantity,
                     'ecpu_display': '',
                     'ecpu_from': 'item cost override'}
+
         # priority 2 winning bid
-        elif winning_bids:
+        # can be bid_components, bid_parts, or bid_products
+        elif len(winning_bids) > 0:
             return {
                     'ecpu': winning_bids[0].ecpu,
                     'ecpu_display': '',
                     'ecpu_from': 'item winning bid'}
+
         # priority 3 subitems ecpu
-        elif secpu['item_ecpu__sum'] > 0:
-            return {
-                    'ecpu': secpu['item_ecpu__sum'],
-                    'ecpu_display': '',
-                    'ecpu_from': 'sub subitem ecpu'}
+        # both products and parts can contain cost components
+        # components are existing items differentiated only by item_type
+        # part-components are item_type="COMP"
+        # product-components are item_type="PART"
+
+  #       elif len(components) > 0:
+            # print("in priority 3 components")
+
+            # for x in components:
+                # print("x", x.to_item.ecpu['ecpu'], type(x.to_item.ecpu['ecpu']))
+                # print("quantity", x.quantity, type(x.quantity))
+
+            # # 'quantity' * 'to_item__ecpu'.get('ecpu', 0)
+
+            # component_ecpu = components \
+                # .annotate(
+                        # comp_ecpu=(F("quantity") * F("to_item__ecpu['ecpu']"))
+                        # ) \
+                # .aggregate(Sum('comp_ecpu'))
+
+            # print("component_ecpu", component_ecpu)
+
+
+            # return {
+                    # 'ecpu': component_ecpu,
+                    # 'ecpu_display': '',
+  #                   'ecpu_from': 'sum subitem ecpu'}
         else:
             return {'ecpu': 0, 'ecpu_from': 'not calculated'}
+        """
+        thinking about recursive calculation of ecpu
+        ecpu values are contained completly within models, so it is it possible to
+        recursively check for override, bids and components to calculate the ecpu.
+
+        priority is 1. override, 2. bids and 3. component costs
+        note: component costs are also recursive. their costs are determined in the
+        same priority 1. override, 2, bids and 3. component costs
+
+        begin with an item.object
+
+        does have override, return
+        does have winning bid, return
+        does have component costs, calculate the 
+        """
 
     class Meta:
         indexes = [
@@ -303,44 +384,71 @@ class Item(models.Model):
         return f"{self.sku} {self.name}"  # .format(self.sku, self.name)
 
 
-class PartManager(models.Manager):
-    def get_queryset(self):
-        return Item.objects.filter(item_type="PART")
-
-
-class Part(Item):
+class Component(Item):
     """Is a proxy model of Item."""
-    objects = PartManager()
 
     class Meta:
         proxy = True
-        verbose_name_plural = "01. Parts"
+        verbose_name_plural = "01. Component"
+
+    def save(self, *args, **kwargs):
+        self.item_type = "COMP"
+        super(Component, self).save(*args, **kwargs)
+
+
+class Part(Item):
+    """Is a proxy model of Item.
+    Can use like:
+        Part.objects.all()
+        Part.ogjects.with_ecpu()."""
+
+    class Meta:
+        proxy = True
+        verbose_name_plural = "02. Parts"
 
     def save(self, *args, **kwargs):
         self.item_type = "PART"
         super(Part, self).save(*args, **kwargs)
 
 
-class ProductManager(models.Manager):
-    def get_queryset(self):
-        qs = Item.objects.filter(parent_id__isnull=True, item_type="PROD")
-        return qs
-
-
 class Product(Item):
     """Is a proxy model of Item."""
-    objects = ProductManager()
+    objects = ItemQueries.as_manager()
 
     class Meta:
         proxy = True
-        verbose_name_plural = "02a. Products"
+        verbose_name_plural = "03. Products"
 
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
         super(Product, self).save(*args, **kwargs)
 
 
+class ComponentJoin(models.Model):
+    from_item = models.ForeignKey(
+            Item,
+            related_name='from_item',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    to_item = models.ForeignKey(
+            Item,
+            related_name='to_item',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    quantity = models.IntegerField(
+            default=1,
+            help_text="How many components are included in the cost of 1 item.")
+
+
 class Bid(models.Model):
+    component = models.ForeignKey(
+            Component,
+            related_name="bid_components",
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
     part = models.ForeignKey(
             Part,
             related_name="bid_parts",
@@ -377,16 +485,11 @@ class Bid(models.Model):
             on_delete=models.CASCADE)
     is_winning_bid = models.BooleanField(default=False)
 
-    @property
-    def ecpu(self):
-        return (self.cost + self.cost_shipping) / self.cost_quantity
-
     def __str__(self):
         if self.part:
             return "{} {}".format(self.supplier, self.part)
         else:
             return "{} {}".format(self.supplier, self.product)
-
 
 
 # do I need to do this, or just add a related digital items relation?
@@ -433,103 +536,6 @@ class Measurement(models.Model):
 
     def __str__(self):
         return '{}'.format(self.item.name)
-
-
-# class ProductAttributeJoin(models.Model):
-    # """Used for product attributes."""
-    # items = models.ForeignKey(
-        # Item,
-        # related_name='product_att_join',
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-    # attribute = models.ForeignKey(
-        # Attribute,
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-    # # ManyToMany for product-attributes
-    # term = models.ManyToManyField(
-        # Term,
-        # blank=True)
-
-    # def __str__(self):
-        # return '{}'.format(self.attribute.name)
-
-
-# class Variation(models.Model):
-    # parent = models.ForeignKey(
-        # Item,
-        # related_name='variation_parents',
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-    # items = models.ForeignKey(
-        # Item,
-        # related_name='variation_products',
-        # null=True,
-        # on_delete=models.CASCADE)
-
-    # def __str__(self):
-        # return '{} : {}'.format(self.parent.sku, self.parent.name)
-
-
-# class VariationAttribute(models.Model):
-    # items = models.ForeignKey(
-        # Item,
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-    # variations = models.ForeignKey(
-        # Variation,
-        # related_name='variation_attributes',
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-    # attributes = models.ForeignKey(
-        # Attribute,
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-    # terms = models.ForeignKey(
-        # Term,
-        # null=True,
-        # blank=True,
-        # on_delete=models.CASCADE)
-
-    # def __str__(self):
-        # return '{}'.format(self.variations.product.sku)
-
-
-# class Bundle(models.Model):
-    # parent = models.ForeignKey(
-        # Item,
-        # related_name='bundle_parents',
-        # on_delete=models.CASCADE)
-    # items = models.ForeignKey(
-        # Item,
-        # related_name='bundle_products',
-        # null=True,
-        # on_delete=models.CASCADE)
-    # quantity_min = models.PositiveSmallIntegerField(default=1)
-    # quantity_max = models.PositiveSmallIntegerField(blank=True, null=True)
-    # is_optional = models.BooleanField(default=False)
-
-    # def __str__(self):
-#         return '{} : {}'.format(self.parent.sku, self.parent.name)
-
-
-# class DigitalOption(models.Model):
-    # item = models.OneToOneField(
-        # Item,
-        # related_name='digital_options',
-        # null=True,
-        # on_delete=models.CASCADE)
-    # name = models.CharField(max_length=200, blank=True)
-    # # other things like a download key, file, expiration date etc ...
-
-    # def __str__(self):
-        # return '{}'.format(self.item.name)
 
 
 class Promotion(models.Model):
@@ -719,65 +725,6 @@ class Image(models.Model):
 
     def __str__(self):
         return '{}'.format(self.name)
-
-
-class ProductPartJoin(models.Model):
-    parts = models.ForeignKey(
-            Part,
-            related_name='ppj_parts',
-            blank=True,
-            null=True,
-            on_delete=models.CASCADE)
-    products = models.ForeignKey(
-            Product,
-            related_name='ppj_products',
-            blank=True,
-            null=True,
-            on_delete=models.CASCADE)
-#     simple_products = models.ForeignKey(
-            # SimpleProduct,
-            # related_name="ppj_simple_products",
-            # blank=True,
-            # null=True,
-#             on_delete=models.CASCADE)
-#     digital_products = models.ForeignKey(
-            # DigitalProduct,
-            # related_name="ppj_digital_products",
-            # blank=True,
-            # null=True,
-#             on_delete=models.CASCADE)
-    # bundle_products = models.ForeignKey(
-            # BundleProduct,
-            # related_name="ppj_bundle_products",
-            # blank=True,
-            # null=True,
-            # on_delete=models.CASCADE)
-    # variable_products = models.ForeignKey(
-            # VariableProduct,
-            # related_name="ppj_variable_products",
-            # blank=True,
-            # null=True,
-    #         on_delete=models.CASCADE)
-    quantity = models.IntegerField(
-            default=1,
-            help_text="How many parts per product?")
-    is_unlimited = models.BooleanField(
-            default=False,
-            help_text="Denotes if a part should be considered unlimited.")
-    use_all = models.BooleanField(
-            default=False,
-            help_text=(
-                "Use all part inventory when the related product is "
-                "brought into inventory."))
-
-    @property
-    def _ecpu(self):
-        ecpu = self.parts.ecpu if self.parts.ecpu is not None else 0
-        return round(ecpu, 4)
-
-    @property
-    def _unit(self):
-        return self.parts._unit
 
 
 class Note(models.Model):

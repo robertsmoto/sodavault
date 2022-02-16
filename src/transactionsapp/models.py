@@ -870,5 +870,3 @@ class Return(Transaction):
         if self.transaction_type == '':
             self.transaction_type='RET'
         super(Return, self).save(*args, **kwargs)
-
-

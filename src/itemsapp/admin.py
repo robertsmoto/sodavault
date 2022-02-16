@@ -1,15 +1,12 @@
-from dal import autocomplete
-from dal import forward
 from django import forms
 from django.contrib import admin
-from django.db.models import Sum, Count, F
+from django.db.models import Prefetch
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 from ledgerapp.models import Entry
 import configapp.models
 import contactapp.models
 import itemsapp.models
-import nested_admin
 
 
 # @admin.register(models.Price)
@@ -24,7 +21,7 @@ class SupplierAdmin(admin.ModelAdmin):
     exclude = ['company_type']
 
 
-class SubDepartmentInline(nested_admin.NestedTabularInline):
+class SubDepartmentInline(admin.TabularInline):
     model = configapp.models.Group
     exclude = ['cat_type']
     prepopulated_fields = {'slug': ('name',)}
@@ -48,7 +45,7 @@ class DepartmentAdmin(admin.ModelAdmin):
         return qs.filter(group_type="ITEMDEP")
 
 
-class SubCategoryInline(nested_admin.NestedTabularInline):
+class SubCategoryInline(admin.TabularInline):
     model = configapp.models.Group
     exclude = ['cat_type']
     prepopulated_fields = {'slug': ('name',)}
@@ -71,7 +68,7 @@ class CategoryAdmin(admin.ModelAdmin):
     inlines = [SubCategoryInline, ]
 
 
-class SubTagInline(nested_admin.NestedTabularInline):
+class SubTagInline(admin.TabularInline):
     model = configapp.models.Group
     exclude = ['cat_type']
     prepopulated_fields = {'slug': ('name',)}
@@ -91,7 +88,7 @@ class TagAdmin(admin.ModelAdmin):
     inlines = [SubTagInline, ]
 
 
-class SubAttributeInline(nested_admin.NestedTabularInline):
+class SubAttributeInline(admin.TabularInline):
     model = itemsapp.models.Attribute
     exclude = ['group_type']
     prepopulated_fields = {'slug': ('name',)}
@@ -117,7 +114,7 @@ class AttributeAdmin(admin.ModelAdmin):
         return qs.filter(subgroup_id__isnull=True)
 
 
-class ProductInventoryInline(nested_admin.NestedTabularInline):
+class ProductInventoryInline(admin.TabularInline):
 
     model = Entry
 
@@ -144,7 +141,7 @@ class ProductInventoryInline(nested_admin.NestedTabularInline):
     exclude = ['parts']
 
 
-class PartInventoryInline(nested_admin.NestedTabularInline):
+class PartInventoryInline(admin.TabularInline):
 
     model = Entry
 
@@ -172,7 +169,7 @@ class PartInventoryInline(nested_admin.NestedTabularInline):
     exclude = ['lots', 'products', 'account']  # , 'note'
 
 
-class NoteInline(nested_admin.NestedTabularInline):
+class NoteInline(admin.TabularInline):
     model = itemsapp.models.Note
     extra = 0
     classes = ['collapse']
@@ -181,9 +178,9 @@ class NoteInline(nested_admin.NestedTabularInline):
     # exclude = ['pos', 'asns']
 
 
-class BidPartInline(nested_admin.NestedTabularInline):
+class BidComponentInline(admin.TabularInline):
     model = itemsapp.models.Bid
-    exclude = ['product', ]
+    exclude = ['part', 'product']
     extra = 0
     classes = ['collapse']
     verbose_name = "bid"
@@ -191,16 +188,26 @@ class BidPartInline(nested_admin.NestedTabularInline):
     autocomplete_fields = ['unit_inventory', 'supplier']
 
 
-class BidProductInline(nested_admin.NestedTabularInline):
+class BidPartInline(admin.TabularInline):
     model = itemsapp.models.Bid
-    exclude = ['part', ]
+    exclude = ['component', 'product']
+    extra = 0
+    classes = ['collapse']
+    verbose_name = "bid"
+    verbose_name_plural = "bids"
+    autocomplete_fields = ['unit_inventory', 'supplier']
+
+
+class BidProductInline(admin.TabularInline):
+    model = itemsapp.models.Bid
+    exclude = ['component', 'part']
     extra = 0
     classes = ['collapse']
     verbose_name = "bid"
     verbose_name_plural = "bids"
 
 
-class IdentifierInline(nested_admin.NestedTabularInline):
+class IdentifierInline(admin.TabularInline):
 
     model = itemsapp.models.Identifier
     fields = [
@@ -213,7 +220,7 @@ class IdentifierInline(nested_admin.NestedTabularInline):
     verbose_name_plural = "identifiers"
 
 
-class MeasurementInline(nested_admin.NestedTabularInline):
+class MeasurementInline(admin.TabularInline):
 
     model = itemsapp.models.Measurement
     fields = [
@@ -225,7 +232,7 @@ class MeasurementInline(nested_admin.NestedTabularInline):
     verbose_name = "measurements"
 
 
-class MarketingOptionInline(nested_admin.NestedStackedInline):
+class MarketingOptionInline(admin.StackedInline):
 
     model = itemsapp.models.Marketing
     extra = 0
@@ -240,7 +247,7 @@ class MarketingOptionInline(nested_admin.NestedStackedInline):
     verbose_name_plural = "marketing options"
 
 
-class ImageInline(nested_admin.NestedStackedInline):
+class ImageInline(admin.StackedInline):
 
     model = itemsapp.models.Image
     extra = 0
@@ -420,22 +427,46 @@ class ProductTypesFilter(admin.SimpleListFilter):
             return queryset.filter(variation_parents__isnull=False).distinct()
 
 
-class ComponentInline(nested_admin.NestedStackedInline):
-    """Component is a Part subitem."""
-    model = itemsapp.models.Item
-    fields = [
-            # 'sku',
-            'name',
-            'description',
-            ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-    ]
+class ComponentInlineForm(forms.ModelForm):
 
+    to_item = forms.ModelChoiceField(
+            queryset=itemsapp.models.Item.objects
+            .filter(item_type="COMP"),
+            empty_label="-----")
+
+
+class ComponentInline(admin.TabularInline):
+    """Component is an Item with item_type='COMP'."""
+
+    model = itemsapp.models.Item.components.through
+    form = ComponentInlineForm
+    fk_name = 'from_item'
     extra = 0
     classes = ['collapse']
     verbose_name = 'Component'
     verbose_name_plural = 'Components'
-    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+
+
+class PartInlineForm(forms.ModelForm):
+
+    to_item = forms.ModelChoiceField(
+            queryset=itemsapp.models.Item.objects
+            .filter(item_type="PART"),
+            empty_label="-----")
+
+
+class PartInline(admin.TabularInline):
+    """Component, part is an Item with item_type='PART'."""
+
+    model = itemsapp.models.Item.components.through
+    form = PartInlineForm
+    fk_name = 'from_item'
+    extra = 0
+    classes = ['collapse']
+    verbose_name = 'Part'
+    verbose_name_plural = 'Parts'
+    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
 
 
 @admin.register(itemsapp.models.UnitInventory)
@@ -450,19 +481,57 @@ class UnitDisplayAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(itemsapp.models.Part)
-class PartAdmin(nested_admin.NestedModelAdmin):
+@admin.register(itemsapp.models.Component)
+class ComponentAdmin(admin.ModelAdmin):
 
     fields = [
-            ('sku', 'name'),
-            'description',
-            ('categories', 'tags', 'keywords'),
+            ('name', 'sku'),
+            ('description', 'keywords'),
+            ('categories', 'tags'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-            'ecpu',
+            # 'ecpu',
     ]
-    readonly_fields = (
-            'ecpu',
-            )
+    prepopulated_fields = {'sku': ('name',), }
+    readonly_fields = ['ecpu']
+    list_display = (
+        'sku',
+        'name',
+    )
+    list_display_links = (
+        'sku',
+        'name',
+    )
+    search_fields = (
+        'sku',
+        'name',
+    )
+    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    ordering = ['sku']
+
+    inlines = [
+        BidComponentInline,
+        NoteInline,
+    ]
+
+    def get_queryset(self, request):
+        """Use custom model manager."""
+        qs = self.model.objects.components()
+        return qs
+
+
+@admin.register(itemsapp.models.Part)
+class PartAdmin(admin.ModelAdmin):
+
+    fields = [
+            ('name', 'sku'),
+            ('description', 'keywords'),
+            ('categories', 'tags'),
+            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
+            # 'new_field'
+            # 'ecpu',
+    ]
+    prepopulated_fields = {'sku': ('name',), }
+    readonly_fields = ['ecpu']
     list_display = (
         'sku',
         'name',
@@ -484,44 +553,144 @@ class PartAdmin(nested_admin.NestedModelAdmin):
         NoteInline,
     ]
 
-    def sum_component_cost(self, obj):
-        return {
-                'cost': obj.sum_subitems_cost,
-                'cost_shipping': obj.sum_subitems_cost_shipping,
-                'cost_total': obj.sum_subitems_cost_total
-                }
+    def get_queryset(self, request):
+        """Use custom model manager."""
+        qs = self.model.objects.parts()
+        return qs
 
-    # def save_related(self, request, form, formsets, change):
-        # super().save_related(request, form, formsets, change)
-    #     form.instance.save()
+
+def calc_ecpu(start_ids: list, ecpu: int, ecpu_from: int) -> (int, str):
+    """Recursive function that calculates the estimated cost per unit."""
+    print("start_ids", start_ids)
+
+    def check_for_list(start_ids: list) -> (str, list):
+        item_id = None
+        qnty_multby = 1
+        if start_ids:
+            item_id = start_ids.pop()
+        if isinstance(item_id, list):
+            if item_id:
+                hold_ids = item_id
+                item_id = hold_ids.pop()
+                if hold_ids:
+                    start_ids.append(hold_ids)
+            else:
+                check_for_list(start_ids=start_ids)
+        if isinstance(item_id, tuple):
+            qnty_multby = item_id[0]
+            item_id = item_id[1]
+
+        return qnty_multby, item_id, start_ids
+
+    qnty_multby, item_id, start_ids = check_for_list(start_ids)
+
+    if not item_id:
+        return ecpu, ecpu_from
+
+    item = itemsapp.models.Item.objects \
+        .prefetch_related(
+                'bid_components',
+                'bid_parts',
+                'bid_products',
+                ) \
+        .get(id=item_id)
+
+    print("item_q", item.bid_components, item.bid_parts, item.bid_products)
+
+    # bid queries
+    bids = (
+            item.bid_components.filter(is_winning_bid=True) |
+            item.bid_parts.filter(is_winning_bid=True) |
+            item.bid_products.filter(is_winning_bid=True)
+            )
+
+    # component queries
+    new_ids = itemsapp.models.ComponentJoin.objects \
+        .values_list('quantity', 'to_item_id') \
+        .filter(from_item_id=item_id)
+
+    # check override
+    if item.cost + item.cost_shipping > 0:
+        ecpu = ecpu + (
+                qnty_multby
+                * ((item.cost + item.cost_shipping) / item.cost_quantity)
+                )
+        ecpu_from = 1 if ecpu_from == 0 else ecpu_from
+
+    # check winning bid
+    elif len(bids) > 0:
+        bid = bids[0]
+        ecpu = ecpu + (
+                qnty_multby
+                * ((bid.cost + bid.cost_shipping) / bid.cost_quantity)
+                )
+
+        ecpu_from = 2 if ecpu_from == 0 else ecpu_from
+
+    # check components
+    elif new_ids:
+        start_ids.append(list(new_ids))
+
+    # return condition
+    print("start_ids at end", start_ids, len(start_ids))
+    if len(start_ids) > 0:
+        ecpu_from += 1
+        return calc_ecpu(start_ids=start_ids, ecpu=ecpu, ecpu_from=ecpu_from)
+    else:
+        print("this is the end")
+        if ecpu_from == 1:
+            ecpu_from = "cost override"
+        elif ecpu_from == 2:
+            ecpu_from = "winning bid"
+        else:
+            ecpu_from = "component costs"
+        return int(ecpu), ecpu_from
+
+
+class ProductForm(forms.ModelForm):
+
+    class Meta:
+        model = itemsapp.models.Product
+        fields = '__all__'
+
+    ecpu = forms.CharField(
+            max_length=200,
+            disabled=True,
+            widget=forms.TextInput(
+                attrs={
+                    'style': 'width: 350px;'}
+                )
+            )
+
+    def __init__(self, *args, **kwargs):
+        """Return the initial data to use for forms on this view."""
+        super(ProductForm, self).__init__(*args, **kwargs)
+        object_ids = []
+        obj = self.instance
+        object_ids.append(obj.id)
+        ecpu, ecpu_from = calc_ecpu(start_ids=object_ids, ecpu=0, ecpu_from=0)
+        print(ecpu, ecpu_from)
+        self.fields['ecpu'].initial = {"ecpu": ecpu, "ecpu_from": ecpu_from}
 
 
 @admin.register(itemsapp.models.Product)
-class ProductAdmin(nested_admin.NestedModelAdmin):
+class ProductAdmin(admin.ModelAdmin):
 
-    fields = (
-        # ('sku', 'name'),
-        'description',
-        'keywords',
-        ('departments', 'categories', 'tags'),
-        'price',
-        ('unit', 'unit_plural', 'unit_base'),
-        ('order_min', 'order_max')
-    )
-    # readonly_fields = (
-        # 'ecpu',
-        # 'unit',
-        # 'ecpu_calc_from',
-        # 'available_inventory',
-        # 'max_new_inventory',
-        # 'price',
-        # 'price_calc_from',
-        # 'is_digital',
-        # 'is_variable',
-        # 'is_bundle',
-    # )
+    form = ProductForm
+    fields = [
+            ('name', 'sku'),
+            ('description', 'keywords'),
+            ('categories', 'tags'),
+            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
+            'ecpu'
+            # 'ecpu',
+    ]
+
+
+    prepopulated_fields = {'sku': ('name',), }
+
     list_display = (
-        # 'sku',
+        'sku',
         'name',
     #     'ecpu',
     #     'available_inventory',
@@ -550,6 +719,7 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         # ProductPartJoinInline,
         # ProductInventoryInline,
         BidProductInline,
+        PartInline,
         IdentifierInline,
         MeasurementInline,
         MarketingOptionInline,
@@ -560,9 +730,10 @@ class ProductAdmin(nested_admin.NestedModelAdmin):
         # VariationInline,
     )
 
-    def save_related(self, request, form, formsets, change):
-        super().save_related(request, form, formsets, change)
-        form.instance.save()
+    def get_queryset(self, request):
+        """Use custom model manager."""
+        qs = self.model.objects.products()
+        return qs
 
 
 @admin.register(itemsapp.models.DigitalProduct)
