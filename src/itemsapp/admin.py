@@ -559,33 +559,37 @@ class PartAdmin(admin.ModelAdmin):
         return qs
 
 
-def calc_ecpu(start_ids: list, ecpu: int, ecpu_from: int) -> (int, str):
-    """Recursive function that calculates the estimated cost per unit."""
-    print("start_ids", start_ids)
+def calc_ecpu(main: dict) -> dict:
+    """Recursive function that calculates the estimated cost per unit.
+    Begin with 'start_ids' key as a list of one or more obj.ids
+    formatted: main = {'start_ids': [17]}"""
 
-    def check_for_list(start_ids: list) -> (str, list):
+    main['ecpu'] = 0 if 'ecpu' not in main else main['ecpu']
+    main['ecpu_fcnt'] = 0 if 'ecpu_fcnt' not in main else main['ecpu_fcnt']
+
+    def check_for_list(main: dict) -> (int, int, dict):
         item_id = None
         qnty_multby = 1
-        if start_ids:
-            item_id = start_ids.pop()
+        if main['start_ids']:
+            item_id = main['start_ids'].pop()
         if isinstance(item_id, list):
             if item_id:
                 hold_ids = item_id
                 item_id = hold_ids.pop()
                 if hold_ids:
-                    start_ids.append(hold_ids)
+                    main['start_ids'].append(hold_ids)
             else:
-                check_for_list(start_ids=start_ids)
+                check_for_list(main)
         if isinstance(item_id, tuple):
             qnty_multby = item_id[0]
             item_id = item_id[1]
 
-        return qnty_multby, item_id, start_ids
+        return qnty_multby, item_id, main
 
-    qnty_multby, item_id, start_ids = check_for_list(start_ids)
+    qnty_multby, item_id, main = check_for_list(main)
 
     if not item_id:
-        return ecpu, ecpu_from
+        return main
 
     item = itemsapp.models.Item.objects \
         .prefetch_related(
@@ -594,8 +598,6 @@ def calc_ecpu(start_ids: list, ecpu: int, ecpu_from: int) -> (int, str):
                 'bid_products',
                 ) \
         .get(id=item_id)
-
-    print("item_q", item.bid_components, item.bid_parts, item.bid_products)
 
     # bid queries
     bids = (
@@ -611,40 +613,43 @@ def calc_ecpu(start_ids: list, ecpu: int, ecpu_from: int) -> (int, str):
 
     # check override
     if item.cost + item.cost_shipping > 0:
-        ecpu = ecpu + (
+        main['ecpu'] = main['ecpu'] + (
                 qnty_multby
                 * ((item.cost + item.cost_shipping) / item.cost_quantity)
                 )
-        ecpu_from = 1 if ecpu_from == 0 else ecpu_from
+        main['ecpu_fcnt'] = 1 if main['ecpu_fcnt'] == 0 else main['ecpu_fcnt']
 
     # check winning bid
     elif len(bids) > 0:
         bid = bids[0]
-        ecpu = ecpu + (
+        main['ecpu'] = main['ecpu'] + (
                 qnty_multby
                 * ((bid.cost + bid.cost_shipping) / bid.cost_quantity)
                 )
 
-        ecpu_from = 2 if ecpu_from == 0 else ecpu_from
+        main['ecpu_fcnt'] = 2 if main['ecpu_fcnt'] == 0 else main['ecpu_fcnt']
 
     # check components
     elif new_ids:
-        start_ids.append(list(new_ids))
+        main['start_ids'].append(list(new_ids))
 
     # return condition
-    print("start_ids at end", start_ids, len(start_ids))
-    if len(start_ids) > 0:
-        ecpu_from += 1
-        return calc_ecpu(start_ids=start_ids, ecpu=ecpu, ecpu_from=ecpu_from)
+    print("main @ end",  main)
+    if len(main['start_ids']) > 0:
+        main['ecpu_fcnt'] += 1
+        return calc_ecpu(main=main)
     else:
         print("this is the end")
-        if ecpu_from == 1:
-            ecpu_from = "cost override"
-        elif ecpu_from == 2:
-            ecpu_from = "winning bid"
+        if main['ecpu_fcnt'] == 1:
+            main['ecpu_from'] = "cost override"
+        elif main['ecpu_fcnt'] == 2:
+            main['ecpu_from'] = "winning bid"
         else:
-            ecpu_from = "component costs"
-        return int(ecpu), ecpu_from
+            main['ecpu_from'] = "component costs"
+
+        main.pop('start_ids')
+        main.pop('ecpu_fcnt')
+        return main
 
 
 class ProductForm(forms.ModelForm):
@@ -668,9 +673,10 @@ class ProductForm(forms.ModelForm):
         object_ids = []
         obj = self.instance
         object_ids.append(obj.id)
-        ecpu, ecpu_from = calc_ecpu(start_ids=object_ids, ecpu=0, ecpu_from=0)
-        print(ecpu, ecpu_from)
-        self.fields['ecpu'].initial = {"ecpu": ecpu, "ecpu_from": ecpu_from}
+        main_dict = {'start_ids': object_ids}
+        main = calc_ecpu(main=main_dict)
+        print(main)
+        self.fields['ecpu'].initial = main
 
 
 @admin.register(itemsapp.models.Product)
