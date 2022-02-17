@@ -7,7 +7,6 @@ from rest_framework.authtoken.models import Token
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
 import contactapp.models
-import uuid
 
 
 class Timestamps(models.Model):

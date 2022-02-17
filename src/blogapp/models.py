@@ -66,42 +66,38 @@ DOW_CHOICES = [
 ]
 
 
-class CategoryManager(models.Manager):
+class PostCategoryManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(group_type='BLOGCAT')
+        return super().get_queryset().filter(group_type='POSTCAT')
 
 
-class Category(configapp.models.Group):
+class PostCategory(configapp.models.Group):
 
-    objects = CategoryManager()
+    objects = PostCategoryManager()
 
     class Meta:
         proxy = True
-        # verbose_name_plural = "06. Tags"
-        # ordering = ['menu_order', 'name']
 
     def save(self, *args, **kwargs):
-        self.group_type = 'BLOGCAT'
-        super(Category, self).save(*args, **kwargs)
+        self.group_type = 'POSTCAT'
+        super(PostCategory, self).save(*args, **kwargs)
 
 
-class TagManager(models.Manager):
+class PostTagManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(group_type='BLOGTAG')
+        return super().get_queryset().filter(group_type='POSTTAG')
 
 
-class Tag(configapp.models.Group):
+class PostTag(configapp.models.Group):
 
-    objects = TagManager()
+    objects = PostTagManager()
 
     class Meta:
         proxy = True
-        # verbose_name_plural = "06. Tags"
-        # ordering = ['menu_order', 'name']
 
     def save(self, *args, **kwargs):
-        self.group_type = 'BLOGTAG'
-        super(Tag, self).save(*args, **kwargs)
+        self.group_type = 'POSTTAG'
+        super(PostTag, self).save(*args, **kwargs)
 
 
 class Book(models.Model):
@@ -499,11 +495,11 @@ class Post(models.Model):
     ]
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
     categories = models.ManyToManyField(
-            Category,
+            PostCategory,
             related_name="post_categories",
             blank=True)
     tags = models.ManyToManyField(
-            Tag,
+            PostTag,
             related_name="post_tags",
             blank=True)
     author = models.ForeignKey(
@@ -567,13 +563,13 @@ class Post(models.Model):
             'Menu Order',
             default=0,
             help_text="Use to order menu")
-    is_primary_menu = models.BooleanField(
+    is_primary = models.BooleanField(
             default=False,
             help_text="Use if in primary menu.")
-    is_secondary_menu = models.BooleanField(
+    is_secondary = models.BooleanField(
             default=False,
             help_text="Use if in secondary menu.")
-    is_footer_menu = models.BooleanField(
+    is_tertiary = models.BooleanField(
             default=False,
             help_text="Use if in footer menu.")
     post_type = models.CharField(
@@ -781,7 +777,7 @@ class Article(Post):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "02. Articles"
+        verbose_name_plural = "Articles"
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
@@ -800,13 +796,13 @@ class Doc(Post):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "04. Docs"
+        verbose_name_plural = "Docs"
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing
         if self.post_type != 'DOC':
             self.post_type = 'DOC'
-        super(Article, self).save(*args, **kwargs)
+        super(Doc, self).save(*args, **kwargs)
 
 
 class PageManager(models.Manager):
@@ -819,7 +815,7 @@ class Page(Post):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "03. Pages"
+        verbose_name_plural = "Pages"
 
     def save(self, *args, **kwargs):
         # add the transaction_type if missing

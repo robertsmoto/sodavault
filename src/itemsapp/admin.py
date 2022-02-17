@@ -1,24 +1,10 @@
 from django import forms
 from django.contrib import admin
-from django.db.models import Prefetch
 from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
 from ledgerapp.models import Entry
 import configapp.models
-import contactapp.models
 import itemsapp.models
-
-
-# @admin.register(models.Price)
-# class PriceAdmin(admin.ModelAdmin):
-    # model = models.Price
-    # list_display = ['name', 'is_margin', 'is_markup', 'is_flat']
-#     list_filter = ['is_margin', 'is_markup', 'is_flat']
-
-@admin.register(contactapp.models.Supplier)
-class SupplierAdmin(admin.ModelAdmin):
-    search_fields = ['name']
-    exclude = ['company_type']
 
 
 class SubDepartmentInline(admin.TabularInline):

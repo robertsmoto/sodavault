@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 import blogapp.models
 
@@ -19,7 +20,7 @@ class RecipeInline(admin.StackedInline):
     model = blogapp.models.Recipe
 
 
-@admin.register(blogapp.models.Category)
+@admin.register(blogapp.models.PostCategory)
 class CategoryAdmin(admin.ModelAdmin):
     fields = [
             ('websites', 'parent'),
@@ -34,8 +35,14 @@ class CategoryAdmin(admin.ModelAdmin):
     autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
 
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
-@admin.register(blogapp.models.Tag)
+
+@admin.register(blogapp.models.PostTag)
 class TagAdmin(admin.ModelAdmin):
     fields = [
             ('websites', 'parent'),
@@ -50,45 +57,85 @@ class TagAdmin(admin.ModelAdmin):
     autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
 
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
 
 @admin.register(blogapp.models.LocalBusiness)
 class LocalBusinessAdmin(admin.ModelAdmin):
     inlines = [HoursInline, ReviewInline]
-    pass
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(blogapp.models.Book)
 class ReviewBookAdmin(admin.ModelAdmin):
     inlines = [ReviewInline]
-    pass
 
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 @admin.register(blogapp.models.Movie)
 class ReviewMovieAdmin(admin.ModelAdmin):
     inlines = [ReviewInline]
-    pass
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(blogapp.models.Ingredient)
 class IngredientAdmin(admin.ModelAdmin):
-    pass
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(blogapp.models.Recipe)
 class RecipeAdmin(admin.ModelAdmin):
     inlines = [IngredientInline, ]
-    pass
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
+
+class ArticleForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(ArticleForm, self).__init__(*args, **kwargs)
+        self.fields['parent'].queryset = blogapp.models.Article.objects.all()
+
+    class Meta:
+        model = blogapp.models.Post
+        fields = '__all__'
 
 
 @admin.register(blogapp.models.Article)
-class PostAdmin(admin.ModelAdmin):
+class ArticleAdmin(admin.ModelAdmin):
 
+    form = ArticleForm
     fields = [
         ("websites", "parent"),
         ("title", "slug"),
-        (
-            "menu_order", "is_primary_menu", "is_secondary_menu",
-            "is_footer_menu"),
+        ("menu_order", "is_primary", "is_secondary", "is_tertiary"),
         ("author", "status", "is_featured"),
         ("date_published", "date_modified"),
         "excerpt",
@@ -97,6 +144,7 @@ class PostAdmin(admin.ModelAdmin):
         ("image_featured", "image_thumb", "image_191"),
         ("image_title", "image_caption"),
         ("categories", "tags", "kwd_list"),
+        ("local_business", "book", "movie", "recipe")
     ]
 
     list_display = ["title", "author", "date_published", "status"]
@@ -105,16 +153,28 @@ class PostAdmin(admin.ModelAdmin):
 
     prepopulated_fields = {"slug": ("title",)}
     autocomplete_fields = ["websites", "categories", "tags"]
+
+
+class DocForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(DocForm, self).__init__(*args, **kwargs)
+        self.fields['parent'].queryset = blogapp.models.Doc.objects.all()
+
+    class Meta:
+        model = blogapp.models.Post
+        fields = '__all__'
 
 
 @admin.register(blogapp.models.Doc)
 class DocAdmin(admin.ModelAdmin):
+
+    form = DocForm
+
     fields = [
         ("websites", "parent"),
         ("title", "slug"),
-        (
-            "menu_order", "is_primary_menu", "is_secondary_menu",
-            "is_footer_menu"),
+        ("menu_order", "is_primary", "is_secondary", "is_tertiary"),
         ("author", "status", "is_featured"),
         ("date_published", "date_modified"),
         "excerpt",
@@ -133,14 +193,26 @@ class DocAdmin(admin.ModelAdmin):
     autocomplete_fields = ["websites", "categories", "tags"]
 
 
+class PageForm(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        super(PageForm, self).__init__(*args, **kwargs)
+        self.fields['parent'].queryset = blogapp.models.Page.objects.all()
+
+    class Meta:
+        model = blogapp.models.Post
+        fields = '__all__'
+
+
 @admin.register(blogapp.models.Page)
 class PageAdmin(admin.ModelAdmin):
+
+    form = PageForm
+
     fields = [
         ("websites", "parent"),
         ("title", "slug"),
-        (
-            "menu_order", "is_primary_menu", "is_secondary_menu",
-            "is_footer_menu"),
+        ("menu_order", "is_primary", "is_secondary", "is_tertiary"),
         ("author", "status", "is_featured"),
         ("date_published", "date_modified"),
         "excerpt",

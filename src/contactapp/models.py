@@ -5,6 +5,7 @@ class Location(models.Model):
 
     LOCATION_TYPE_CHOICES = [
         ('COMP', 'Company'),  # <- for external use
+        ('SUPP', 'Supplier'),  # <- for external use
         ('STOR', 'Store'),
         ('WARE', 'Warehouse'),
         ('WEBS', 'Website'),
@@ -31,7 +32,7 @@ class Location(models.Model):
     ship_state = models.CharField(max_length=200, blank=True)
     ship_zipcode = models.CharField(max_length=200, blank=True)
 
-    class Meta():
+    class Meta:
         verbose_name_plural = "locations"
         ordering = ['name']
 
@@ -40,6 +41,7 @@ class Location(models.Model):
 
 
 class CompanyManager(models.Manager):
+
     def get_queryset(self):
         return super().get_queryset().filter(location_type="COMP")
 
@@ -49,10 +51,33 @@ class Company(Location):
 
     class Meta:
         proxy = True
+        verbose_name = "l. Company"
+        verbose_name_plural = "l. Companies"
+        ordering = ['name']
 
     def save(self, *args, **kwargs):
         self.location_type = "COMP"
         super(Company, self).save(*args, **kwargs)
+
+
+class SupplierManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(location_type="SUPP")
+
+
+class Supplier(Location):
+    objects = SupplierManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "l. Supplier"
+        verbose_name_plural = "l. Suppliers"
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        self.location_type = "SUPP"
+        super(Supplier, self).save(*args, **kwargs)
 
 
 class StoreManager(models.Manager):
@@ -65,6 +90,9 @@ class Store(Location):
 
     class Meta:
         proxy = True
+        verbose_name = "l. Store"
+        verbose_name_plural = "l. Stores"
+        ordering = ['name']
 
     def save(self, *args, **kwargs):
         self.location_type = "STOR"
@@ -81,6 +109,9 @@ class Warehouse(Location):
 
     class Meta:
         proxy = True
+        verbose_name = "l. Warehouse"
+        verbose_name_plural = "l. Warehouses"
+        ordering = ['name']
 
     def save(self, *args, **kwargs):
         self.location_type = "WARE"
@@ -97,6 +128,9 @@ class Website(Location):
 
     class Meta:
         proxy = True
+        verbose_name = "l. Website"
+        verbose_name_plural = "l. Websites"
+        ordering = ['name']
 
     def save(self, *args, **kwargs):
         self.location_type = "WEBS"
@@ -104,14 +138,31 @@ class Website(Location):
 
 
 class Person(models.Model):
-    company = models.ForeignKey(
-        Company,
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
+
+    companies = models.ManyToManyField(
+            Location,
+            related_name='companies',
+            blank=True)
+    suppliers = models.ManyToManyField(
+            Location,
+            related_name='suppliers',
+            blank=True)
+    stores = models.ManyToManyField(
+            Location,
+            related_name='stores',
+            blank=True)
+    warehouses = models.ManyToManyField(
+            Location,
+            related_name='warehouses',
+            blank=True)
+    websites = models.ManyToManyField(
+            Location,
+            related_name='websites',
+            blank=True)
+
     PERSON_TYPE_CHOICES = [
         ('CUST', 'Customer'),
-        ('SUPP', 'Suppplier'),
+        ('CONT', 'Contact'),
     ]
     person_type = models.CharField(
         choices=PERSON_TYPE_CHOICES,
@@ -132,10 +183,10 @@ class Person(models.Model):
     ship_address_02 = models.CharField(max_length=200, blank=True)
     ship_city = models.CharField(max_length=200, blank=True)
     ship_state = models.CharField(max_length=200, blank=True)
-    shop_zipcode = models.CharField(max_length=200, blank=True)
+    ship_zipcode = models.CharField(max_length=200, blank=True)
 
     class Meta():
-        verbose_name_plural = "people"
+        verbose_name_plural = "People"
 
     def __str__(self):
         return '{} {}'.format(self.firstname, self.lastname)
@@ -151,23 +202,29 @@ class Customer(Person):
 
     class Meta:
         proxy = True
+        verbose_name = "c. Customer"
+        verbose_name_plural = "c. Customers"
+        ordering = ['lastname', 'firstname']
 
     def save(self, *args, **kwargs):
         self.person_type = "CUST"
         super(Customer, self).save(*args, **kwargs)
 
 
-class SupplierManager(models.Manager):
+class ContactManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(person_type="SUPP")
+        return super().get_queryset().filter(person_type="CONT")
 
 
-class Supplier(Person):
-    objects = SupplierManager()
+class Contact(Person):
+    objects = ContactManager()
 
     class Meta:
         proxy = True
+        verbose_name = "c. Contact"
+        verbose_name_plural = "c. Contacts"
+        ordering = ['lastname', 'firstname']
 
     def save(self, *args, **kwargs):
-        self.person_type = "SUPP"
-        super(Supplier, self).save(*args, **kwargs)
+        self.person_type = "CONT"
+        super(Contact, self).save(*args, **kwargs)
