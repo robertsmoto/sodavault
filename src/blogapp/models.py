@@ -1,5 +1,4 @@
 import configapp.models
-import contactapp.models
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.db import models
@@ -493,7 +492,7 @@ class Post(models.Model):
         ('DRAFT', 'Draft'),
         ('TRASH', 'Trash'),
     ]
-    websites = models.ManyToManyField(contactapp.models.Website, blank=True)
+    websites = models.ManyToManyField(configapp.models.Website, blank=True)
     categories = models.ManyToManyField(
             PostCategory,
             related_name="category_posts",

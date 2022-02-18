@@ -7,6 +7,12 @@ from django.forms import models
 import configapp.models
 
 
+@admin.register(configapp.models.Website)
+class WebsiteAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    # autocomplete_fields = ['categories', 'tags']
+
+
 @admin.register(configapp.models.Group)
 class GroupAdmin(admin.ModelAdmin):
     # inlines = [HoursInline, ReviewInline]
