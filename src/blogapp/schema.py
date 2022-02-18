@@ -9,13 +9,13 @@ import os
 
 class PostCategoryNode(DjangoObjectType):
     class Meta:
-        model = blogapp.models.Category
+        model = blogapp.models.PostCategory
         interfaces = (relay.Node, )
 
 
 class PostTagNode(DjangoObjectType):
     class Meta:
-        model = blogapp.models.Tag
+        model = blogapp.models.PostTag
         interfaces = (relay.Node, )
 
 
