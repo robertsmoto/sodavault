@@ -9,12 +9,12 @@ class Migration(migrations.Migration):
         ('blogapp', '0023_auto_20220218_1557'),
     ]
 
-    operations = [
-        migrations.RemoveField(
-            model_name='post',
-            name='websites',
-        ),
-        migrations.DeleteModel(
-            name='Website',
-        ),
-    ]
+#     operations = [
+        # migrations.RemoveField(
+            # model_name='post',
+            # name='websites',
+        # ),
+        # migrations.DeleteModel(
+            # name='Website',
+        # ),
+#     ]
