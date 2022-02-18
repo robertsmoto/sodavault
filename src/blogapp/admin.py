@@ -21,10 +21,9 @@ class RecipeInline(admin.StackedInline):
 
 
 @admin.register(blogapp.models.PostCategory)
-class CategoryAdmin(admin.ModelAdmin):
+class PostCategoryAdmin(admin.ModelAdmin):
     fields = [
-            ('websites', 'parent'),
-            ('name', 'slug'),
+            ('name', 'slug', 'parent'),
             ('description', 'kwd_list'),
             ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
             ('image_thumb', 'image_21', 'image_191'),
@@ -32,8 +31,18 @@ class CategoryAdmin(admin.ModelAdmin):
             ]
     search_fields = ["categories"]
     readonly_fields = ['image_lg_square', 'image_md_square', 'image_sm_square']
-    autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(PostCategoryAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        queryset = queryset.filter(group_type="POSTCAT")
+        return queryset, use_distinct
+
+    def save_model(self, request, obj, form, change):
+        obj.group_type = "POSTCAT"
+        super().save_model(request, obj, form, change)
 
     def get_model_perms(self, request):
         """
@@ -43,10 +52,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(blogapp.models.PostTag)
-class TagAdmin(admin.ModelAdmin):
+class PostTagAdmin(admin.ModelAdmin):
     fields = [
-            ('websites', 'parent'),
-            ('name', 'slug'),
+            ('name', 'slug', 'parent'),
             ('description', 'kwd_list'),
             ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
             ('image_thumb', 'image_21', 'image_191'),
@@ -54,8 +62,18 @@ class TagAdmin(admin.ModelAdmin):
             ]
     search_fields = ["tags"]
     readonly_fields = ['image_lg_square', 'image_md_square', 'image_sm_square']
-    autocomplete_fields = ["websites"]
     prepopulated_fields = {"slug": ("name",)}
+
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(PostTagAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        queryset = queryset.filter(group_type="POSTTAG")
+        return queryset, use_distinct
+
+    def save_model(self, request, obj, form, change):
+        obj.group_type = "POSTTAG"
+        super().save_model(request, obj, form, change)
 
     def get_model_perms(self, request):
         """
@@ -84,6 +102,7 @@ class ReviewBookAdmin(admin.ModelAdmin):
         Return empty perms dict thus hiding the model from admin index.
         """
         return {}
+
 
 @admin.register(blogapp.models.Movie)
 class ReviewMovieAdmin(admin.ModelAdmin):

@@ -16,7 +16,7 @@ class SubDepartmentInline(admin.TabularInline):
 
 
 @admin.register(itemsapp.models.Department)
-class DepartmentAdmin(admin.ModelAdmin):
+class ItemDepartmentAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
@@ -26,9 +26,16 @@ class DepartmentAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name', )}
     inlines = [SubDepartmentInline, ]
 
-    def get_queryset(self, request):
-        qs = super(DepartmentAdmin, self).get_queryset(request)
-        return qs.filter(group_type="ITEMDEP")
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(ItemDepartmentAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        queryset = queryset.filter(group_type="ITEMDEP")
+        return queryset, use_distinct
+
+    def save_model(self, request, obj, form, change):
+        obj.group_type = "ITEMDEP"
+        super().save_model(request, obj, form, change)
 
 
 class SubCategoryInline(admin.TabularInline):
@@ -40,7 +47,7 @@ class SubCategoryInline(admin.TabularInline):
 
 
 @admin.register(itemsapp.models.Category)
-class CategoryAdmin(admin.ModelAdmin):
+class ItemCategoryAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
@@ -53,6 +60,17 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name', )}
     inlines = [SubCategoryInline, ]
 
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(ItemCategoryAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        queryset = queryset.filter(group_type="ITEMCAT")
+        return queryset, use_distinct
+
+    def save_model(self, request, obj, form, change):
+        obj.group_type = "ITEMCAT"
+        super().save_model(request, obj, form, change)
+
 
 class SubTagInline(admin.TabularInline):
     model = configapp.models.Group
@@ -63,7 +81,7 @@ class SubTagInline(admin.TabularInline):
 
 
 @admin.register(itemsapp.models.Tag)
-class TagAdmin(admin.ModelAdmin):
+class ItemTagAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
@@ -73,18 +91,29 @@ class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubTagInline, ]
 
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(ItemTagAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        queryset = queryset.filter(group_type="ITEMTAG")
+        return queryset, use_distinct
+
+    def save_model(self, request, obj, form, change):
+        obj.group_type = "ITEMTAG"
+        super().save_model(request, obj, form, change)
+
 
 class SubAttributeInline(admin.TabularInline):
     model = itemsapp.models.Attribute
-    exclude = ['group_type']
+    # exclude = ['group_type']
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Term"
     verbose_name_plural = "Attribute Terms"
-    autocomplete_fields = ['stores', 'warehouses']
+    # autocomplete_fields = ['stores', 'warehouses']
 
 
 @admin.register(itemsapp.models.Attribute)
-class AttributeAdmin(admin.ModelAdmin):
+class ItemAttributeAdmin(admin.ModelAdmin):
     list_display = [
         'name',
         'slug',
@@ -93,11 +122,17 @@ class AttributeAdmin(admin.ModelAdmin):
     exclude = ['group_type', 'subgroup']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubAttributeInline, ]
-    autocomplete_fields = ['stores', 'warehouses']
 
-    def get_queryset(self, request):
-        qs = super(AttributeAdmin, self).get_queryset(request)
-        return qs.filter(subgroup_id__isnull=True)
+    def get_search_results(self, request, queryset, search_term):
+        queryset, use_distinct = super(ItemAttributeAdmin, self).get_search_results(
+            request, queryset, search_term
+        )
+        queryset = queryset.filter(group_type="ITEMATT")
+        return queryset, use_distinct
+
+    def save_model(self, request, obj, form, change):
+        obj.group_type = "ITEMATT"
+        super().save_model(request, obj, form, change)
 
 
 class ProductInventoryInline(admin.TabularInline):

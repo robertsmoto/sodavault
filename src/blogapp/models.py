@@ -66,38 +66,38 @@ DOW_CHOICES = [
 ]
 
 
-class PostCategoryManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='POSTCAT')
+# class PostCategoryManager(models.Manager):
+    # def get_queryset(self):
+        # return super().get_queryset().filter(group_type='POSTCAT')
 
 
 class PostCategory(configapp.models.Group):
 
-    objects = PostCategoryManager()
+    # objects = PostCategoryManager()
 
     class Meta:
         proxy = True
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'POSTCAT'
-        super(PostCategory, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.group_type = 'POSTCAT'
+    #     super(PostCategory, self).save(*args, **kwargs)
 
 
-class PostTagManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='POSTTAG')
+# class PostTagManager(models.Manager):
+    # def get_queryset(self):
+#         return super().get_queryset().filter(group_type='POSTTAG')
 
 
 class PostTag(configapp.models.Group):
 
-    objects = PostTagManager()
+    # objects = PostTagManager()
 
     class Meta:
         proxy = True
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'POSTTAG'
-        super(PostTag, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.group_type = 'POSTTAG'
+    #     super(PostTag, self).save(*args, **kwargs)
 
 
 class Book(models.Model):
@@ -496,11 +496,11 @@ class Post(models.Model):
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
     categories = models.ManyToManyField(
             PostCategory,
-            related_name="post_categories",
+            related_name="category_posts",
             blank=True)
     tags = models.ManyToManyField(
             PostTag,
-            related_name="post_tags",
+            related_name="tag_posts",
             blank=True)
     author = models.ForeignKey(
             User,

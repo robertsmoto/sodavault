@@ -1,86 +1,83 @@
 from ckeditor.fields import RichTextField
-from configapp.models import Group
 from django.db import models
-from django.db.models import Sum, F
+from django.db.models import Sum
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import configapp.models
 import contactapp.models
 import utilities.utils as utils
-import uuid
-
-# comment
-
-class DepartmentManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='DEP')
 
 
-class Department(Group):
+# class DepartmentManager(models.Manager):
+    # def get_queryset(self):
+#         return super().get_queryset().filter(group_type='DEP')
+
+
+class Department(configapp.models.Group):
     """Is a proxy model of Group."""
-    objects = DepartmentManager()
+    # objects = DepartmentManager()
 
     class Meta:
         proxy = True
         verbose_name_plural = "04. Departments"
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'ITEMDEP'
-        super(Department, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.group_type = 'ITEMDEP'
+    #     super(Department, self).save(*args, **kwargs)
 
 
-class CategoryManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='ITEMCAT')
+# class CategoryManager(models.Manager):
+    # def get_queryset(self):
+#         return super().get_queryset().filter(group_type='ITEMCAT')
 
 
-class Category(Group):
+class Category(configapp.models.Group):
     """Is a proxy model of Group."""
-    objects = CategoryManager()
+    # objects = CategoryManager()
 
     class Meta:
         proxy = True
         verbose_name_plural = "05. Categories"
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'ITEMCAT'
-        super(Category, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.group_type = 'ITEMCAT'
+    #     super(Category, self).save(*args, **kwargs)
 
 
-class TagManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='ITEMTAG')
+# class TagManager(models.Manager):
+    # def get_queryset(self):
+#         return super().get_queryset().filter(group_type='ITEMTAG')
 
 
-class Tag(Group):
+class Tag(configapp.models.Group):
     """Is a proxy model of Group."""
-    objects = TagManager()
+    # objects = TagManager()
 
     class Meta:
         proxy = True
         verbose_name_plural = "06. Tags"
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'ITEMTAG'
-        super(Tag, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.group_type = 'ITEMTAG'
+    #     super(Tag, self).save(*args, **kwargs)
 
 
-class AttributeManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='ITEMATT')
+# class AttributeManager(models.Manager):
+    # def get_queryset(self):
+#         return super().get_queryset().filter(group_type='ITEMATT')
 
 
-class Attribute(Group):
+class Attribute(configapp.models.Group):
     """Is a proxy model of Group."""
-    objects = AttributeManager()
+    # objects = AttributeManager()
 
     class Meta:
         proxy = True
         verbose_name_plural = "07. Attributes"
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'ITEMATT'
-        super(Attribute, self).save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+        # self.group_type = 'ITEMATT'
+    #     super(Attribute, self).save(*args, **kwargs)
 
 
 
@@ -207,18 +204,19 @@ class ItemQueries(models.QuerySet):
 class Item(models.Model):
     departments = models.ManyToManyField(
             Department,
-            related_name='item_departments',
+            related_name='department_items',
             blank=True)
     categories = models.ManyToManyField(
             Category,
-            related_name='item_categories',
+            related_name='category_items',
             blank=True)
     tags = models.ManyToManyField(
             Tag,
-            related_name='item_tags',
+            related_name='tag_items',
             blank=True)
     attributes = models.ManyToManyField(
             AttributeItemJoin,
+            related_name='attribute_items',
             blank=True)
     ITEM_TYPE_CHOICES = [
             ('COMP', 'Component'),

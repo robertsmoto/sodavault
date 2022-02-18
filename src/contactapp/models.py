@@ -1,4 +1,39 @@
 from django.db import models
+import configapp.models
+
+
+class LocationCategoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='LOCACAT')
+
+
+class LocationCategory(configapp.models.Group):
+
+    objects = LocationCategoryManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.group_type = 'LOCACAT'
+        super(LocationCategory, self).save(*args, **kwargs)
+
+
+class LocationTagManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='LOCATAG')
+
+
+class LocationTag(configapp.models.Group):
+
+    objects = LocationTagManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.group_type = 'LOCATAG'
+        super(LocationTag, self).save(*args, **kwargs)
 
 
 class Location(models.Model):
@@ -10,7 +45,14 @@ class Location(models.Model):
         ('WARE', 'Warehouse'),
         ('WEBS', 'Website'),
     ]
-
+    categories = models.ManyToManyField(
+            LocationCategory,
+            related_name="category_locations",
+            blank=True)
+    tags = models.ManyToManyField(
+            LocationTag,
+            related_name="tag_locations",
+            blank=True)
     location_type = models.CharField(
         choices=LOCATION_TYPE_CHOICES,
         max_length=4, blank=True)
@@ -51,8 +93,8 @@ class Company(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "l. Company"
-        verbose_name_plural = "l. Companies"
+        verbose_name = "Company"
+        verbose_name_plural = "Companies"
         ordering = ['name']
 
     def save(self, *args, **kwargs):
@@ -71,8 +113,8 @@ class Supplier(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "l. Supplier"
-        verbose_name_plural = "l. Suppliers"
+        verbose_name = "Supplier"
+        verbose_name_plural = "Suppliers"
         ordering = ['name']
 
     def save(self, *args, **kwargs):
@@ -90,8 +132,8 @@ class Store(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "l. Store"
-        verbose_name_plural = "l. Stores"
+        verbose_name = "Store"
+        verbose_name_plural = "Stores"
         ordering = ['name']
 
     def save(self, *args, **kwargs):
@@ -109,8 +151,8 @@ class Warehouse(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "l. Warehouse"
-        verbose_name_plural = "l. Warehouses"
+        verbose_name = "Warehouse"
+        verbose_name_plural = "Warehouses"
         ordering = ['name']
 
     def save(self, *args, **kwargs):
@@ -128,8 +170,8 @@ class Website(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "l. Website"
-        verbose_name_plural = "l. Websites"
+        verbose_name = "Website"
+        verbose_name_plural = "Websites"
         ordering = ['name']
 
     def save(self, *args, **kwargs):
@@ -137,29 +179,69 @@ class Website(Location):
         super(Website, self).save(*args, **kwargs)
 
 
+class PersonCategoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='PERSCAT')
+
+
+class PersonCategory(configapp.models.Group):
+    objects = PersonCategoryManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.group_type = 'PERSCAT'
+        super(PersonCategory, self).save(*args, **kwargs)
+
+
+class PersonTagManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='PERSTAG')
+
+
+class PersonTag(configapp.models.Group):
+
+    objects = PersonTagManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, *args, **kwargs):
+        self.group_type = 'PERSTAG'
+        super(PersonTag, self).save(*args, **kwargs)
+
+
 class Person(models.Model):
 
     companies = models.ManyToManyField(
             Location,
-            related_name='companies',
+            related_name='company_people',
             blank=True)
     suppliers = models.ManyToManyField(
             Location,
-            related_name='suppliers',
+            related_name='supplier_people',
             blank=True)
     stores = models.ManyToManyField(
             Location,
-            related_name='stores',
+            related_name='store_people',
             blank=True)
     warehouses = models.ManyToManyField(
             Location,
-            related_name='warehouses',
+            related_name='warehouse_people',
             blank=True)
     websites = models.ManyToManyField(
             Location,
-            related_name='websites',
+            related_name='website_people',
             blank=True)
-
+    categories = models.ManyToManyField(
+            PersonCategory,
+            related_name="category_people",
+            blank=True)
+    tags = models.ManyToManyField(
+            PersonTag,
+            related_name="tag_people",
+            blank=True)
     PERSON_TYPE_CHOICES = [
         ('CUST', 'Customer'),
         ('CONT', 'Contact'),
@@ -202,8 +284,8 @@ class Customer(Person):
 
     class Meta:
         proxy = True
-        verbose_name = "c. Customer"
-        verbose_name_plural = "c. Customers"
+        verbose_name = "Customer"
+        verbose_name_plural = "Customers"
         ordering = ['lastname', 'firstname']
 
     def save(self, *args, **kwargs):
@@ -221,8 +303,8 @@ class Contact(Person):
 
     class Meta:
         proxy = True
-        verbose_name = "c. Contact"
-        verbose_name_plural = "c. Contacts"
+        verbose_name = "Contact"
+        verbose_name_plural = "Contacts"
         ordering = ['lastname', 'firstname']
 
     def save(self, *args, **kwargs):

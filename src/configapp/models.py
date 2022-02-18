@@ -6,7 +6,6 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
-import contactapp.models
 
 
 class Timestamps(models.Model):
@@ -74,57 +73,24 @@ class CurrencyConfig(Timestamps, models.Model):
         return f"{self.currency}"
 
 
-# class Location(Timestamps, models.Model):
-    # domain = models.CharField(
-            # 'Domain eg. example.com',
-            # max_length=200,
-            # blank=True)
-    # name = models.CharField(
-            # 'Location Name',
-            # max_length=200,
-            # blank=True)
-    # description = models.CharField(
-            # 'Location Description',
-            # max_length=200,
-            # blank=True)
-
-    # class Meta:
-        # verbose_name_plural = "01. Locations"
-
-    # def __str__(self):
-        # return '%s' % (self.name)
-
-
 class Group(Timestamps, models.Model):
 
     GROUP_TYPE_CHOICES = [
-        ('BLOGCAT', 'Blog Category'),
-        ('BLOGTAG', 'Blog Tag'),
-        ('ITEMCAT', 'Item Category'),
-        ('ITEMTAG', 'Item Tag'),
-        ('ITEMDEP', 'Item Department'),
         ('ITEMATT', 'Item Attribute'),
+        ('ITEMCAT', 'Item Category'),
+        ('ITEMDEP', 'Item Department'),
+        ('ITEMTAG', 'Item Tag'),
+        ('LOCACAT', 'Location Category'),
+        ('LOCATAG', 'Location Tag'),
+        ('PERSCAT', 'Person Category'),
+        ('PERSTAG', 'Person Tag'),
+        ('POSTCAT', 'Post Category'),
+        ('POSTTAG', 'Post Tag'),
     ]
     group_type = models.CharField(
         max_length=7,
         blank=True,
         choices=GROUP_TYPE_CHOICES)
-    companies = models.ManyToManyField(
-            contactapp.models.Company,
-            related_name="group_companies",
-            blank=True)
-    stores = models.ManyToManyField(
-            contactapp.models.Store,
-            related_name="group_stores",
-            blank=True)
-    warehouses = models.ManyToManyField(
-            contactapp.models.Warehouse,
-            related_name="group_warehouses",
-            blank=True)
-    websites = models.ManyToManyField(
-            contactapp.models.Website,
-            related_name="group_websites",
-            blank=True)
     parent = models.ForeignKey(
             'self',
             related_name="subgroups",
