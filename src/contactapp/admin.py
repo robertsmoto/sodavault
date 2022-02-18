@@ -1,6 +1,5 @@
 from django.contrib import admin
 import contactapp.models
-import configapp.models
 
 
 @admin.register(contactapp.models.LocationCategory)
@@ -147,6 +146,10 @@ class WarehouseAdmin(admin.ModelAdmin):
     autocomplete_fields = ['categories', 'tags']
 
 
+@admin.register(contactapp.models.Website)
+class WebsiteAdmin(admin.ModelAdmin):
+    search_fields = ['name']
+    autocomplete_fields = ['categories', 'tags']
 
 
 @admin.register(contactapp.models.Customer)

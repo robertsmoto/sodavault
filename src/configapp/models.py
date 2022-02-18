@@ -73,24 +73,6 @@ class CurrencyConfig(Timestamps, models.Model):
         return f"{self.currency}"
 
 
-class Website(models.Model):
-
-    name = models.CharField(max_length=200, blank=True)
-    description = models.CharField(max_length=200, blank=True)
-    domain = models.CharField(
-            'Domain eg. example.com',
-            max_length=200,
-            blank=True)
-    website = models.CharField(max_length=200, blank=True)
-
-    class Meta:
-        verbose_name_plural = "locations"
-        ordering = ['domain']
-
-    def __str__(self):
-        return f"{self.domain}"
-
-
 class Group(Timestamps, models.Model):
 
     GROUP_TYPE_CHOICES = [
@@ -115,9 +97,6 @@ class Group(Timestamps, models.Model):
             on_delete=models.CASCADE,
             blank=True,
             null=True)
-    websites = models.ManyToManyField(
-            Website,
-            blank=True)
     slug = models.SlugField(
             max_length=50,
             unique=True,

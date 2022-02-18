@@ -1,4 +1,5 @@
 import configapp.models
+import contactapp.models
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.db import models
@@ -6,6 +7,7 @@ from django.urls import reverse
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
 import datetime
+
 
 NOREC = (0, 'Not Recommended')
 RECOM = (1, 'Recommended')
@@ -492,7 +494,7 @@ class Post(models.Model):
         ('DRAFT', 'Draft'),
         ('TRASH', 'Trash'),
     ]
-    websites = models.ManyToManyField(configapp.models.Website, blank=True)
+    websites = models.ManyToManyField(contactapp.models.Website, blank=True)
     categories = models.ManyToManyField(
             PostCategory,
             related_name="category_posts",

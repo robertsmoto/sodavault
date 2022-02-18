@@ -82,6 +82,26 @@ class Location(models.Model):
         return '{}'.format(self.name)
 
 
+class WebsiteManager(models.Manager):
+
+    def get_queryset(self):
+        return super().get_queryset().filter(location_type="WEBS")
+
+
+class Website(Location):
+    objects = WebsiteManager()
+
+    class Meta:
+        proxy = True
+        verbose_name = "Website"
+        verbose_name_plural = "Websites"
+        ordering = ['name']
+
+    def save(self, *args, **kwargs):
+        self.location_type = "WEBS"
+        super(Website, self).save(*args, **kwargs)
+
+
 class CompanyManager(models.Manager):
 
     def get_queryset(self):
