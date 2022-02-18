@@ -33,7 +33,6 @@ class GroupNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                'websites__domain',
                 'name',
                 'order',
                 'slug',
