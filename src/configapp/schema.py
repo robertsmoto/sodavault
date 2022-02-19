@@ -28,8 +28,6 @@ class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
         filter_fields = [
-                'category_posts__website__domain',
-                'tag_posts__website__domain',
                 'group_type',
                 'id',
                 'is_primary',
