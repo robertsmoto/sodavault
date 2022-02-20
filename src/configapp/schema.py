@@ -4,6 +4,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import configapp.models
 import graphene
+import django_filters
 
 
 class UserNode(DjangoObjectType):
@@ -24,12 +25,6 @@ class UserProfileNode(DjangoObjectType):
         return self.avatar.url
 
 
-# class CategoryPostsNode(DjangoObjectType):
-    # class Meta:
-        # model = configapp.models.Group
-#         interfaces = (relay.Node, )
-
-
 class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
@@ -48,13 +43,22 @@ class GroupNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
+class GroupDistinctFilter(django_filters.FilterSet):
+
+    class Meta:
+        model = configapp.models.Group
+        fields = ['name']
+
+    @property
+    def qs(self):
+        return super(GroupDistinctFilter, self).qs.distinct('name')
+
+
 class Query(graphene.ObjectType):
     # group = relay.Node.Field(GroupNode)
     node = relay.Node.Field()
     all_groups = DjangoFilterConnectionField(GroupNode)
 
-    category_posts = DjangoFilterConnectionField(GroupNode)
-
-    def resolve_category_post(self, info):
-        print("self", self)
-        return self.queryset.filter(group_type="POSTTAG")
+    all_groups_distinct = DjangoFilterConnectionField(
+            GroupNode,
+            filterset_class=GroupDistinctFilter)
