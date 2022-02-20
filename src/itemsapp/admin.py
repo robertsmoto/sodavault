@@ -15,7 +15,7 @@ class SubDepartmentInline(admin.TabularInline):
     verbose_name_plural = "Sub-Departments"
 
 
-@admin.register(itemsapp.models.Department)
+@admin.register(itemsapp.models.ItemDepartment)
 class ItemDepartmentAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -37,6 +37,13 @@ class ItemDepartmentAdmin(admin.ModelAdmin):
         obj.group_type = "ITEMDEP"
         super().save_model(request, obj, form, change)
 
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
+
 
 class SubCategoryInline(admin.TabularInline):
     model = configapp.models.Group
@@ -46,7 +53,7 @@ class SubCategoryInline(admin.TabularInline):
     verbose_name_plural = "Sub-Categories"
 
 
-@admin.register(itemsapp.models.Category)
+@admin.register(itemsapp.models.ItemCategory)
 class ItemCategoryAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -71,6 +78,13 @@ class ItemCategoryAdmin(admin.ModelAdmin):
         obj.group_type = "ITEMCAT"
         super().save_model(request, obj, form, change)
 
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
+
 
 class SubTagInline(admin.TabularInline):
     model = configapp.models.Group
@@ -80,7 +94,7 @@ class SubTagInline(admin.TabularInline):
     verbose_name_plural = "Sub-Tags"
 
 
-@admin.register(itemsapp.models.Tag)
+@admin.register(itemsapp.models.ItemTag)
 class ItemTagAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -102,9 +116,15 @@ class ItemTagAdmin(admin.ModelAdmin):
         obj.group_type = "ITEMTAG"
         super().save_model(request, obj, form, change)
 
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
+
 
 class SubAttributeInline(admin.TabularInline):
-    model = itemsapp.models.Attribute
+    model = itemsapp.models.ItemAttribute
     # exclude = ['group_type']
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Term"
@@ -112,7 +132,7 @@ class SubAttributeInline(admin.TabularInline):
     # autocomplete_fields = ['stores', 'warehouses']
 
 
-@admin.register(itemsapp.models.Attribute)
+@admin.register(itemsapp.models.ItemAttribute)
 class ItemAttributeAdmin(admin.ModelAdmin):
     list_display = [
         'name',
@@ -133,6 +153,12 @@ class ItemAttributeAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.group_type = "ITEMATT"
         super().save_model(request, obj, form, change)
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 class ProductInventoryInline(admin.TabularInline):
@@ -206,7 +232,7 @@ class BidComponentInline(admin.TabularInline):
     classes = ['collapse']
     verbose_name = "bid"
     verbose_name_plural = "bids"
-    autocomplete_fields = ['unit_inventory', 'supplier']
+    # autocomplete_fields = ['unit_inventory', 'supplier']
 
 
 class BidPartInline(admin.TabularInline):
@@ -216,7 +242,7 @@ class BidPartInline(admin.TabularInline):
     classes = ['collapse']
     verbose_name = "bid"
     verbose_name_plural = "bids"
-    autocomplete_fields = ['unit_inventory', 'supplier']
+    # autocomplete_fields = ['unit_inventory', 'supplier']
 
 
 class BidProductInline(admin.TabularInline):
@@ -493,13 +519,23 @@ class PartInline(admin.TabularInline):
 @admin.register(itemsapp.models.UnitInventory)
 class UnitInventoryAdmin(admin.ModelAdmin):
     search_fields = ['singular']
-    pass
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(itemsapp.models.UnitDisplay)
 class UnitDisplayAdmin(admin.ModelAdmin):
     search_fields = ['singular']
-    pass
+
+    def get_model_perms(self, request):
+        """
+        Return empty perms dict thus hiding the model from admin index.
+        """
+        return {}
 
 
 @admin.register(itemsapp.models.Component)
@@ -526,7 +562,7 @@ class ComponentAdmin(admin.ModelAdmin):
         'sku',
         'name',
     )
-    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
     ordering = ['sku']
 
     inlines = [
@@ -565,7 +601,7 @@ class PartAdmin(admin.ModelAdmin):
         'sku',
         'name',
     )
-    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
     ordering = ['sku']
 
     inlines = [
@@ -710,37 +746,27 @@ class ProductAdmin(admin.ModelAdmin):
             ('categories', 'tags'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
             'ecpu'
-            # 'ecpu',
     ]
-
 
     prepopulated_fields = {'sku': ('name',), }
 
     list_display = (
         'sku',
         'name',
-    #     'ecpu',
-    #     'available_inventory',
+        # 'ecpu',
         'price',
-        # 'price_calc_from',
     )
     list_filter = (
         ProductTypesFilter,
     )
     list_display_links = (
-        # 'sku',
         'name',
     )
     search_fields = (
-        # 'sku',
+        'sku',
         'name',
     )
-    autocomplete_fields = [
-        'departments',
-        'categories',
-        'tags',
-    ]
-    # ordering = ['sku']
+    # autocomplete_fields = ['departments', 'categories', 'tags']
 
     inlines = (
         # ProductPartJoinInline,
@@ -761,17 +787,3 @@ class ProductAdmin(admin.ModelAdmin):
         """Use custom model manager."""
         qs = self.model.objects.products()
         return qs
-
-
-@admin.register(itemsapp.models.DigitalProduct)
-class DigitalProductAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-    ]
-    # autocomplete_fields = [
-        # 'departments',
-        # 'categories',
-        # 'tags',
-    # ]
-    search_fields = ['name']
-    # prepopulated_fields = {'slug': ('sku', 'name', )}

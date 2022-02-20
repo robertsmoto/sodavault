@@ -8,77 +8,73 @@ import contactapp.models
 import utilities.utils as utils
 
 
-# class DepartmentManager(models.Manager):
-    # def get_queryset(self):
-#         return super().get_queryset().filter(group_type='DEP')
+class ItemDepartmentManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='ITEMDEP')
 
 
-class Department(configapp.models.Group):
+class ItemDepartment(configapp.models.Group):
     """Is a proxy model of Group."""
-    # objects = DepartmentManager()
+    objects = ItemDepartmentManager()
 
     class Meta:
         proxy = True
-        verbose_name_plural = "04. Departments"
 
-    # def save(self, *args, **kwargs):
-        # self.group_type = 'ITEMDEP'
-    #     super(Department, self).save(*args, **kwargs)
-
-
-# class CategoryManager(models.Manager):
-    # def get_queryset(self):
-#         return super().get_queryset().filter(group_type='ITEMCAT')
+    def save(self, *args, **kwargs):
+        self.group_type = 'ITEMDEP'
+        super(ItemDepartment, self).save(*args, **kwargs)
 
 
-class Category(configapp.models.Group):
+class ItemCategoryManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='ITEMCAT')
+
+
+class ItemCategory(configapp.models.Group):
     """Is a proxy model of Group."""
-    # objects = CategoryManager()
+    objects = ItemCategoryManager()
 
     class Meta:
         proxy = True
-        verbose_name_plural = "05. Categories"
+        verbose_name_plural = "Categories"
 
-    # def save(self, *args, **kwargs):
-        # self.group_type = 'ITEMCAT'
-    #     super(Category, self).save(*args, **kwargs)
-
-
-# class TagManager(models.Manager):
-    # def get_queryset(self):
-#         return super().get_queryset().filter(group_type='ITEMTAG')
+    def save(self, *args, **kwargs):
+        self.group_type = 'ITEMCAT'
+        super(ItemCategory, self).save(*args, **kwargs)
 
 
-class Tag(configapp.models.Group):
+class ItemTagManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='ITEMTAG')
+
+
+class ItemTag(configapp.models.Group):
     """Is a proxy model of Group."""
-    # objects = TagManager()
+    objects = ItemTagManager()
 
     class Meta:
         proxy = True
-        verbose_name_plural = "06. Tags"
 
-    # def save(self, *args, **kwargs):
-        # self.group_type = 'ITEMTAG'
-    #     super(Tag, self).save(*args, **kwargs)
-
-
-# class AttributeManager(models.Manager):
-    # def get_queryset(self):
-#         return super().get_queryset().filter(group_type='ITEMATT')
+    def save(self, *args, **kwargs):
+        self.group_type = 'ITEMTAG'
+        super(ItemTag, self).save(*args, **kwargs)
 
 
-class Attribute(configapp.models.Group):
+class ItemAttributeManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(group_type='ITEMATT')
+
+
+class ItemAttribute(configapp.models.Group):
     """Is a proxy model of Group."""
-    # objects = AttributeManager()
+    objects = ItemAttributeManager()
 
     class Meta:
         proxy = True
-        verbose_name_plural = "07. Attributes"
 
-    # def save(self, *args, **kwargs):
-        # self.group_type = 'ITEMATT'
-    #     super(Attribute, self).save(*args, **kwargs)
-
+    def save(self, *args, **kwargs):
+        self.group_type = 'ITEMATT'
+        super(ItemAttribute, self).save(*args, **kwargs)
 
 
 """
@@ -202,22 +198,22 @@ class ItemQueries(models.QuerySet):
 
 
 class Item(models.Model):
-    departments = models.ManyToManyField(
-            Department,
-            related_name='department_items',
-            blank=True)
-    categories = models.ManyToManyField(
-            Category,
-            related_name='category_items',
-            blank=True)
-    tags = models.ManyToManyField(
-            Tag,
-            related_name='tag_items',
-            blank=True)
-    attributes = models.ManyToManyField(
-            AttributeItemJoin,
-            related_name='attribute_items',
-            blank=True)
+#     departments = models.ManyToManyField(
+            # ItemDepartment,
+            # related_name='department_items',
+            # blank=True)
+    # categories = models.ManyToManyField(
+            # ItemCategory,
+            # related_name='category_items',
+            # blank=True)
+    # tags = models.ManyToManyField(
+            # ItemTag,
+            # related_name='tag_items',
+            # blank=True)
+    # attributes = models.ManyToManyField(
+            # AttributeItemJoin,
+            # related_name='attribute_items',
+            # blank=True)
     ITEM_TYPE_CHOICES = [
             ('COMP', 'Component'),
             ('PART', 'Part'),
@@ -327,34 +323,6 @@ class Item(models.Model):
                     'ecpu_display': '',
                     'ecpu_from': 'item winning bid'}
 
-        # priority 3 subitems ecpu
-        # both products and parts can contain cost components
-        # components are existing items differentiated only by item_type
-        # part-components are item_type="COMP"
-        # product-components are item_type="PART"
-
-  #       elif len(components) > 0:
-            # print("in priority 3 components")
-
-            # for x in components:
-                # print("x", x.to_item.ecpu['ecpu'], type(x.to_item.ecpu['ecpu']))
-                # print("quantity", x.quantity, type(x.quantity))
-
-            # # 'quantity' * 'to_item__ecpu'.get('ecpu', 0)
-
-            # component_ecpu = components \
-                # .annotate(
-                        # comp_ecpu=(F("quantity") * F("to_item__ecpu['ecpu']"))
-                        # ) \
-                # .aggregate(Sum('comp_ecpu'))
-
-            # print("component_ecpu", component_ecpu)
-
-
-            # return {
-                    # 'ecpu': component_ecpu,
-                    # 'ecpu_display': '',
-  #                   'ecpu_from': 'sum subitem ecpu'}
         else:
             return {'ecpu': 0, 'ecpu_from': 'not calculated'}
         """
@@ -387,7 +355,6 @@ class Component(Item):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "01. Component"
 
     def save(self, *args, **kwargs):
         self.item_type = "COMP"
@@ -402,7 +369,6 @@ class Part(Item):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "02. Parts"
 
     def save(self, *args, **kwargs):
         self.item_type = "PART"
@@ -415,7 +381,6 @@ class Product(Item):
 
     class Meta:
         proxy = True
-        verbose_name_plural = "03. Products"
 
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
@@ -499,7 +464,7 @@ class DigitalProduct(Item):
     # objects = DigitalProductManager()
     class Meta:
         # proxy = True
-        verbose_name_plural = "02b. Digital Products"
+        verbose_name_plural = "Digital Products"
 
     def save(self, *args, **kwargs):
         self.item_type = "PROD"
