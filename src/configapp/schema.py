@@ -41,6 +41,9 @@ class GroupNode(DjangoObjectType):
                 ]
         interfaces = (relay.Node, )
 
+    def resolve_category_posts__websites__domain(self, info):
+        return self.category_posts__websites__domain.distinct('name')
+
 
 class Query(graphene.ObjectType):
     group = relay.Node.Field(GroupNode)
