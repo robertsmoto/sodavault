@@ -57,4 +57,4 @@ class Query(graphene.ObjectType):
 
     def resolve_category_post(self, info):
         print("self", self)
-        return self.filter(group_type="POSTTAG")
+        return self.queryset.filter(group_type="POSTTAG")
