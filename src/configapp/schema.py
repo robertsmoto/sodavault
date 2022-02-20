@@ -47,7 +47,18 @@ class GroupDistinctFilter(django_filters.FilterSet):
 
     class Meta:
         model = configapp.models.Group
-        fields = ['name']
+        fields = [
+                'category_posts__websites__domain',
+                'tag_posts__websites__domain',
+                'group_type',
+                'id',
+                'is_primary',
+                'is_secondary',
+                'is_tertiary',
+                'name',
+                'order',
+                'slug',
+                ]
 
     @property
     def qs(self):
