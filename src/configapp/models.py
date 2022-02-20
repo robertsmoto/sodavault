@@ -147,8 +147,8 @@ class Group(Timestamps, models.Model):
             help_text="Automatic size: 200px x 200px")
 
     class Meta:
-        verbose_name_plural = "05. Groups"
-        ordering = ['order', 'name']
+        verbose_name_plural = "Groupings"
+        ordering = ['name']
 
     def __init__(self, *args, **kwargs):
         super(Group, self).__init__(*args, **kwargs)

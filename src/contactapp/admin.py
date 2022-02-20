@@ -136,8 +136,8 @@ class LocationAdmin(admin.ModelAdmin):
         return queryset, use_distinct
 
     def save_model(self, request, obj, form, change):
-        print("in save_model method")
-        print("request", request)
+        # print("in save_model method")
+        # print("request", request)
         super().save_model(request, obj, form, change)
 
 #     def get_model_perms(self, request):
