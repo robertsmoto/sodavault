@@ -49,10 +49,10 @@ class GroupNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    node = relay.Node.Field()
-    # group = relay.Node.Field(GroupNode)
+    group = relay.Node.Field(GroupNode)
     all_groups = DjangoFilterConnectionField(GroupNode)
 
+    category_post = relay.Node.Field(CategoryPostsNode)
     category_posts = DjangoFilterConnectionField(CategoryPostsNode)
 
     def resolve_category_post(self, info):
