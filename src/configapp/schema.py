@@ -24,10 +24,10 @@ class UserProfileNode(DjangoObjectType):
         return self.avatar.url
 
 
-class CategoryPostsNode(DjangoObjectType):
-    class Meta:
-        model = configapp.models.Group
-        interfaces = (relay.Node, )
+# class CategoryPostsNode(DjangoObjectType):
+    # class Meta:
+        # model = configapp.models.Group
+#         interfaces = (relay.Node, )
 
 
 class GroupNode(DjangoObjectType):
@@ -49,11 +49,12 @@ class GroupNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    group = relay.Node.Field(GroupNode)
+    # group = relay.Node.Field(GroupNode)
+    node = relay.Node.Field()
     all_groups = DjangoFilterConnectionField(GroupNode)
 
-    category_post = relay.Node.Field(CategoryPostsNode)
-    category_posts = DjangoFilterConnectionField(CategoryPostsNode)
+    # category_post = relay.Node.Field(CategoryPostsNode)
+    # category_posts = DjangoFilterConnectionField(CategoryPostsNode)
 
-    def resolve_category_post(self, info):
-        return configapp.models.Group.filter(group_type="POSTTAG")
+    # def resolve_category_post(self, info):
+    #     return configapp.models.Group.filter(group_type="POSTTAG")
