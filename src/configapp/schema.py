@@ -56,4 +56,4 @@ class Query(graphene.ObjectType):
     category_posts = DjangoFilterConnectionField(GroupNode)
 
     def resolve_category_post(self, info):
-        return configapp.models.Group.filter(group_type="POSTTAG")
+        return configapp.models.Group.objects.filter(group_type="POSTTAG")
