@@ -24,6 +24,12 @@ class UserProfileNode(DjangoObjectType):
         return self.avatar.url
 
 
+class CategoryPostsNode(DjangoObjectType):
+    class Meta:
+        model = configapp.models.Group
+        interfaces = (relay.Node, )
+
+
 class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
@@ -41,10 +47,13 @@ class GroupNode(DjangoObjectType):
                 ]
         interfaces = (relay.Node, )
 
-    def resolve_category_posts__websites__domain(self, info):
-        return self.category_posts__websites__domain.distinct('name')
-
 
 class Query(graphene.ObjectType):
-    group = relay.Node.Field(GroupNode)
+    node = relay.Node.Field()
+    # group = relay.Node.Field(GroupNode)
     all_groups = DjangoFilterConnectionField(GroupNode)
+
+    category_posts = DjangoFilterConnectionField(CategoryPostsNode)
+
+    def resolve_category_post(self, info):
+        return configapp.models.Group.filter(group_type="POSTTAG")
