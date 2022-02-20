@@ -53,8 +53,7 @@ class Query(graphene.ObjectType):
     node = relay.Node.Field()
     all_groups = DjangoFilterConnectionField(GroupNode)
 
-    # category_post = relay.Node.Field(CategoryPostsNode)
-    # category_posts = DjangoFilterConnectionField(CategoryPostsNode)
+    category_posts = DjangoFilterConnectionField(GroupNode)
 
-    # def resolve_category_post(self, info):
-    #     return configapp.models.Group.filter(group_type="POSTTAG")
+    def resolve_category_post(self, info):
+        return configapp.models.Group.filter(group_type="POSTTAG")
