@@ -5,7 +5,6 @@ from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import configapp.models
 import contactapp.models
-import utilities.utils as utils
 
 
 class ItemDepartmentManager(models.Manager):
@@ -198,22 +197,22 @@ class ItemQueries(models.QuerySet):
 
 
 class Item(models.Model):
-#     departments = models.ManyToManyField(
-            # ItemDepartment,
-            # related_name='department_items',
-            # blank=True)
-    # categories = models.ManyToManyField(
-            # ItemCategory,
-            # related_name='category_items',
-            # blank=True)
-    # tags = models.ManyToManyField(
-            # ItemTag,
-            # related_name='tag_items',
-            # blank=True)
-    # attributes = models.ManyToManyField(
-            # AttributeItemJoin,
-            # related_name='attribute_items',
-            # blank=True)
+    departments = models.ManyToManyField(
+            ItemDepartment,
+            related_name='department_items',
+            blank=True)
+    categories = models.ManyToManyField(
+            ItemCategory,
+            related_name='category_items',
+            blank=True)
+    tags = models.ManyToManyField(
+            ItemTag,
+            related_name='tag_items',
+            blank=True)
+    attributes = models.ManyToManyField(
+            AttributeItemJoin,
+            related_name='attribute_items',
+            blank=True)
     ITEM_TYPE_CHOICES = [
             ('COMP', 'Component'),
             ('PART', 'Part'),

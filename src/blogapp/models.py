@@ -1,11 +1,11 @@
-import configapp.models
-import contactapp.models
 from ckeditor_uploader.fields import RichTextUploadingField
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from sodavault.utils_logging import svlog_info
 from utilities import utils_images
+import configapp.models
+import contactapp.models
 import datetime
 
 
