@@ -1,9 +1,8 @@
-from .models import Campaign, Banner
+from .models import Campaign
 from .forms import CampaignForm
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import TemplateView, ListView, FormView
+from django.views.generic import TemplateView, ListView
 from django.views.generic import CreateView, UpdateView, DeleteView
-from dal import autocomplete
 from homeapp.mixins import Navigation
 from django.urls import reverse
 
@@ -13,18 +12,18 @@ class AdvertisingView(LoginRequiredMixin, Navigation, TemplateView):
     pass
 
 
-class CampaignAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
-        if not self.request.user.is_authenticated:
-            return Campaign.objects.none()
+# class CampaignAutocomplete(autocomplete.Select2QuerySetView):
+    # def get_queryset(self):
+        # # Don't forget to filter out results depending on the visitor !
+        # if not self.request.user.is_authenticated:
+            # return Campaign.objects.none()
 
-        qs = Campaign.objects.all()
+        # qs = Campaign.objects.all()
 
-        if self.q:
-            qs = qs.filter(name__icontains=self.q)
+        # if self.q:
+            # qs = qs.filter(name__icontains=self.q)
 
-        return qs
+#         return qs
 
 
 class CampaignListView(ListView):

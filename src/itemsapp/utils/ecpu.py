@@ -1,64 +1,94 @@
-@property
-def calc_ecpu(self):
-    _ecpu = 0
-    _unit = ""
-    _designator = ""
-
-    # check for estimated costs based on winning_bid
-    _items_q = None
-    _w_bid = None
-
-    if self.item_type == 'PART':
-        # print("made it to first PART")
-        # query part winning_bid
-        _w_bid = self.bid_parts.filter(is_winning_bid=True).first()
-
-    if self.item_type == 'PROD':
-        # print("made it to first PROD")
-        # query product winning_bid
-        _w_bid = self.bid_products.filter(is_winning_bid=True).first()
-
-    # check for ecpu based on winning bid
-    if _w_bid:
-        # print("_w_bid", _w_bid)
-        _cost = 0; _shipping = 0; _quantity = 0; _unit = ""
-        _cost = _w_bid.cost if _w_bid.cost is not None else 0
-        _shipping = _w_bid.shipping if _w_bid.shipping is not None else 0
-        _quantity = _w_bid.quantity
-        _unit = _w_bid.units
-        _unit = _unit.rstrip('s') # rstrip only from the end of string
-        _ecpu = (_cost + _shipping) / _quantity if _quantity > 0 else 0
-        _designator = "ecpu based on winning bid"
+import itemsapp.models
 
 
-    # check for ecpu based on assembled parts (for product)
-    _items_q = None
-    if self.item_type == 'PROD':
-        _items_q = self.ppj_products.all().prefetch_related('parts')
+def calc_ecpu(main: dict) -> dict:
+    """Recursive function that calculates the estimated cost per unit.
+    Begin with 'start_ids' key as a list of one or more obj.ids
+    formatted: main = {'start_ids': [17]}"""
 
-    if _items_q:
-        _total_ecpu = 0
-        for it in _items_q:
-            _quantity = it.quantity if it.quantity is not None else 0
-            _ecpu = it.parts.ecpu if it.parts.ecpu is not None else 0
-            _total_ecpu = _total_ecpu + (_quantity * _ecpu)
+    main['ecpu'] = 0 if 'ecpu' not in main else main['ecpu']
+    main['ecpu_fcnt'] = 0 if 'ecpu_fcnt' not in main else main['ecpu_fcnt']
 
-        _ecpu = round(_total_ecpu, 4)
-        _unit = "pc"
-        _designator = "ecpu based on assembled parts"
+    def check_for_list(main: dict) -> (int, int, dict):
+        item_id = None
+        qnty_multby = 1
+        if main['start_ids']:
+            item_id = main['start_ids'].pop()
+        if isinstance(item_id, list):
+            if item_id:
+                hold_ids = item_id
+                item_id = hold_ids.pop()
+                if hold_ids:
+                    main['start_ids'].append(hold_ids)
+            else:
+                check_for_list(main)
+        if isinstance(item_id, tuple):
+            qnty_multby = item_id[0]
+            item_id = item_id[1]
 
-    # check ecpu based on overrides
-    _ecpu = self.ecpu_override if self.ecpu_override is not None else _ecpu
-    _unit = self.unit_override if self.unit_override != "" else _unit
-    if self.ecpu_override:
-        _designator = "ecpu based on override"
+        return qnty_multby, item_id, main
 
-    calc_ecpu = {}
-    calc_ecpu['ecpu'] = _ecpu
-    calc_ecpu['unit'] = _unit
-    calc_ecpu['designator'] = _designator
+    qnty_multby, item_id, main = check_for_list(main)
 
-    print("calc_ecpu", calc_ecpu)
+    if not item_id:
+        return main
 
-    return calc_ecpu
+    item = itemsapp.models.Item.objects \
+        .prefetch_related(
+                'bid_components',
+                'bid_parts',
+                'bid_products',
+                ) \
+        .get(id=item_id)
 
+    # bid queries
+    bids = (
+            item.bid_components.filter(is_winning_bid=True) |
+            item.bid_parts.filter(is_winning_bid=True) |
+            item.bid_products.filter(is_winning_bid=True)
+            )
+
+    # component queries
+    new_ids = itemsapp.models.ComponentJoin.objects \
+        .values_list('quantity', 'to_item_id') \
+        .filter(from_item_id=item_id)
+
+    # check override
+    if item.cost + item.cost_shipping > 0:
+        main['ecpu'] = main['ecpu'] + (
+                qnty_multby
+                * ((item.cost + item.cost_shipping) / item.cost_quantity)
+                )
+        main['ecpu_fcnt'] = 1 if main['ecpu_fcnt'] == 0 else main['ecpu_fcnt']
+
+    # check winning bid
+    elif len(bids) > 0:
+        bid = bids[0]
+        main['ecpu'] = main['ecpu'] + (
+                qnty_multby
+                * ((bid.cost + bid.cost_shipping) / bid.cost_quantity)
+                )
+
+        main['ecpu_fcnt'] = 2 if main['ecpu_fcnt'] == 0 else main['ecpu_fcnt']
+
+    # check components
+    elif new_ids:
+        main['start_ids'].append(list(new_ids))
+
+    # return condition
+    print("main @ end",  main)
+    if len(main['start_ids']) > 0:
+        main['ecpu_fcnt'] += 1
+        return calc_ecpu(main=main)
+    else:
+        print("this is the end")
+        if main['ecpu_fcnt'] == 1:
+            main['ecpu_from'] = "cost override"
+        elif main['ecpu_fcnt'] == 2:
+            main['ecpu_from'] = "winning bid"
+        else:
+            main['ecpu_from'] = "component costs"
+
+        main.pop('start_ids')
+        main.pop('ecpu_fcnt')
+        return main

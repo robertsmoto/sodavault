@@ -154,10 +154,13 @@ class Group(Timestamps, models.Model):
         super(Group, self).__init__(*args, **kwargs)
         self._orig_image_thumb = self.image_thumb
 
+    @property
+    def parent_name(self):
+        return self.parent.name
+
     def save(self, *args, **kwargs):
         # Creates new image sizes. Save new images directly to media server
         # and save the url in a char field.
-
         img_index = {}
 
         if self._orig_image_thumb != self.image_thumb and self.image_thumb:
@@ -189,6 +192,11 @@ class Group(Timestamps, models.Model):
                 self.image_md_square = file_path
             if k == "image_sm_square":
                 self.image_sm_square = file_path
+
+        # checks children slugs
+        if self.parent:
+            if not self.slug.startswith(self.parent.slug):
+                self.slug = f"{self.parent.slug}-{self.slug}"
 
         super(Group, self).save(*args, **kwargs)
 

@@ -8,29 +8,27 @@ import configapp.models
 
 
 class SubgroupInline(admin.StackedInline):
+
     model = configapp.models.Group
+    fields = [
+            'parent',
+            ('name', 'slug'),
+            ('description', 'kwd_list'),
+            ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
+            ('image_thumb', 'image_21', 'image_191'),
+            ('image_sm_square', 'image_md_square', 'image_lg_square'),
+            ]
+    prepopulated_fields = {"slug": ("name", )}
     can_delete = False
     verbose_name_plural = 'Subgroups'
     extra = 0
 
 
-class GroupForm(forms.ModelForm):
-
-    def __init__(self, *args, **kwargs):
-        super(GroupForm, self).__init__(*args, **kwargs)
-        self.fields['parent'].queryset = configapp.models.Group.objects \
-            .exclude(parent__isnull=False)
-
-    class Meta:
-        model = configapp.models.Group
-        fields = '__all__'
-
-
 @admin.register(configapp.models.Group)
 class GroupAdmin(admin.ModelAdmin):
-    form = GroupForm
+    # form = GroupForm
     fields = [
-            ('group_type', 'parent'),
+            'group_type',
             ('name', 'slug'),
             ('description', 'kwd_list'),
             ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
@@ -41,6 +39,7 @@ class GroupAdmin(admin.ModelAdmin):
             'group_type', 'name', 'get_subgroups', 'is_primary', 'is_secondary',
             'is_tertiary', 'order'
             ]
+    prepopulated_fields = {"slug": ("name",)}
     list_filter = ['group_type']
     search_fields = ['group_type', 'name', 'description']
     inlines = [SubgroupInline, ]

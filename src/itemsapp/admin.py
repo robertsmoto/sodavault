@@ -1,10 +1,9 @@
 from django import forms
 from django.contrib import admin
-from django.urls import resolve
 from django.utils.translation import gettext_lazy as _
-from ledgerapp.models import Entry
 import configapp.models
 import itemsapp.models
+
 
 
 class SubDepartmentInline(admin.TabularInline):
@@ -42,7 +41,6 @@ class ItemDepartmentAdmin(admin.ModelAdmin):
         Return empty perms dict thus hiding the model from admin index.
         """
         return {}
-
 
 
 class SubCategoryInline(admin.TabularInline):
@@ -83,7 +81,6 @@ class ItemCategoryAdmin(admin.ModelAdmin):
         Return empty perms dict thus hiding the model from admin index.
         """
         return {}
-
 
 
 class SubTagInline(admin.TabularInline):
@@ -138,16 +135,23 @@ class ItemAttributeAdmin(admin.ModelAdmin):
         'name',
         'slug',
     ]
-    search_fields = ['name']
+    search_fields = ['name', 'id']
     exclude = ['group_type', 'subgroup']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubAttributeInline, ]
 
+
     def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super(ItemAttributeAdmin, self).get_search_results(
-            request, queryset, search_term
-        )
+
+        queryset, use_distinct = super(ItemAttributeAdmin, self) \
+            .get_search_results(request, queryset, search_term)
+        field_name = request.GET.get('field_name', '')
+
         queryset = queryset.filter(group_type="ITEMATT")
+
+        if field_name == 'terms':
+            print("in fieldname")
+        
         return queryset, use_distinct
 
     def save_model(self, request, obj, form, change):
@@ -161,59 +165,59 @@ class ItemAttributeAdmin(admin.ModelAdmin):
         return {}
 
 
-class ProductInventoryInline(admin.TabularInline):
+# class ProductInventoryInline(admin.TabularInline):
 
-    model = Entry
+    # model = Entry
 
-    def get_parent_object_from_request(self, request):
-        """
-        Returns the parent object from the request or None.
+    # def get_parent_object_from_request(self, request):
+        # """
+        # Returns the parent object from the request or None.
 
-        Note that this only works for Inlines, because the `parent_model`
-        is not available in the regular admin.ModelAdmin as an attribute.
-        """
-        resolved = resolve(request.path_info)
-        pid = None
-        if resolved.kwargs:
-            pid = resolved.kwargs['object_id']
-        return pid
+        # Note that this only works for Inlines, because the `parent_model`
+        # is not available in the regular admin.ModelAdmin as an attribute.
+        # """
+        # resolved = resolve(request.path_info)
+        # pid = None
+        # if resolved.kwargs:
+            # pid = resolved.kwargs['object_id']
+        # return pid
 
-    def get_queryset(self, request):
-        pid = self.get_parent_object_from_request(request)
-        return Entry.inventory.products(pid=pid)
+    # def get_queryset(self, request):
+        # pid = self.get_parent_object_from_request(request)
+        # return Entry.inventory.products(pid=pid)
 
-    extra = 0
-    verbose_name = "Inventory"
-    verbose_name_plural = "Inventory"
-    exclude = ['parts']
+    # extra = 0
+    # verbose_name = "Inventory"
+    # verbose_name_plural = "Inventory"
+    # exclude = ['parts']
 
 
-class PartInventoryInline(admin.TabularInline):
+# class PartInventoryInline(admin.TabularInline):
 
-    model = Entry
+    # model = Entry
 
-    def get_parent_object_from_request(self, request):
-        """
-        Returns the parent object from the request or None.
+    # def get_parent_object_from_request(self, request):
+        # """
+        # Returns the parent object from the request or None.
 
-        Note that this only works for Inlines, because the `parent_model`
-        is not available in the regular admin.ModelAdmin as an attribute.
-        """
-        resolved = resolve(request.path_info)
-        pid = None
-        if resolved.kwargs:
-            pid = resolved.kwargs['object_id']
-            # print("\n--> PID", pid)
-        return pid
+        # Note that this only works for Inlines, because the `parent_model`
+        # is not available in the regular admin.ModelAdmin as an attribute.
+        # """
+        # resolved = resolve(request.path_info)
+        # pid = None
+        # if resolved.kwargs:
+            # pid = resolved.kwargs['object_id']
+            # # print("\n--> PID", pid)
+        # return pid
 
-    def get_queryset(self, request):
-        pid = self.get_parent_object_from_request(request)
-        return Entry.inventory.parts(pid=pid)
+    # def get_queryset(self, request):
+        # pid = self.get_parent_object_from_request(request)
+        # return Entry.inventory.parts(pid=pid)
 
-    extra = 0
-    verbose_name = "Inventory"
-    verbose_name_plural = "Inventory"
-    exclude = ['lots', 'products', 'account']  # , 'note'
+    # extra = 0
+    # verbose_name = "Inventory"
+    # verbose_name_plural = "Inventory"
+    # exclude = ['lots', 'products', 'account']  # , 'note'
 
 
 class NoteInline(admin.TabularInline):
@@ -318,118 +322,6 @@ class ImageInline(admin.StackedInline):
 #     verbose_name_plural = "digital options"
 
 
-# class BundleInline(nested_admin.NestedTabularInline):
-    # model = Bundle
-    # fk_name = 'parent'
-    # extra = 0
-    # verbose_name = "bundle"
-    # verbose_name_plural = "bundles"
-
-# # used in Attribute admin
-# class TermInline(admin.TabularInline):
-    # model = Term
-    # fields = ['name', 'slug', 'img']
-    # extra = 0
-    # verbose_name = "term"
-    # verbose_name_plural = "terms"
-    # prepopulated_fields = {'slug': ('name',)}
-
-
-#### PRODUCT-ATTRIBUTES ####
-# I'm putting this form directly in Admin rather than in forms.py
-# since this is where it is used
-# class ProdAttrJoinForm(forms.ModelForm):
-    # class Meta:
-        # model = ProductAttributeJoin
-        # fields = ('attribute', 'term')
-        # widgets = {
-            # 'attribute': autocomplete.ModelSelect2(
-                # url='attr-autocomplete',
-                # forward=('product',),
-                # attrs={
-                    # 'data-placeholder': 'Autocomplete ...',
-                # },
-            # ),
-            # 'term': autocomplete.ModelSelect2Multiple(
-                # url='attr-term-autocomplete',
-                # forward=('attribute', forward.Self(),),
-                # attrs={
-                    # 'data-placeholder': 'Autocomplete ...',
-                # },
-            # ),
-        # }
-
-# class ProdAttrJoinInline(nested_admin.NestedTabularInline):
-    # form = ProdAttrJoinForm
-    # model = ProductAttributeJoin
-    # # fields = [
-        # # 'attribute',
-        # # 'term',
-    # # ]
-    # extra = 0
-    # verbose_name = "attribute"
-    # verbose_name_plural = "attributes"
-
-# @admin.register(Attribute)
-# class AttributeAdmin(admin.ModelAdmin):
-    # list_display = [
-        # 'name',
-        # 'slug',
-    # ]
-    # list_display_links = [
-        # 'name'
-    # ]
-    # search_fields = ['name',]
-    # fields = [
-        # ('name', 'slug'),
-    # ]
-    # prepopulated_fields = {'slug': ('name',)}
-    # # inlines = [TermInline,]
-
-
-
-#### PRODUCT-VARIATIONS
-# I'm putting this form directly in Admin rather than in forms.py
-# since this is where we are going to us it
-
-# class VarAttrForm(forms.ModelForm):
-    # class Meta:
-        # model = VariationAttribute
-        # fields = ('attributes', 'terms')
-        # widgets = {
-            # 'attributes': autocomplete.ModelSelect2(
-                # url='var-attr-autocomplete',
-                # forward=('variation',),
-                # attrs={
-                    # 'data-placeholder': 'Autocomplete ...',
-                # },
-            # ),
-            # 'terms': autocomplete.ModelSelect2(
-                # url='var-term-autocomplete',
-                # forward=('variation', 'attributes',),
-                # attrs={
-                    # 'data-placeholder': 'Autocomplete ...',
-                # },
-            # ),
-#         }
-
-# class VarAttrInline(nested_admin.NestedTabularInline):
-    # form = VarAttrForm
-    # model = VariationAttribute
-    # extra = 0
-    # fk_name='variations'
-    # verbose_name = "variation attribute"
-    # verbose_name_plural = "variation attributes"
-
-# class VariationInline(nested_admin.NestedTabularInline):
-    # model = Variation
-    # extra = 0
-    # fk_name = 'parent'
-    # verbose_name = "variation"
-    # verbose_name_plural = "variations"
-#     inlines = [VarAttrInline]
-
-
 class ProductTypesFilter(admin.SimpleListFilter):
     # Human-readable title which will be displayed in the
     # right admin sidebar just above the filter options.
@@ -515,6 +407,39 @@ class PartInline(admin.TabularInline):
     verbose_name_plural = 'Parts'
     # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
 
+class AttributeInlineForm(forms.ModelForm):
+    terms = forms.ModelMultipleChoiceField(
+            queryset=configapp.models.Group.objects.none())
+
+class AttributeInline(admin.TabularInline):
+    """Collection is an Item with item_type='PROD'."""
+
+    form = AttributeInlineForm
+    model = itemsapp.models.Item.attributes.through
+    extra = 0
+    classes = ['collapse']
+
+
+class CollectionInlineForm(forms.ModelForm):
+
+    to_item = forms.ModelChoiceField(
+            queryset=itemsapp.models.Item.objects
+            .filter(item_type="PROD"),
+            empty_label="-----")
+
+
+class CollectionInline(admin.TabularInline):
+    """Collection is an Item with item_type='PROD'."""
+
+    model = itemsapp.models.Item.collections.through
+    form = PartInlineForm
+    fk_name = 'from_item'
+    extra = 0
+    classes = ['collapse']
+    verbose_name = 'Item'
+    verbose_name_plural = 'Collection'
+    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+
 
 @admin.register(itemsapp.models.UnitInventory)
 class UnitInventoryAdmin(admin.ModelAdmin):
@@ -538,6 +463,33 @@ class UnitDisplayAdmin(admin.ModelAdmin):
         return {}
 
 
+# class ComponentForm(forms.ModelForm):
+
+    # class Meta:
+        # model = itemsapp.models.Component
+        # fields = '__all__'
+
+    # ecpu = forms.CharField(
+            # max_length=200,
+            # disabled=True,
+            # widget=forms.TextInput(
+                # attrs={
+                    # 'style': 'width: 350px;'}
+                # )
+            # )
+
+    # def __init__(self, *args, **kwargs):
+        # """Return the initial data to use for forms on this view."""
+        # super(ComponentForm, self).__init__(*args, **kwargs)
+        # object_ids = []
+        # obj = self.instance
+        # object_ids.append(obj.id)
+        # main_dict = {'start_ids': object_ids}
+        # main = calc_ecpu(main=main_dict)
+        # print(main)
+#         self.fields['ecpu'].initial = main
+
+
 @admin.register(itemsapp.models.Component)
 class ComponentAdmin(admin.ModelAdmin):
 
@@ -546,13 +498,14 @@ class ComponentAdmin(admin.ModelAdmin):
             ('description', 'keywords'),
             ('categories', 'tags'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-            # 'ecpu',
+            'ecpu',
     ]
     prepopulated_fields = {'sku': ('name',), }
     readonly_fields = ['ecpu']
     list_display = (
         'sku',
         'name',
+        'ecpu'
     )
     list_display_links = (
         'sku',
@@ -562,7 +515,7 @@ class ComponentAdmin(admin.ModelAdmin):
         'sku',
         'name',
     )
-    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
     ordering = ['sku']
 
     inlines = [
@@ -584,14 +537,14 @@ class PartAdmin(admin.ModelAdmin):
             ('description', 'keywords'),
             ('categories', 'tags'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-            # 'new_field'
-            # 'ecpu',
+            'ecpu',
     ]
     prepopulated_fields = {'sku': ('name',), }
     readonly_fields = ['ecpu']
     list_display = (
         'sku',
         'name',
+        'ecpu'
     )
     list_display_links = (
         'sku',
@@ -601,7 +554,7 @@ class PartAdmin(admin.ModelAdmin):
         'sku',
         'name',
     )
-    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
     ordering = ['sku']
 
     inlines = [
@@ -616,130 +569,9 @@ class PartAdmin(admin.ModelAdmin):
         return qs
 
 
-def calc_ecpu(main: dict) -> dict:
-    """Recursive function that calculates the estimated cost per unit.
-    Begin with 'start_ids' key as a list of one or more obj.ids
-    formatted: main = {'start_ids': [17]}"""
-
-    main['ecpu'] = 0 if 'ecpu' not in main else main['ecpu']
-    main['ecpu_fcnt'] = 0 if 'ecpu_fcnt' not in main else main['ecpu_fcnt']
-
-    def check_for_list(main: dict) -> (int, int, dict):
-        item_id = None
-        qnty_multby = 1
-        if main['start_ids']:
-            item_id = main['start_ids'].pop()
-        if isinstance(item_id, list):
-            if item_id:
-                hold_ids = item_id
-                item_id = hold_ids.pop()
-                if hold_ids:
-                    main['start_ids'].append(hold_ids)
-            else:
-                check_for_list(main)
-        if isinstance(item_id, tuple):
-            qnty_multby = item_id[0]
-            item_id = item_id[1]
-
-        return qnty_multby, item_id, main
-
-    qnty_multby, item_id, main = check_for_list(main)
-
-    if not item_id:
-        return main
-
-    item = itemsapp.models.Item.objects \
-        .prefetch_related(
-                'bid_components',
-                'bid_parts',
-                'bid_products',
-                ) \
-        .get(id=item_id)
-
-    # bid queries
-    bids = (
-            item.bid_components.filter(is_winning_bid=True) |
-            item.bid_parts.filter(is_winning_bid=True) |
-            item.bid_products.filter(is_winning_bid=True)
-            )
-
-    # component queries
-    new_ids = itemsapp.models.ComponentJoin.objects \
-        .values_list('quantity', 'to_item_id') \
-        .filter(from_item_id=item_id)
-
-    # check override
-    if item.cost + item.cost_shipping > 0:
-        main['ecpu'] = main['ecpu'] + (
-                qnty_multby
-                * ((item.cost + item.cost_shipping) / item.cost_quantity)
-                )
-        main['ecpu_fcnt'] = 1 if main['ecpu_fcnt'] == 0 else main['ecpu_fcnt']
-
-    # check winning bid
-    elif len(bids) > 0:
-        bid = bids[0]
-        main['ecpu'] = main['ecpu'] + (
-                qnty_multby
-                * ((bid.cost + bid.cost_shipping) / bid.cost_quantity)
-                )
-
-        main['ecpu_fcnt'] = 2 if main['ecpu_fcnt'] == 0 else main['ecpu_fcnt']
-
-    # check components
-    elif new_ids:
-        main['start_ids'].append(list(new_ids))
-
-    # return condition
-    print("main @ end",  main)
-    if len(main['start_ids']) > 0:
-        main['ecpu_fcnt'] += 1
-        return calc_ecpu(main=main)
-    else:
-        print("this is the end")
-        if main['ecpu_fcnt'] == 1:
-            main['ecpu_from'] = "cost override"
-        elif main['ecpu_fcnt'] == 2:
-            main['ecpu_from'] = "winning bid"
-        else:
-            main['ecpu_from'] = "component costs"
-
-        main.pop('start_ids')
-        main.pop('ecpu_fcnt')
-        return main
-
-
-class ProductForm(forms.ModelForm):
-
-    class Meta:
-        model = itemsapp.models.Product
-        fields = '__all__'
-
-    ecpu = forms.CharField(
-            max_length=200,
-            disabled=True,
-            widget=forms.TextInput(
-                attrs={
-                    'style': 'width: 350px;'}
-                )
-            )
-
-    def __init__(self, *args, **kwargs):
-        """Return the initial data to use for forms on this view."""
-        super(ProductForm, self).__init__(*args, **kwargs)
-        object_ids = []
-        obj = self.instance
-        object_ids.append(obj.id)
-        main_dict = {'start_ids': object_ids}
-        main = calc_ecpu(main=main_dict)
-        print(main)
-        self.fields['ecpu'].initial = main
-
-
 @admin.register(itemsapp.models.Product)
 class ProductAdmin(admin.ModelAdmin):
 
-    form = ProductForm
     fields = [
             ('name', 'sku'),
             ('description', 'keywords'),
@@ -747,32 +579,32 @@ class ProductAdmin(admin.ModelAdmin):
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
             'ecpu'
     ]
-
+    readonly_fields = ['ecpu']
     prepopulated_fields = {'sku': ('name',), }
-
     list_display = (
         'sku',
         'name',
-        # 'ecpu',
+        'ecpu',
         'price',
     )
     list_filter = (
         ProductTypesFilter,
     )
     list_display_links = (
+        'sku',
         'name',
     )
     search_fields = (
         'sku',
         'name',
     )
-    # autocomplete_fields = ['departments', 'categories', 'tags']
+    autocomplete_fields = ['departments', 'categories', 'tags']
 
     inlines = (
-        # ProductPartJoinInline,
-        # ProductInventoryInline,
         BidProductInline,
         PartInline,
+        AttributeInline,
+        CollectionInline,
         IdentifierInline,
         MeasurementInline,
         MarketingOptionInline,

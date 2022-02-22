@@ -14,7 +14,6 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import CampaignAutocomplete
 from .views import CampaignListView, CampaignCreateView
 from .views import CampaignUpdateView, CampaignDeleteView
 from .views import AdvertisingView
@@ -29,34 +28,6 @@ urlpatterns = [
             }
         ),
         name='ad-home',
-    ),
-#     path(
-        # 'assett/',
-        # AssettView.as_view(
-            # extra_context={
-                # 'doc_slug': 'ad-assett',
-            # }
-        # ),
-        # name='ad-assett',
-    # ),
-    # path(
-        # 'banner/',
-        # BannerView.as_view(
-            # extra_context={
-                # 'doc_slug': 'ad-banner',
-            # }
-        # ),
-        # name='ad-banner',
-    # ),
-#     path(
-        # 'assett/',
-        # AssettView.as_view(extra_context={'doc_slug': 'ad-assett', }),
-        # name='ad-assett',
-    # ),
-    path(
-        'campaign-autocomplete/',
-        CampaignAutocomplete.as_view(),
-        name='campaign-autocomplete',
     ),
     path(
         'campaign-list/',

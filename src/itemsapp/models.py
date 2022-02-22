@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Sum
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
+from itemsapp.utils.ecpu import calc_ecpu
 import configapp.models
 import contactapp.models
 
@@ -103,18 +104,6 @@ parent
 """
 
 
-class AttributeItemJoin(models.Model):
-    # attributes = models.ForeignKey(
-    #         Attribute, blank=True, on_delete=models.CASCADE)
-    # this should filter based on the attribute selection
-    terms = models.CharField(max_length=200, blank=True)
-    is_variation = models.BooleanField(default=False)
-    display_order = models.CharField(max_length=20, blank=True)
-
-    def __str__(self):
-        return f"{self.attribute.name}"
-
-
 class CostMultiplier(models.Model):
     MULTIPLIER_CHOICES = [
             ('FL', 'Flat Rate'),
@@ -209,10 +198,33 @@ class Item(models.Model):
             ItemTag,
             related_name='tag_items',
             blank=True)
-    attributes = models.ManyToManyField(
-            AttributeItemJoin,
-            related_name='attribute_items',
+
+    # used to calculate price
+    cost_multiplier = models.ForeignKey(
+            CostMultiplier,
+            blank=True,
+            null=True,
+            on_delete=models.CASCADE)
+
+    #  used for cost estimating
+    components = models.ManyToManyField(
+            'self',
+            through='ComponentJoin',
             blank=True)
+
+    # used to define item attributes and variations
+    attributes = models.ManyToManyField(
+            ItemAttribute,
+            through='AttributeJoin',
+            through_fields=('items', 'attributes'),
+            blank=True)
+
+    # used for collections
+    collections = models.ManyToManyField(
+            'self',
+            through='CollectionJoin',
+            blank=True)
+
     ITEM_TYPE_CHOICES = [
             ('COMP', 'Component'),
             ('PART', 'Part'),
@@ -258,87 +270,15 @@ class Item(models.Model):
             default=1,
             help_text="eg. 100 if inventory = 120 cm, display = 1.2 meters")
 
-    # used to calculate price
-    cost_multiplier = models.ForeignKey(
-            CostMultiplier,
-            blank=True,
-            null=True,
-            on_delete=models.CASCADE)
     price = models.BigIntegerField(blank=True, null=True)
-
-    #  used for cost estimating
-    components = models.ManyToManyField(
-            'self',
-            through='ComponentJoin',
-            blank=True)
-
-    # used for collections
-    product_parent = models.ForeignKey(
-            'self',
-            null=True,
-            on_delete=models.CASCADE,
-            related_name="products")
-    collection_quantity = models.IntegerField(
-            default=1,
-            help_text="How many items are included.")
-    order_min = models.IntegerField(
-            default=0,
-            help_text="Use to require minium order quantity.")
-    order_max = models.IntegerField(
-            default=0,
-            help_text="Use to limit order quantity.")
 
     objects = ItemQueries.as_manager()
 
     @property
     def ecpu(self):
-        winning_bids = []
-        if self.bid_components.exists():
-            winning_bids = self.bid_components.filter(is_winning_bid=True)
-        if self.bid_parts.exists():
-            winning_bids = self.bid_parts.filter(is_winning_bid=True)
-        if self.bid_products.exists():
-            winning_bids = self.bid_components.filter(is_winning_bid=True)
-
-        components = ComponentJoin.objects \
-            .filter(from_item_id=self.id)
-            # \
-            # .annotate(comp_ecpu=(to_item__quantity * to_item__ecpu['cost']))
-
-        # priority 1 item cost override
-        if (self.cost + self.cost_shipping) / self.cost_quantity > 0:
-            print("in priority 1")
-            return {
-                    'ecpu': (
-                        self.cost + self.cost_shipping) / self.cost_quantity,
-                    'ecpu_display': '',
-                    'ecpu_from': 'item cost override'}
-
-        # priority 2 winning bid
-        # can be bid_components, bid_parts, or bid_products
-        elif len(winning_bids) > 0:
-            return {
-                    'ecpu': winning_bids[0].ecpu,
-                    'ecpu_display': '',
-                    'ecpu_from': 'item winning bid'}
-
-        else:
-            return {'ecpu': 0, 'ecpu_from': 'not calculated'}
-        """
-        thinking about recursive calculation of ecpu
-        ecpu values are contained completly within models, so it is it possible to
-        recursively check for override, bids and components to calculate the ecpu.
-
-        priority is 1. override, 2. bids and 3. component costs
-        note: component costs are also recursive. their costs are determined in the
-        same priority 1. override, 2, bids and 3. component costs
-
-        begin with an item.object
-
-        does have override, return
-        does have winning bid, return
-        does have component costs, calculate the 
-        """
+        object_ids = []
+        object_ids.append(self.id)
+        return calc_ecpu(main={'start_ids': object_ids})
 
     class Meta:
         indexes = [
@@ -389,19 +329,67 @@ class Product(Item):
 class ComponentJoin(models.Model):
     from_item = models.ForeignKey(
             Item,
-            related_name='from_item',
+            related_name='components_from_item',
             on_delete=models.CASCADE,
             blank=True,
             null=True)
     to_item = models.ForeignKey(
             Item,
-            related_name='to_item',
+            related_name='components_to_item',
             on_delete=models.CASCADE,
             blank=True,
             null=True)
     quantity = models.IntegerField(
             default=1,
-            help_text="How many components are included in the cost of 1 item.")
+            help_text="How many components are included in the cost of 1 item."
+            )
+
+
+class AttributeJoin(models.Model):
+    items = models.ForeignKey(
+            Item,
+            related_name='attr_join_items',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    attributes = models.ForeignKey(
+            ItemAttribute,
+            related_name='attr_join_attributes',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    terms = models.ManyToManyField(
+            ItemAttribute,
+            blank=True)
+    is_variation = models.BooleanField(default=False)
+    order = models.IntegerField(blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.attributes.name}"
+
+
+class CollectionJoin(models.Model):
+    from_item = models.ForeignKey(
+            Item,
+            related_name='collections_from_item',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    to_item = models.ForeignKey(
+            Item,
+            related_name='collections_to_item',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    quantity = models.IntegerField(
+            default=1,
+            help_text="How many items are included in the collection.")
+    order_min = models.IntegerField(
+            default=0,
+            help_text="Use to require minium order quantity.")
+    order_max = models.IntegerField(
+            default=0,
+            help_text="Use to limit order quantity.")
 
 
 class Bid(models.Model):
