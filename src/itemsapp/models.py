@@ -223,6 +223,7 @@ class Item(models.Model):
     collections = models.ManyToManyField(
             'self',
             through='CollectionJoin',
+            through_fields=('product', 'included_products'),
             blank=True)
 
     ITEM_TYPE_CHOICES = [
@@ -365,31 +366,40 @@ class AttributeJoin(models.Model):
     order = models.IntegerField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.attributes.name}"
+        if self.attributes:
+            return f"{self.attributes.name}"
+        else:
+            return "----"
 
 
 class CollectionJoin(models.Model):
-    from_item = models.ForeignKey(
+    product = models.ForeignKey(
             Item,
-            related_name='collections_from_item',
+            related_name='collections_product',
             on_delete=models.CASCADE,
             blank=True,
             null=True)
-    to_item = models.ForeignKey(
+    included_products = models.ForeignKey(
             Item,
-            related_name='collections_to_item',
+            related_name='collections_incl_products',
             on_delete=models.CASCADE,
             blank=True,
             null=True)
-    quantity = models.IntegerField(
-            default=1,
-            help_text="How many items are included in the collection.")
     order_min = models.IntegerField(
             default=0,
             help_text="Use to require minium order quantity.")
     order_max = models.IntegerField(
             default=0,
             help_text="Use to limit order quantity.")
+    discount = models.IntegerField(
+            default=0,
+            help_text="Discount (5.0%) for purchase in collection.")
+
+    def __str__(self):
+        if self.included_products:
+            return f"{self.included_products.name}"
+        else:
+            return "----"
 
 
 class Bid(models.Model):

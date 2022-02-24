@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
 from sodavault.utils_logging import svlog_info
-from utilities import utils_images
+from configapp.utils import utils_images
 import configapp.models
 import contactapp.models
 import datetime
@@ -592,17 +592,17 @@ class Post(models.Model):
             blank=True,
             help_text='Comma-separated list')
     image_featured = models.ImageField(
-            upload_to=utils_images.new_filename_blog_feat,
+            upload_to=utils_images.new_filename,
             null=True,
             blank=True,
             help_text="Recommended size: 1200 x 600px")
     image_thumb = models.ImageField(
-            upload_to=utils_images.new_filename_blog_thumb,
+            upload_to=utils_images.new_filename,
             null=True,
             blank=True,
             help_text="Recommended size: 500 x 500px")
     image_191 = models.ImageField(
-            upload_to=utils_images.new_filename_blog_feat,
+            upload_to=utils_images.new_filename,
             null=True,
             blank=True,
             help_text="1.9:1 ratio recommended size 1200px x 630px")

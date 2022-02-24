@@ -3,7 +3,7 @@ from django.contrib import admin
 from django.utils.translation import gettext_lazy as _
 import configapp.models
 import itemsapp.models
-
+from django.forms.models import ModelChoiceIterator
 
 
 class SubDepartmentInline(admin.TabularInline):
@@ -140,7 +140,6 @@ class ItemAttributeAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubAttributeInline, ]
 
-
     def get_search_results(self, request, queryset, search_term):
 
         queryset, use_distinct = super(ItemAttributeAdmin, self) \
@@ -151,7 +150,6 @@ class ItemAttributeAdmin(admin.ModelAdmin):
 
         if field_name == 'terms':
             print("in fieldname")
-        
         return queryset, use_distinct
 
     def save_model(self, request, obj, form, change):
@@ -163,61 +161,6 @@ class ItemAttributeAdmin(admin.ModelAdmin):
         Return empty perms dict thus hiding the model from admin index.
         """
         return {}
-
-
-# class ProductInventoryInline(admin.TabularInline):
-
-    # model = Entry
-
-    # def get_parent_object_from_request(self, request):
-        # """
-        # Returns the parent object from the request or None.
-
-        # Note that this only works for Inlines, because the `parent_model`
-        # is not available in the regular admin.ModelAdmin as an attribute.
-        # """
-        # resolved = resolve(request.path_info)
-        # pid = None
-        # if resolved.kwargs:
-            # pid = resolved.kwargs['object_id']
-        # return pid
-
-    # def get_queryset(self, request):
-        # pid = self.get_parent_object_from_request(request)
-        # return Entry.inventory.products(pid=pid)
-
-    # extra = 0
-    # verbose_name = "Inventory"
-    # verbose_name_plural = "Inventory"
-    # exclude = ['parts']
-
-
-# class PartInventoryInline(admin.TabularInline):
-
-    # model = Entry
-
-    # def get_parent_object_from_request(self, request):
-        # """
-        # Returns the parent object from the request or None.
-
-        # Note that this only works for Inlines, because the `parent_model`
-        # is not available in the regular admin.ModelAdmin as an attribute.
-        # """
-        # resolved = resolve(request.path_info)
-        # pid = None
-        # if resolved.kwargs:
-            # pid = resolved.kwargs['object_id']
-            # # print("\n--> PID", pid)
-        # return pid
-
-    # def get_queryset(self, request):
-        # pid = self.get_parent_object_from_request(request)
-        # return Entry.inventory.parts(pid=pid)
-
-    # extra = 0
-    # verbose_name = "Inventory"
-    # verbose_name_plural = "Inventory"
-    # exclude = ['lots', 'products', 'account']  # , 'note'
 
 
 class NoteInline(admin.TabularInline):
@@ -265,9 +208,8 @@ class IdentifierInline(admin.TabularInline):
         ('gtin', 'isbn'),
         ('pid_i', 'pid_c')
     ]
-    extra = 0
     classes = ['collapse']
-    verbose_name = "identifier"
+    verbose_name = "identifiers"
     verbose_name_plural = "identifiers"
 
 
@@ -278,7 +220,6 @@ class MeasurementInline(admin.TabularInline):
         'weight',
         ('length', 'width', 'height')
     ]
-    extra = 0
     classes = ['collapse']
     verbose_name = "measurements"
 
@@ -286,7 +227,6 @@ class MeasurementInline(admin.TabularInline):
 class MarketingOptionInline(admin.StackedInline):
 
     model = itemsapp.models.Marketing
-    extra = 0
     classes = ['collapse']
     verbose_name = "marketing options"
     fields = [
@@ -294,14 +234,13 @@ class MarketingOptionInline(admin.StackedInline):
         'description_md',
         'description_lg',
     ]
-    verbose_name = "option"
+    verbose_name = "marketing options"
     verbose_name_plural = "marketing options"
 
 
 class ImageInline(admin.StackedInline):
 
     model = itemsapp.models.Image
-    extra = 0
     classes = ['collapse']
     verbose_name = "marketing options"
     fields = [
@@ -392,6 +331,7 @@ class PartInlineForm(forms.ModelForm):
     to_item = forms.ModelChoiceField(
             queryset=itemsapp.models.Item.objects
             .filter(item_type="PART"),
+            label="Cost Componets",
             empty_label="-----")
 
 
@@ -407,9 +347,32 @@ class PartInline(admin.TabularInline):
     verbose_name_plural = 'Parts'
     # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
 
+
 class AttributeInlineForm(forms.ModelForm):
-    terms = forms.ModelMultipleChoiceField(
-            queryset=configapp.models.Group.objects.none())
+
+    class Meta:
+        model = itemsapp.models.Item.attributes.through
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['attributes'].queryset = configapp.models.Group.objects \
+            .filter(group_type="ITEMATT", parent__isnull=True)
+
+        _attrid = None
+        if self.instance.attributes:
+            _attrid = self.instance.attributes.id
+        if _attrid:
+            TERM_CHOICES = configapp.models.Group.objects \
+                .values_list('id', 'name') \
+                .filter(group_type="ITEMATT", parent=_attrid)
+            self.fields['terms'].choices = TERM_CHOICES
+            self.fields['terms'].to_field_name = 'id'
+        else:
+            self.fields['terms'].queryset = configapp.models.Group.objects \
+                .none()
+
 
 class AttributeInline(admin.TabularInline):
     """Collection is an Item with item_type='PROD'."""
@@ -418,11 +381,16 @@ class AttributeInline(admin.TabularInline):
     model = itemsapp.models.Item.attributes.through
     extra = 0
     classes = ['collapse']
+    filter_horizontal = ['terms']
+    ordering = ['order', ]
+    verbose_name = "Attribute"
+    verbose_name_plural = "Attributes"
+    # autocomplete_fields = ['attributes', 'terms']
 
 
 class CollectionInlineForm(forms.ModelForm):
 
-    to_item = forms.ModelChoiceField(
+    included_products = forms.ModelChoiceField(
             queryset=itemsapp.models.Item.objects
             .filter(item_type="PROD"),
             empty_label="-----")
@@ -432,8 +400,8 @@ class CollectionInline(admin.TabularInline):
     """Collection is an Item with item_type='PROD'."""
 
     model = itemsapp.models.Item.collections.through
-    form = PartInlineForm
-    fk_name = 'from_item'
+    form = CollectionInlineForm
+    fk_name = 'product'
     extra = 0
     classes = ['collapse']
     verbose_name = 'Item'
@@ -575,7 +543,7 @@ class ProductAdmin(admin.ModelAdmin):
     fields = [
             ('name', 'sku'),
             ('description', 'keywords'),
-            ('categories', 'tags'),
+            ('departments', 'categories', 'tags'),
             ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
             'ecpu'
     ]

@@ -1,3 +1,4 @@
+from configapp.utils import utils_images
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -5,7 +6,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from sodavault.utils_logging import svlog_info
-from utilities import utils_images
+import uuid
 
 
 class Timestamps(models.Model):
@@ -14,6 +15,141 @@ class Timestamps(models.Model):
 
     class Meta:
         abstract = True
+
+
+class Image(models.Model):
+
+    user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    img_lg_21 = models.ImageField(
+            upload_to=utils_images.new_filename,
+            storage=utils_images.OverwriteStorage(),
+            null=True,
+            blank=True,
+            help_text="Recommended size: 2100px x 600px. "
+            "Recommended name: img_name-21.jpg")
+    img_lg_11 = models.ImageField(
+            upload_to=utils_images.new_filename,
+            storage=utils_images.OverwriteStorage(),
+            null=True,
+            blank=True,
+            help_text="Recommended size: 500px x 500px "
+            "Recommended name: img_name-11.jpg")
+    img_any = models.ImageField(
+            upload_to=utils_images.new_filename,
+            storage=utils_images.OverwriteStorage(),
+            null=True,
+            blank=True,
+            help_text="Image with custom size.")
+    img_lg_191 = models.ImageField(
+            upload_to=utils_images.new_filename,
+            storage=utils_images.OverwriteStorage(),
+            null=True,
+            blank=True,
+            help_text="1.9:1 ratio recommended size 2100px x 630px "
+            "Recommended name: img_name-191.jpg")
+    img_title = models.CharField(
+            'Image Title',
+            max_length=200,
+            blank=True,
+            help_text="Alt text for image.")
+    img_caption = models.CharField(
+            'Image Caption',
+            max_length=200,
+            blank=True,
+            help_text="Caption for image.")
+
+    """The following are automatically generated using the
+    model's save method."""
+    img_md_21 = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 800px x 400px")
+    img_sm_21 = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 400px x 200px")
+    img_md_11 = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 250px x 250px")
+    img_sm_11 = models.CharField(
+            max_length=200,
+            blank=True,
+            help_text="Automatic size: 200px x 200px")
+
+    def __init__(self, *args, **kwargs):
+        super(Image, self).__init__(*args, **kwargs)
+        self._orig_img_lg_21 = self.img_lg_21
+        self._orig_img_lg_11 = self.img_lg_11
+
+    def save(self, *args, **kwargs):
+        """Creates new image sizes. Save new images directly to media server
+        and save the url in a char field."""
+
+        img_index = {}
+
+        if (
+                self._orig_img_lg_21 != self.img_lg_21
+                and self.img_lg_21):
+
+            svlog_info("Creating blog featured image variations.")
+
+            img_index['Md21'] = [
+                    utils_images.Md21WebP,
+                    self.img_lg_21,
+                    (800, 400),
+                    "subdir/not-currently-used"]
+            img_index['Sm21'] = [
+                    utils_images.Sm21WebP,
+                    self.img_lg_21,
+                    (400, 200),
+                    "subdir/not-currently-used"]
+
+        if (
+                self._orig_img_lg_11 != self.img_lg_11
+                and self.img_lg_11):
+
+            svlog_info("Creating blog thumbnail image variations.")
+
+            img_index['Md11'] = [
+                    utils_images.Md11WebP,
+                    self.img_lg_11,
+                    (250, 250),
+                    "subdir/not-currently-used"]
+            img_index['Sm11'] = [
+                    utils_images.Sm11WebP,
+                    self.img_lg_11,
+                    (200, 200),
+                    "subdir/not-currently-used"]
+
+        for k, v in img_index.items():
+
+            file_path = utils_images.process_images(self=self, k=k, v=v)
+
+            if k == "Md21":
+                self.img_md_21 = file_path
+            if k == "Sm21":
+                self.img_sm_21 = file_path
+            if k == "Md11":
+                self.img_md_11 = file_path
+            if k == "Sm11":
+                self.img_sm_11 = file_path
+
+        super(Image, self).save(*args, **kwargs)
+
+    def __str__(self):
+        strname = "image"
+        if self.img_lg_11:
+            strname = f"{self.img_lg_11}"
+        if self.img_lg_21:
+            strname = f"{self.img_lg_21}"
+        if self.img_title:
+            strname = f"{self.img_title}"
+        return strname
 
 
 class Currency(Timestamps, models.Model):
@@ -115,20 +251,20 @@ class Group(Timestamps, models.Model):
     is_tertiary = models.BooleanField(default=False)
     order = models.IntegerField(blank=True, null=True)
     image_thumb = models.ImageField(
-            upload_to=utils_images.new_filename_config_group,
+            upload_to=utils_images.new_filename,
             null=True,
             blank=True,
             help_text="Recommended size 500px x 500px")
     image_191 = models.ImageField(
-            upload_to=utils_images.new_filename_config_group,
+            upload_to=utils_images.new_filename,
             null=True,
             blank=True,
-            help_text="1.9:1 ratio recommended size 1200px x 630px")
+            help_text="1.9:1 ratio recommended size 2100px x 630px")
     image_21 = models.ImageField(
-            upload_to=utils_images.new_filename_config_group,
+            upload_to=utils_images.new_filename,
             null=True,
             blank=True,
-            help_text="Recommended size 1200px x 600px")
+            help_text="Recommended size 2100px x 600px")
 
     # The following are automatically generated using the
     # model's save method.
@@ -254,6 +390,12 @@ class Profile(models.Model):
     bio = models.TextField(max_length=500, blank=True)
     location = models.CharField(max_length=30, blank=True)
     birth_date = models.DateField(null=True, blank=True)
+    cdn_dir = models.CharField(
+            max_length=20,
+            default=str(uuid.uuid4())[:13],
+            help_text="User root cdn dir.eg. "
+            "https://cdn.sodavault.com/image_dir/Y/m/d/image.webp"
+            )
 
     class Meta:
         permissions = [

@@ -1,6 +1,7 @@
 from decouple import config, Csv
 from pathlib import Path
 import logging
+import os
 
 # ENVIRONMENT
 DEBUG = config('ENV_DEBUG', default=False, cast=bool)
@@ -87,7 +88,7 @@ DEFAULT_HOST = 'default-host'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

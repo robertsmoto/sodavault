@@ -5,7 +5,7 @@ import datetime
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import utilities.utils_images
+from configapp.utils import utils_images
 
 
 class Migration(migrations.Migration):
@@ -44,9 +44,9 @@ class Migration(migrations.Migration):
                 ('is_secondary_menu', models.BooleanField(default=False, help_text='Use if in secondary menu.')),
                 ('is_footer_menu', models.BooleanField(default=False, help_text='Use if in footer menu.')),
                 ('kwd_list', models.CharField(blank=True, help_text='Comma-separated values.', max_length=100, verbose_name='Category Keywords')),
-                ('image', models.ImageField(blank=True, help_text='Recommended size 500px x 500px', null=True, upload_to=utilities.utils_images.new_filename_blog_cat)),
-                ('image_191', models.ImageField(blank=True, help_text='1.9:1 ratio recommended size 1200px x 630px', null=True, upload_to=utilities.utils_images.new_filename_blog_cat)),
-                ('image_21', models.ImageField(blank=True, help_text='Recommended size 1200px x 600px', null=True, upload_to=utilities.utils_images.new_filename_blog_cat)),
+                ('image', models.ImageField(blank=True, help_text='Recommended size 500px x 500px', null=True, upload_to=utils_images.new_filename)),
+                ('image_191', models.ImageField(blank=True, help_text='1.9:1 ratio recommended size 1200px x 630px', null=True, upload_to=utils_images.new_filename)),
+                ('image_21', models.ImageField(blank=True, help_text='Recommended size 1200px x 600px', null=True, upload_to=utils_images.new_filename)),
                 ('image_lg_square', models.CharField(blank=True, help_text='Automatic size: 500px x 500px', max_length=200)),
                 ('image_md_square', models.CharField(blank=True, help_text='Automatic size: 250px x 250px', max_length=200)),
                 ('image_sm_square', models.CharField(blank=True, help_text='Automatic size: 200px x 200px', max_length=200)),
@@ -170,9 +170,9 @@ class Migration(migrations.Migration):
                 ('date_published', models.DateField(default=datetime.date.today, verbose_name='Date Published')),
                 ('date_modified', models.DateField(blank=True, default=datetime.date.today, null=True, verbose_name='Date Modified')),
                 ('kwd_list', models.CharField(blank=True, help_text='Comma-separated list', max_length=200, verbose_name='Keyword List')),
-                ('image_featured', models.ImageField(blank=True, help_text='Recommended size: 1200 x 600px', null=True, upload_to=utilities.utils_images.new_filename_blog_feat)),
-                ('image_thumb', models.ImageField(blank=True, help_text='Recommended size: 500 x 500px', null=True, upload_to=utilities.utils_images.new_filename_blog_thumb)),
-                ('image_191', models.ImageField(blank=True, help_text='1.9:1 ratio recommended size 1200px x 630px', null=True, upload_to=utilities.utils_images.new_filename_blog_feat)),
+                ('image_featured', models.ImageField(blank=True, help_text='Recommended size: 1200 x 600px', null=True, upload_to=utils_images.new_filename)),
+                ('image_thumb', models.ImageField(blank=True, help_text='Recommended size: 500 x 500px', null=True, upload_to=utils_images.new_filename)),
+                ('image_191', models.ImageField(blank=True, help_text='1.9:1 ratio recommended size 1200px x 630px', null=True, upload_to=utils_images.new_filename)),
                 ('image_title', models.CharField(blank=True, help_text='Alt text for image.', max_length=200, verbose_name='Image Title')),
                 ('image_caption', models.CharField(blank=True, help_text='Caption for image.', max_length=200, verbose_name='Image Caption')),
                 ('footer', ckeditor_uploader.fields.RichTextUploadingField(blank=True, help_text='Use for footnotes, redactions and notes of changes or updates.', null=True)),

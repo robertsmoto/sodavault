@@ -7,6 +7,17 @@ from rest_framework.authtoken.models import Token, TokenProxy
 import configapp.models
 
 
+@admin.register(configapp.models.Image)
+class ImageAdmin(admin.ModelAdmin):
+    exclude = ['user']
+    readonly_fields = ['img_md_21', 'img_sm_21', 'img_md_11', 'img_sm_11']
+    print("in admin")
+
+    def save_model(self, request, obj, form, change):
+        obj.user = request.user
+        return super(ImageAdmin, self).save_model(request, obj, form, change)
+
+
 class SubgroupInline(admin.StackedInline):
 
     model = configapp.models.Group
@@ -36,8 +47,8 @@ class GroupAdmin(admin.ModelAdmin):
             ('image_sm_square', 'image_md_square', 'image_lg_square'),
             ]
     list_display = [
-            'group_type', 'name', 'get_subgroups', 'is_primary', 'is_secondary',
-            'is_tertiary', 'order'
+            'group_type', 'name', 'get_subgroups', 'is_primary',
+            'is_secondary', 'is_tertiary', 'order'
             ]
     prepopulated_fields = {"slug": ("name",)}
     list_filter = ['group_type']
@@ -80,6 +91,7 @@ class ProfileInline(admin.StackedInline):
     can_delete = False
     verbose_name_plural = 'Profile'
     fk_name = 'user'
+    readonly_fields = ['cdn_dir']
 
 
 class CustomUserAdmin(UserAdmin):
