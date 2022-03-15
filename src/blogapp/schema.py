@@ -64,6 +64,16 @@ class ReviewMovieNode(DjangoObjectType):
 class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
+        filter_fields = [
+                'categories',
+                'tags',
+                'is_primary',
+                'is_secondary',
+                'is_teriary',
+                'is_featured',
+                'status',
+                'post_type'
+                ]
         # filter_fields = {
                 # # 'categories__id': ['isnull'],
                 # # 'categories__slug': ['exact'],
