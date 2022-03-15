@@ -21,7 +21,10 @@ class CampaignNode(DjangoObjectType):
 class BannerNode(DjangoObjectType):
     class Meta:
         model = advertisingapp.models.Banner
-        filter_fields = ["name"]
+        filter_fields = [
+                "name",
+                "campaign__name",
+                ]
         interfaces = (relay.Node, )
 
     def resolve_ban_square(self, info):
