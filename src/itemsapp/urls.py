@@ -33,29 +33,29 @@ urlpatterns = [
     # path('attr-term-autocomplete', AttrTermAutocomplete.as_view(), name='attr-term-autocomplete'), 
     # path('var-attr-autocomplete', VarAttrAutocomplete.as_view(), name='var-attr-autocomplete'), 
 #     path('var-term-autocomplete', VarTermAutocomplete.as_view(), name='var-term-autocomplete'), 
-    path(
-        'product-list/',
-        views.ProductListView.as_view(
-            extra_context={'doc_slug': 'product-list', }),
-        name='product-list',
-    ),
-    path(
-        'product-create/',
-        views.ProductCreateView.as_view(
-            extra_context={'doc_slug': 'product-create', }),
-        name='product-create',
-    ),
-    path(
-        '<pk>/product-update/',
-        views.ProductUpdateView.as_view(
-            extra_context={'doc_slug': 'product-update', }),
-        name='product-update',
-    ),
-    path(
-        '<pk>/product-delete/',
-        views.ProductDeleteView.as_view(
-            extra_context={'doc_slug': 'product-delete', }),
-        name='product-delete',
-    ),
+    # path(
+        # 'product-list/',
+        # views.ProductListView.as_view(
+            # extra_context={'doc_slug': 'product-list', }),
+        # name='product-list',
+    # ),
+#     path(
+        # 'product-create/',
+        # views.ProductCreateView.as_view(
+            # extra_context={'doc_slug': 'product-create', }),
+        # name='product-create',
+    # ),
+    # path(
+        # '<pk>/product-update/',
+        # views.ProductUpdateView.as_view(
+            # extra_context={'doc_slug': 'product-update', }),
+        # name='product-update',
+    # ),
+    # path(
+        # '<pk>/product-delete/',
+        # views.ProductDeleteView.as_view(
+            # extra_context={'doc_slug': 'product-delete', }),
+        # name='product-delete',
+#     ),
 
 ]

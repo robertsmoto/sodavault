@@ -2,60 +2,34 @@ from django.db import models
 import configapp.models
 
 
-class LocationCategoryManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='LOCACAT')
+class Category(configapp.models.GroupABC):
+    class Meta(configapp.models.GroupABC.Meta):
+        verbose_name_plural = '__ categories'
 
 
-class LocationCategory(configapp.models.Group):
-
-    objects = LocationCategoryManager()
-
-    class Meta:
-        proxy = True
-
-    def save(self, *args, **kwargs):
-        self.group_type = 'LOCACAT'
-        super(LocationCategory, self).save(*args, **kwargs)
-
-
-class LocationTagManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='LOCATAG')
-
-
-class LocationTag(configapp.models.Group):
-
-    objects = LocationTagManager()
-
-    class Meta:
-        proxy = True
-
-    def save(self, *args, **kwargs):
-        self.group_type = 'LOCATAG'
-        super(LocationTag, self).save(*args, **kwargs)
+class Tag(configapp.models.GroupABC):
+    class Meta(configapp.models.GroupABC.Meta):
+        verbose_name_plural = '__ tags'
 
 
 class Location(models.Model):
-
-    LOCATION_TYPE_CHOICES = [
-        ('COMP', 'Company'),  # <- for external use
-        ('SUPP', 'Supplier'),  # <- for external use
-        ('STOR', 'Store'),
-        ('WARE', 'Warehouse'),
-        ('WEBS', 'Website'),
-    ]
     categories = models.ManyToManyField(
-            LocationCategory,
-            related_name="category_locations",
+            Category,
             blank=True)
     tags = models.ManyToManyField(
-            LocationTag,
-            related_name="tag_locations",
+            Tag,
             blank=True)
+    LOCATION_TYPE_CHOICES = [
+            ('COMP', 'Company'),
+            ('STOR', 'Store'),
+            ('SUPP', 'Supplier'),
+            ('WARE', 'Warehouse'),
+            ('WEBS', 'Website'),
+            ]
     location_type = models.CharField(
-        choices=LOCATION_TYPE_CHOICES,
-        max_length=4, blank=True)
+            max_length=4,
+            choices=LOCATION_TYPE_CHOICES,
+            blank=True)
     name = models.CharField(max_length=200, blank=True)
     phone = models.CharField(max_length=200, blank=True)
     domain = models.CharField(
@@ -75,37 +49,17 @@ class Location(models.Model):
     ship_zipcode = models.CharField(max_length=200, blank=True)
 
     class Meta:
-        verbose_name_plural = "locations"
         ordering = ['name']
 
     def __str__(self):
         return '{}'.format(self.name)
 
 
-class WebsiteManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().filter(location_type="WEBS")
-
-
-class Website(Location):
-    objects = WebsiteManager()
-
-    class Meta:
-        proxy = True
-        verbose_name = "Website"
-        verbose_name_plural = "Websites"
-        ordering = ['name']
-
-    def save(self, *args, **kwargs):
-        self.location_type = "WEBS"
-        super(Website, self).save(*args, **kwargs)
-
-
 class CompanyManager(models.Manager):
 
     def get_queryset(self):
-        return super().get_queryset().filter(location_type="COMP")
+        return super(CompanyManager, self).get_queryset().filter(
+                location_type="COMP")
 
 
 class Company(Location):
@@ -113,38 +67,17 @@ class Company(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "Company"
-        verbose_name_plural = "Companies"
-        ordering = ['name']
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         self.location_type = "COMP"
-        super(Company, self).save(*args, **kwargs)
-
-
-class SupplierManager(models.Manager):
-
-    def get_queryset(self):
-        return super().get_queryset().filter(location_type="SUPP")
-
-
-class Supplier(Location):
-    objects = SupplierManager()
-
-    class Meta:
-        proxy = True
-        verbose_name = "Supplier"
-        verbose_name_plural = "Suppliers"
-        ordering = ['name']
-
-    def save(self, *args, **kwargs):
-        self.location_type = "SUPP"
-        super(Supplier, self).save(*args, **kwargs)
+        return super().save(**kwargs)
 
 
 class StoreManager(models.Manager):
+
     def get_queryset(self):
-        return super().get_queryset().filter(location_type="STOR")
+        return super(StoreManager, self).get_queryset().filter(
+                location_type="STOR")
 
 
 class Store(Location):
@@ -152,18 +85,35 @@ class Store(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "Store"
-        verbose_name_plural = "Stores"
-        ordering = ['name']
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         self.location_type = "STOR"
-        super(Store, self).save(*args, **kwargs)
+        return super().save(**kwargs)
+
+
+class SupplierManager(models.Manager):
+
+    def get_queryset(self):
+        return super(SupplierManager, self).get_queryset().filter(
+                location_type="SUPP")
+
+
+class Supplier(Location):
+    objects = SupplierManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, **kwargs):
+        self.location_type = "SUPP"
+        return super().save(**kwargs)
 
 
 class WarehouseManager(models.Manager):
+
     def get_queryset(self):
-        return super().get_queryset().filter(location_type="WARE")
+        return super(WarehouseManager, self).get_queryset().filter(
+                location_type="WARE")
 
 
 class Warehouse(Location):
@@ -171,87 +121,49 @@ class Warehouse(Location):
 
     class Meta:
         proxy = True
-        verbose_name = "Warehouse"
-        verbose_name_plural = "Warehouses"
-        ordering = ['name']
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         self.location_type = "WARE"
-        super(Warehouse, self).save(*args, **kwargs)
+        return super().save(**kwargs)
 
 
+class WebsiteManager(models.Manager):
 
-
-class PersonCategoryManager(models.Manager):
     def get_queryset(self):
-        return super().get_queryset().filter(group_type='PERSCAT')
+        return super(WebsiteManager, self).get_queryset().filter(
+                location_type="WEBS")
 
 
-class PersonCategory(configapp.models.Group):
-    objects = PersonCategoryManager()
+class Website(Location):
+    objects = WebsiteManager()
 
     class Meta:
         proxy = True
 
-    def save(self, *args, **kwargs):
-        self.group_type = 'PERSCAT'
-        super(PersonCategory, self).save(*args, **kwargs)
-
-
-class PersonTagManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(group_type='PERSTAG')
-
-
-class PersonTag(configapp.models.Group):
-
-    objects = PersonTagManager()
-
-    class Meta:
-        proxy = True
-
-    def save(self, *args, **kwargs):
-        self.group_type = 'PERSTAG'
-        super(PersonTag, self).save(*args, **kwargs)
+    def save(self, **kwargs):
+        self.location_type = "WEBS"
+        return super().save(**kwargs)
 
 
 class Person(models.Model):
-
-    companies = models.ManyToManyField(
+    locations = models.ManyToManyField(
             Location,
-            related_name='company_people',
-            blank=True)
-    suppliers = models.ManyToManyField(
-            Location,
-            related_name='supplier_people',
-            blank=True)
-    stores = models.ManyToManyField(
-            Location,
-            related_name='store_people',
-            blank=True)
-    warehouses = models.ManyToManyField(
-            Location,
-            related_name='warehouse_people',
-            blank=True)
-    websites = models.ManyToManyField(
-            Location,
-            related_name='website_people',
             blank=True)
     categories = models.ManyToManyField(
-            PersonCategory,
-            related_name="category_people",
+            Category,
             blank=True)
     tags = models.ManyToManyField(
-            PersonTag,
-            related_name="tag_people",
+            Tag,
             blank=True)
     PERSON_TYPE_CHOICES = [
-        ('CUST', 'Customer'),
-        ('CONT', 'Contact'),
-    ]
+            ('CUST', 'Customer'),
+            ('CONT', 'Contact'),
+            ]
     person_type = models.CharField(
-        choices=PERSON_TYPE_CHOICES,
-        max_length=4, blank=True)
+            max_length=4,
+            choices=PERSON_TYPE_CHOICES,
+            blank=True
+            )
     firstname = models.CharField(max_length=200, blank=True)
     lastname = models.CharField(max_length=200, blank=True)
     nickname = models.CharField(max_length=200, blank=True)
@@ -270,35 +182,15 @@ class Person(models.Model):
     ship_state = models.CharField(max_length=200, blank=True)
     ship_zipcode = models.CharField(max_length=200, blank=True)
 
-    class Meta():
-        verbose_name_plural = "People"
-
     def __str__(self):
         return '{} {}'.format(self.firstname, self.lastname)
 
 
-class CustomerManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(person_type="CUST")
-
-
-class Customer(Person):
-    objects = CustomerManager()
-
-    class Meta:
-        proxy = True
-        verbose_name = "Customer"
-        verbose_name_plural = "Customers"
-        ordering = ['lastname', 'firstname']
-
-    def save(self, *args, **kwargs):
-        self.person_type = "CUST"
-        super(Customer, self).save(*args, **kwargs)
-
-
 class ContactManager(models.Manager):
+
     def get_queryset(self):
-        return super().get_queryset().filter(person_type="CONT")
+        return super(ContactManager, self).get_queryset().filter(
+                person_type="CONT")
 
 
 class Contact(Person):
@@ -306,10 +198,27 @@ class Contact(Person):
 
     class Meta:
         proxy = True
-        verbose_name = "Contact"
-        verbose_name_plural = "Contacts"
-        ordering = ['lastname', 'firstname']
 
-    def save(self, *args, **kwargs):
+    def save(self, **kwargs):
         self.person_type = "CONT"
-        super(Contact, self).save(*args, **kwargs)
+        return super().save(**kwargs)
+
+
+class CustomerManager(models.Manager):
+
+    def get_queryset(self):
+        return super(CustomerManager, self).get_queryset().filter(
+                person_type="CUST")
+
+
+class Customer(Person):
+    objects = CustomerManager()
+
+    class Meta:
+        proxy = True
+
+    def save(self, **kwargs):
+        self.person_type = "CUST"
+        return super().save(**kwargs)
+
+

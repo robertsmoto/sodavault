@@ -10,146 +10,153 @@ import uuid
 
 
 class Timestamps(models.Model):
-    created_date = models.DateTimeField(auto_now_add=True)
-    modified_date = models.DateTimeField(auto_now=True)
+    timestamp_created = models.DateTimeField(auto_now_add=True)
+    timestamp_modified = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
 
 
-class Image(models.Model):
+class ImageABC(models.Model):
 
-    user = models.ForeignKey(
-            settings.AUTH_USER_MODEL,
-            on_delete=models.CASCADE,
-            blank=True,
-            null=True)
-    img_lg_21 = models.ImageField(
+    lg_21 = models.ImageField(
             upload_to=utils_images.new_filename,
             storage=utils_images.OverwriteStorage(),
             null=True,
             blank=True,
             help_text="Recommended size: 2100px x 600px. "
-            "Recommended name: img_name-21.jpg")
-    img_lg_11 = models.ImageField(
+            "Recommended name: name-21.jpg")
+    lg_11 = models.ImageField(
             upload_to=utils_images.new_filename,
             storage=utils_images.OverwriteStorage(),
             null=True,
             blank=True,
             help_text="Recommended size: 500px x 500px "
-            "Recommended name: img_name-11.jpg")
-    img_any = models.ImageField(
+            "Recommended name: name-11.jpg")
+    custom = models.ImageField(
             upload_to=utils_images.new_filename,
             storage=utils_images.OverwriteStorage(),
             null=True,
             blank=True,
             help_text="Image with custom size.")
-    img_lg_191 = models.ImageField(
+    lg_191 = models.ImageField(
             upload_to=utils_images.new_filename,
             storage=utils_images.OverwriteStorage(),
             null=True,
             blank=True,
             help_text="1.9:1 ratio recommended size 2100px x 630px "
-            "Recommended name: img_name-191.jpg")
-    img_title = models.CharField(
-            'Image Title',
+            "Recommended name: name-191.jpg")
+    title = models.CharField(
             max_length=200,
             blank=True,
             help_text="Alt text for image.")
-    img_caption = models.CharField(
-            'Image Caption',
+    caption = models.CharField(
             max_length=200,
             blank=True,
             help_text="Caption for image.")
+    featured = models.BooleanField(default=False)
+    order = models.IntegerField(default=0)
 
     """The following are automatically generated using the
     model's save method."""
-    img_md_21 = models.CharField(
+    md_21 = models.CharField(
             max_length=200,
             blank=True,
             help_text="Automatic size: 800px x 400px")
-    img_sm_21 = models.CharField(
+    sm_21 = models.CharField(
             max_length=200,
             blank=True,
             help_text="Automatic size: 400px x 200px")
-    img_md_11 = models.CharField(
+    md_11 = models.CharField(
             max_length=200,
             blank=True,
             help_text="Automatic size: 250px x 250px")
-    img_sm_11 = models.CharField(
+    sm_11 = models.CharField(
             max_length=200,
             blank=True,
             help_text="Automatic size: 200px x 200px")
 
+    class Meta:
+        abstract = True
+
     def __init__(self, *args, **kwargs):
-        super(Image, self).__init__(*args, **kwargs)
-        self._orig_img_lg_21 = self.img_lg_21
-        self._orig_img_lg_11 = self.img_lg_11
+        super(ImageABC, self).__init__(*args, **kwargs)
+        self._orig_lg_21 = self.lg_21
+        self._orig_lg_11 = self.lg_11
 
     def save(self, *args, **kwargs):
         """Creates new image sizes. Save new images directly to media server
         and save the url in a char field."""
 
-        img_index = {}
+        index = {}
 
         if (
-                self._orig_img_lg_21 != self.img_lg_21
-                and self.img_lg_21):
+                self._orig_lg_21 != self.lg_21
+                and self.lg_21):
 
             svlog_info("Creating blog featured image variations.")
 
-            img_index['Md21'] = [
+            index['Md21'] = [
                     utils_images.Md21WebP,
-                    self.img_lg_21,
+                    self.lg_21,
                     (800, 400),
                     "subdir/not-currently-used"]
-            img_index['Sm21'] = [
+            index['Sm21'] = [
                     utils_images.Sm21WebP,
-                    self.img_lg_21,
+                    self.lg_21,
                     (400, 200),
                     "subdir/not-currently-used"]
 
         if (
-                self._orig_img_lg_11 != self.img_lg_11
-                and self.img_lg_11):
+                self._orig_lg_11 != self.lg_11
+                and self.lg_11):
 
             svlog_info("Creating blog thumbnail image variations.")
 
-            img_index['Md11'] = [
+            index['Md11'] = [
                     utils_images.Md11WebP,
-                    self.img_lg_11,
+                    self.lg_11,
                     (250, 250),
                     "subdir/not-currently-used"]
-            img_index['Sm11'] = [
+            index['Sm11'] = [
                     utils_images.Sm11WebP,
-                    self.img_lg_11,
+                    self.lg_11,
                     (200, 200),
                     "subdir/not-currently-used"]
 
-        for k, v in img_index.items():
+        for k, v in index.items():
 
             file_path = utils_images.process_images(self=self, k=k, v=v)
 
             if k == "Md21":
-                self.img_md_21 = file_path
+                self.md_21 = file_path
             if k == "Sm21":
-                self.img_sm_21 = file_path
+                self.sm_21 = file_path
             if k == "Md11":
-                self.img_md_11 = file_path
+                self.md_11 = file_path
             if k == "Sm11":
-                self.img_sm_11 = file_path
+                self.sm_11 = file_path
 
-        super(Image, self).save(*args, **kwargs)
+        super(ImageABC, self).save(*args, **kwargs)
 
     def __str__(self):
         strname = "image"
-        if self.img_lg_11:
-            strname = f"{self.img_lg_11}"
-        if self.img_lg_21:
-            strname = f"{self.img_lg_21}"
-        if self.img_title:
-            strname = f"{self.img_title}"
+        if self.lg_11:
+            strname = f"{self.lg_11}"
+        if self.lg_21:
+            strname = f"{self.lg_21}"
+        if self.title:
+            strname = f"{self.title}"
         return strname
+
+
+class Image(ImageABC):
+    user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            related_name='config_user_images',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
 
 
 class Currency(Timestamps, models.Model):
@@ -209,24 +216,8 @@ class CurrencyConfig(Timestamps, models.Model):
         return f"{self.currency}"
 
 
-class Group(Timestamps, models.Model):
+class GroupABC(models.Model):
 
-    GROUP_TYPE_CHOICES = [
-        ('ITEMATT', 'Item Attribute'),
-        ('ITEMCAT', 'Item Category'),
-        ('ITEMDEP', 'Item Department'),
-        ('ITEMTAG', 'Item Tag'),
-        ('LOCACAT', 'Location Category'),
-        ('LOCATAG', 'Location Tag'),
-        ('PERSCAT', 'Person Category'),
-        ('PERSTAG', 'Person Tag'),
-        ('POSTCAT', 'Post Category'),
-        ('POSTTAG', 'Post Tag'),
-    ]
-    group_type = models.CharField(
-        max_length=7,
-        blank=True,
-        choices=GROUP_TYPE_CHOICES)
     parent = models.ForeignKey(
             'self',
             related_name="subgroups",
@@ -250,113 +241,39 @@ class Group(Timestamps, models.Model):
     is_secondary = models.BooleanField(default=False)
     is_tertiary = models.BooleanField(default=False)
     order = models.IntegerField(blank=True, null=True)
-    image_thumb = models.ImageField(
-            upload_to=utils_images.new_filename,
-            null=True,
-            blank=True,
-            help_text="Recommended size 500px x 500px")
-    image_191 = models.ImageField(
-            upload_to=utils_images.new_filename,
-            null=True,
-            blank=True,
-            help_text="1.9:1 ratio recommended size 2100px x 630px")
-    image_21 = models.ImageField(
-            upload_to=utils_images.new_filename,
-            null=True,
-            blank=True,
-            help_text="Recommended size 2100px x 600px")
-
-    # The following are automatically generated using the
-    # model's save method.
-
-    image_lg_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 500px x 500px")
-    image_md_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 250px x 250px")
-    image_sm_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="Automatic size: 200px x 200px")
 
     class Meta:
-        verbose_name_plural = "Groupings"
-        ordering = ['name']
-
-    def __init__(self, *args, **kwargs):
-        super(Group, self).__init__(*args, **kwargs)
-        self._orig_image_thumb = self.image_thumb
+        abstract = True
+        ordering = ['slug']
 
     @property
     def parent_name(self):
         return self.parent.name
 
     def save(self, *args, **kwargs):
-        # Creates new image sizes. Save new images directly to media server
-        # and save the url in a char field.
-        img_index = {}
-
-        if self._orig_image_thumb != self.image_thumb and self.image_thumb:
-            svlog_info("Creating blog category image variations.")
-
-            img_index['image_lg_square'] = [
-                    utils_images.BannerLgSqWebp,
-                    self.image_thumb,
-                    (500, 500),
-                    "configapp/group"]
-            img_index['image_md_square'] = [
-                    utils_images.BannerMdSqWebp,
-                    self.image_thumb,
-                    (250, 250),
-                    "configapp/group"]
-            img_index['image_sm_square'] = [
-                    utils_images.BannerSmSqWebp,
-                    self.image_thumb,
-                    (200, 200),
-                    "configapp/group"]
-
-        for k, v in img_index.items():
-
-            file_path = utils_images.process_images(k=k, v=v)
-
-            if k == "image_lg_square":
-                self.image_lg_square = file_path
-            if k == "image_md_square":
-                self.image_md_square = file_path
-            if k == "image_sm_square":
-                self.image_sm_square = file_path
-
-        # checks children slugs
-        if self.parent:
-            if not self.slug.startswith(self.parent.slug):
-                self.slug = f"{self.parent.slug}-{self.slug}"
-
-        super(Group, self).save(*args, **kwargs)
+        if self.parent and not self.slug.startswith(self.parent.name):
+            parent_slug = self.parent.name.lower().replace(' ', '-')
+            self.slug = f"{parent_slug}-{self.slug}"
+        super(GroupABC, self).save(*args, **kwargs)
 
     def __str__(self):
         return '{}'.format(self.name)
 
 
-class Unit(models.Model):
-    """Used to describe Item units for inventory and for the front-end."""
-
-    UNIT_CHOICES = [
-            ('INV', 'Inventory Stock'),
-            ('DIS', 'Display')
-            ]
-
-    unit_type = models.CharField(
-            max_length=3,
-            choices=UNIT_CHOICES,
+class NoteABC(models.Model):
+    date = models.DateField(
+            blank=True,
+            null=True)
+    note = models.TextField(
+            max_length=3000,
             blank=True)
-    singular = models.CharField(max_length=100, default="piece")
-    plural = models.CharField(max_length=100, default="pieces")
+
+    class Meta:
+        abstract = True
+        ordering = ['-date']
 
     def __str__(self):
-        return f"{self.singular} ({self.plural})"
+        return self.date.isoformat()
 
 
 @receiver(post_save, sender=User)

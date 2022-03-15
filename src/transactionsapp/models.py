@@ -1,17 +1,14 @@
-from django.db import models
-from itemsapp.models import Item, Part # , ProductPartJoin
-#  SimpleProduct, BundleProduct, VariableProduct
-from itemsapp.models import Product  # , DigitalProduct
-from contactapp.models import Company, Supplier, Location
-from django.db.models import Sum, Avg
-from django.db import models
-from contactapp.models import Person
-from django.forms import ValidationError
-from ledgerapp.models import Entry, Lot, Batch
-import datetime
-from django.db.models import Prefetch
 from decimal import Decimal
+from django.db import models
+from django.db.models import Prefetch
+from django.db.models import Sum
+from django.utils import timezone
+# from ledgerapp.models import Entry, Lot, Batch
+import contactapp.models
+import itemsapp.models
+import datetime
 
+TODAY = datetime.date.today()
 
 
 def useall_check(self, detail=None, *args, **kwargs):
@@ -619,90 +616,64 @@ def record_ledger_entries(self, entry=None, *args, **kwargs):
 
     return
 
+    # TRANSACTION_TYPE_CHOICES = [
+        # ('ASN', 'Advanced Shipping Notice'),
+        # ('TRS', 'Transfer'),
+        # ('ADJ', 'Inventory Adjustment'),
+        # ('ORD', 'Order'),
+        # ('RET', 'Return'),
+    # ]
+    # transaction_type = models.CharField(
+        # max_length=3,
+        # blank=True,
+        # choices=TRANSACTION_TYPE_CHOICES,
+    # )
 
-class Transaction(models.Model):
-    TRANSACTION_TYPE_CHOICES = [
-        ('ASN', 'Advanced Shipping Notice'),
-        ('TRS', 'Transfer'),
-        ('ADJ', 'Inventory Adjustment'),
-        ('ORD', 'Order'),
-        ('RET', 'Return'),
-    ]
-    transaction_type = models.CharField(
-        max_length=3,
-        blank=True,
-        choices=TRANSACTION_TYPE_CHOICES,  
-    )
-    transaction_number = models.CharField(max_length=100)
-    ship_from_supplier = models.ForeignKey(
-        Supplier,
-        related_name = 'ship_from_supplier',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-    ship_from_location = models.ForeignKey(
-        Location,
-        related_name = 'ship_from_location',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-    ship_to_location = models.ForeignKey(
-        Location,
-        related_name = 'ship_to_location',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-    est_shipping_date = models.DateField(
-        blank=True,
-        null=True)
-    act_shipping_date = models.DateField(
-        blank=True,
-        null=True)
-    est_receiving_date = models.DateField(
-        blank=True,
-        null=True)
-    act_receiving_date = models.DateField(
-        blank=True,
-        null=True)
-    shipping = models.DecimalField(
-        max_digits=14, decimal_places=4, null=True, blank=True,
-        help_text="Shipping and handling costs associated with this transaction")
-    is_complete = models.BooleanField(
-        default=False,
-        help_text="""
-            Make sure information in this transaction is correct. 
-            Once is_complete is checked, it cannot be unchecked.""")
+#     ship_from_supplier = models.ForeignKey(
+        # Supplier,
+        # related_name = 'ship_from_supplier',
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # ship_from_location = models.ForeignKey(
+        # Location,
+        # related_name = 'ship_from_location',
+        # blank=True,
+        # null=True,
+        # on_delete=models.CASCADE)
+    # ship_to_location = models.ForeignKey(
+        # Location,
+        # related_name = 'ship_to_location',
+        # blank=True,
+        # null=True,
+#         on_delete=models.CASCADE)
 
-    _original_complete = None
-    _le_list = []
-    _error = 0
+"""
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self._original_complete = self.is_complete
+
+
+            
+
+
 
     def clean(self):
         # check if is_complete has changed and is_complete is true
         if self._original_complete is True:  #  and self._original_complete != self.is_complete
             # can't change a Transaction once it is complete
             raise ValidationError("You may not change a Transaction once the field 'Is complete' is checked True.")
-            """
             to assign validation error to a speciific field
             {'is_complete': ("You may not change a Transaction once 
                     the field 'Is complete' is checked True.")}
-            """
         if self._error != 0:
             # not sufficient parts availble
             raise ValidationError("You may not change a Transaction once the field 'Is complete' is checked True.")
 
     def save(self, *args, **kwargs):
-        """
         ('ASN', 'Advanced Shipping Notice'),
         ('TRS', 'Transfer'),
         ('ADJ', 'Inventory Adjustment'),
         ('ORD', 'Order'),
         ('RET', 'Return'),
-        """
         # save the current record
         super().save(*args, **kwargs)
 
@@ -732,141 +703,248 @@ class Transaction(models.Model):
     def __str__(self):
         return self.transaction_number
 
-class TransactionDetails(models.Model):
-    transactions = models.ForeignKey(
-        Transaction,
-        related_name = 'TransactionDetails',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-    parts = models.ForeignKey(
-        Part,
-        related_name = 'Parts_TransactionDetails',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-    products = models.ForeignKey(
-        Product,
-        related_name = 'Products_TransactionDetails',
-        blank=True,
-        null=True,
-        on_delete=models.CASCADE)
-
-    """
-    Think about adding parts and products that will allow for transfers,
-    and add additional shipping costs to cost_per_unit 
-    """
-
-    quantity_shipped = models.IntegerField(
-        blank=True,
-        null=True,
-        help_text="Quantity shipped.")
 
 
-    quantity_received = models.IntegerField(
-        blank=True,
-        null=True,
-        help_text="Quantity received.")
+"""
 
-    @property
-    def calc_cpu(self):
-        if self.parts:
-            cpu = self.parts.calc_cpu
-        elif self.products:
-            cpu = self.products.calc_cpu
-        else:
-            cpu = {'cpu': None, 'unit': None}
-            # print("no cpu calculated -- maybe put error message here ?? ")
-        return cpu 
 
-    """
-    define a save methood, on is_complete that creates a journal entry
-    to compensate for any discrepancies in shipping
-    """
-    def save(self, *args, **kwargs):
-        if not self.quantity_received:
-            self.quantity_received = self.quantity_shipped
-        super(TransactionDetails, self).save(*args, **kwargs)
+class TransactionABC(models.Model):
+    number = models.CharField(
+            max_length=100,
+            default=f"ASN-{TODAY}")
+    date = models.DateField(null=True, default=timezone.now)
+
+    class Meta:
+        abstract = True
+
+    # amount = models.BigIntegerField(default=0)
+    # shipping = models.BigIntegerField(
+            # default=0,
+            # help_text="Shipping and handling costs associated with this "
+            # "transaction"
+            # )
+
+
+class ASN(TransactionABC):
+    sender = models.OneToOneField(
+            contactapp.models.Location,
+            related_name='asn_sender',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            )
+    receiver = models.OneToOneField(
+            contactapp.models.Location,
+            related_name='asn_receiver',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            )
+    shipping_cost = models.BigIntegerField(default=0)
+    other_cost = models.BigIntegerField(
+            default=0,
+            help_text="Record other related costs here such as onboarding "
+            "costs."
+            )
+    # packing slips
+    # file_upload for B.O.L.
+    # notes
+    est_shipping_date = models.DateField(
+            blank=True,
+            null=True)
+    act_shipping_date = models.DateField(
+            blank=True,
+            null=True)
+    est_receiving_date = models.DateField(
+            blank=True,
+            null=True)
+    act_receiving_date = models.DateField(
+            blank=True,
+            null=True)
+    is_complete = models.BooleanField(
+            default=False,
+            help_text="Make sure information in this transaction is correct. "
+            "Once is_complete is checked, it cannot be unchecked."
+            )
 
     def __str__(self):
-        return self.transactions.transaction_number
+        return f"{self.number}"
 
-class ASNManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(transaction_type='ASN')
 
-class ASN(Transaction):
-    objects = ASNManager()
+class AsnDetails(models.Model):
+    asn = models.ForeignKey(
+            ASN,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            )
+    item = models.OneToOneField(
+            itemsapp.models.Item,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            )
+    quantity_shipped = models.IntegerField(default=0)
+    quantity_received = models.IntegerField(default=0)
+    remark = models.CharField(
+            max_length=200,
+            blank=True
+            )
 
-    class Meta:
-        proxy = True
+    @property
+    def quantity_descrepancy(self):
+        return self.quantity_shipped - self.quantity_received
 
-    def save(self, *args, **kwargs):
-        # add the transaction_type if missing
-        if self.transaction_type == '':
-            self.transaction_type='ASN'
-        super(ASN, self).save(*args, **kwargs)
+    @property
+    def ecpu_display(self):
+        return self.item.ecpu_display
 
-class TransferManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(transaction_type='TRS')
 
-class Transfer(Transaction):
-    objects = TransferManager()
+class Transfer(TransactionABC):
+    # location dependencies
+    pass
 
-    class Meta:
-        proxy = True
 
-    def save(self, *args, **kwargs):
-        # add the transaction_type if missing
-        if self.transaction_type == '':
-            self.transaction_type='TRS'
-        super(Transfer, self).save(*args, **kwargs)
 
-class InvAdustmentManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(transaction_type='ADJ')
 
-class InvAdjustment(Transaction):
-    objects = InvAdustmentManager()
+# class TransactionDetails(models.Model):
+# #     transactions = models.ForeignKey(
+        # # Transaction,
+        # # related_name = 'TransactionDetails',
+        # # blank=True,
+        # # null=True,
+    # #     on_delete=models.CASCADE)
+# #     parts = models.ForeignKey(
+        # # Part,
+        # # related_name = 'Parts_TransactionDetails',
+        # # blank=True,
+        # # null=True,
+        # # on_delete=models.CASCADE)
+    # # products = models.ForeignKey(
+        # # Product,
+        # # related_name = 'Products_TransactionDetails',
+        # # blank=True,
+        # # null=True,
+        # # on_delete=models.CASCADE)
 
-    class Meta:
-        proxy = True
+    # """
+    # Think about adding parts and products that will allow for transfers,
+    # and add additional shipping costs to cost_per_unit 
+    # """
 
-    def save(self, *args, **kwargs):
-        # add the transaction_type if missing
-        if self.transaction_type == '':
-            self.transaction_type='ADJ'
-        super(InvAdjustment, self).save(*args, **kwargs)
+    # quantity_shipped = models.IntegerField(
+        # blank=True,
+        # null=True,
+        # help_text="Quantity shipped.")
 
-class OrderManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(transaction_type='ORD')
 
-class Order(Transaction):
-    objects = OrderManager()
+    # quantity_received = models.IntegerField(
+        # blank=True,
+        # null=True,
+        # help_text="Quantity received.")
 
-    class Meta:
-        proxy = True
+#     @property
+    # def calc_cpu(self):
+        # if self.parts:
+            # cpu = self.parts.calc_cpu
+        # elif self.products:
+            # cpu = self.products.calc_cpu
+        # else:
+            # cpu = {'cpu': None, 'unit': None}
+            # # print("no cpu calculated -- maybe put error message here ?? ")
+        # return cpu 
 
-    def save(self, *args, **kwargs):
-        # add the transaction_type if missing
-        if self.transaction_type == '':
-            self.transaction_type='ORD'
-        super(Order, self).save(*args, **kwargs)
+    # """
+    # define a save methood, on is_complete that creates a journal entry
+    # to compensate for any discrepancies in shipping
+    # """
 
-class ReturnManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(transaction_type='RET')
+    # def save(self, *args, **kwargs):
+        # if not self.quantity_received:
+            # self.quantity_received = self.quantity_shipped
+        # super(TransactionDetails, self).save(*args, **kwargs)
 
-class Return(Transaction):
-    objects = ReturnManager()
+    # def __str__(self):
+        # return self.transactions.transaction_number
 
-    class Meta:
-        proxy = True
 
-    def save(self, *args, **kwargs):
-        # add the transaction_type if missing
-        if self.transaction_type == '':
-            self.transaction_type='RET'
-        super(Return, self).save(*args, **kwargs)
+# class ASNManager(models.Manager):
+    # def get_queryset(self):
+        # return super().get_queryset().filter(transaction_type='ASN')
+
+
+# class ASN(Transaction):
+    # objects = ASNManager()
+
+    # class Meta:
+        # proxy = True
+
+    # def save(self, *args, **kwargs):
+        # # add the transaction_type if missing
+        # if self.transaction_type == '':
+            # self.transaction_type='ASN'
+        # super(ASN, self).save(*args, **kwargs)
+
+# class TransferManager(models.Manager):
+    # def get_queryset(self):
+        # return super().get_queryset().filter(transaction_type='TRS')
+
+# class Transfer(Transaction):
+    # objects = TransferManager()
+
+    # class Meta:
+        # proxy = True
+
+    # def save(self, *args, **kwargs):
+        # # add the transaction_type if missing
+        # if self.transaction_type == '':
+            # self.transaction_type='TRS'
+        # super(Transfer, self).save(*args, **kwargs)
+
+# class InvAdustmentManager(models.Manager):
+    # def get_queryset(self):
+        # return super().get_queryset().filter(transaction_type='ADJ')
+
+# class InvAdjustment(Transaction):
+    # objects = InvAdustmentManager()
+
+    # class Meta:
+        # proxy = True
+
+    # def save(self, *args, **kwargs):
+        # # add the transaction_type if missing
+        # if self.transaction_type == '':
+            # self.transaction_type='ADJ'
+        # super(InvAdjustment, self).save(*args, **kwargs)
+
+# class OrderManager(models.Manager):
+    # def get_queryset(self):
+        # return super().get_queryset().filter(transaction_type='ORD')
+
+# class Order(Transaction):
+    # objects = OrderManager()
+
+    # class Meta:
+        # proxy = True
+
+    # def save(self, *args, **kwargs):
+        # # add the transaction_type if missing
+        # if self.transaction_type == '':
+            # self.transaction_type='ORD'
+        # super(Order, self).save(*args, **kwargs)
+
+# class ReturnManager(models.Manager):
+    # def get_queryset(self):
+        # return super().get_queryset().filter(transaction_type='RET')
+
+# class Return(Transaction):
+    # objects = ReturnManager()
+
+    # class Meta:
+        # proxy = True
+
+    # def save(self, *args, **kwargs):
+        # # add the transaction_type if missing
+        # if self.transaction_type == '':
+            # self.transaction_type='RET'
+        # super(Return, self).save(*args, **kwargs)

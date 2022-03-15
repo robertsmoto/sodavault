@@ -93,6 +93,8 @@ def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
     """Creates the base dir and filename variations for user uploads."""
     # create the directory
     now = timezone.now()
+    print("instance", instance)
+    print("instance", instance.user)
     user_dir = instance.user.profile.cdn_dir
     date_dir = now.strftime('%Y/%m/%d/')
     user_date = os.path.join(user_dir, date_dir)

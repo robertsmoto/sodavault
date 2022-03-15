@@ -1,166 +1,134 @@
-from django import forms
+# from django import forms
 from django.contrib import admin
-from django.utils.translation import gettext_lazy as _
-import configapp.models
 import itemsapp.models
-from django.forms.models import ModelChoiceIterator
+
+GROUP_FIELDS = [
+        ('name', 'slug'),
+        ('description', 'kwd_list'),
+        ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
+        ]
+GROUP_LIST_DISPLAY = [
+        'slug', 'name', 'description', 'is_primary', 'is_secondary',
+        'is_tertiary', 'order'
+        ]
+GROUP_LIST_DISPLAY_LINKS = ['slug']
 
 
 class SubDepartmentInline(admin.TabularInline):
-    model = configapp.models.Group
-    exclude = ['cat_type']
+    model = itemsapp.models.Department
+    fields = GROUP_FIELDS
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Sub-Department"
     verbose_name_plural = "Sub-Departments"
 
 
-@admin.register(itemsapp.models.ItemDepartment)
-class ItemDepartmentAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
+@admin.register(itemsapp.models.Department)
+class DepartmentAdmin(admin.ModelAdmin):
+    fields = GROUP_FIELDS
+    list_display = GROUP_LIST_DISPLAY
+    list_display_links = GROUP_LIST_DISPLAY_LINKS
     search_fields = ['name']
-    exclude = ['group_type']
     prepopulated_fields = {'slug': ('name', )}
     inlines = [SubDepartmentInline, ]
 
-    def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super(ItemDepartmentAdmin, self).get_search_results(
-            request, queryset, search_term
-        )
-        queryset = queryset.filter(group_type="ITEMDEP")
-        return queryset, use_distinct
 
-    def save_model(self, request, obj, form, change):
-        obj.group_type = "ITEMDEP"
-        super().save_model(request, obj, form, change)
+class SubBrandInline(admin.TabularInline):
+    model = itemsapp.models.Brand
+    fields = GROUP_FIELDS
+    prepopulated_fields = {'slug': ('name',)}
+    verbose_name = "Sub-Brand"
+    verbose_name_plural = "Sub-Brands"
 
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
+
+@admin.register(itemsapp.models.Brand)
+class BrandAdmin(admin.ModelAdmin):
+    fields = GROUP_FIELDS
+    list_display = GROUP_LIST_DISPLAY
+    list_display_links = GROUP_LIST_DISPLAY_LINKS
+    search_fields = ['name']
+    prepopulated_fields = {'slug': ('name', )}
+    inlines = [SubBrandInline, ]
 
 
 class SubCategoryInline(admin.TabularInline):
-    model = configapp.models.Group
-    exclude = ['cat_type']
+    model = itemsapp.models.Category
+    fields = GROUP_FIELDS
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Sub-Category"
     verbose_name_plural = "Sub-Categories"
 
 
-@admin.register(itemsapp.models.ItemCategory)
-class ItemCategoryAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
-    list_display_links = [
-        'name',
-    ]
+@admin.register(itemsapp.models.Category)
+class CategoryAdmin(admin.ModelAdmin):
+    fields = GROUP_FIELDS
+    list_display = GROUP_LIST_DISPLAY
+    list_display_links = GROUP_LIST_DISPLAY_LINKS
     search_fields = ['name']
     exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name', )}
     inlines = [SubCategoryInline, ]
 
-    def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super(ItemCategoryAdmin, self).get_search_results(
-            request, queryset, search_term
-        )
-        queryset = queryset.filter(group_type="ITEMCAT")
-        return queryset, use_distinct
-
-    def save_model(self, request, obj, form, change):
-        obj.group_type = "ITEMCAT"
-        super().save_model(request, obj, form, change)
-
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
-
 
 class SubTagInline(admin.TabularInline):
-    model = configapp.models.Group
-    exclude = ['cat_type']
+    model = itemsapp.models.Tag
+    fields = GROUP_FIELDS
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Sub-Tag"
     verbose_name_plural = "Sub-Tags"
 
 
-@admin.register(itemsapp.models.ItemTag)
-class ItemTagAdmin(admin.ModelAdmin):
-    list_display = [
-        'name',
-        'slug',
-    ]
+@admin.register(itemsapp.models.Tag)
+class TagAdmin(admin.ModelAdmin):
+    fields = GROUP_FIELDS
+    list_display = GROUP_LIST_DISPLAY
+    list_display_links = GROUP_LIST_DISPLAY_LINKS
     search_fields = ['name']
     exclude = ['cat_type', ]
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubTagInline, ]
 
-    def get_search_results(self, request, queryset, search_term):
-        queryset, use_distinct = super(ItemTagAdmin, self).get_search_results(
-            request, queryset, search_term
-        )
-        queryset = queryset.filter(group_type="ITEMTAG")
-        return queryset, use_distinct
-
-    def save_model(self, request, obj, form, change):
-        obj.group_type = "ITEMTAG"
-        super().save_model(request, obj, form, change)
-
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
-
 
 class SubAttributeInline(admin.TabularInline):
-    model = itemsapp.models.ItemAttribute
-    # exclude = ['group_type']
+    model = itemsapp.models.Attribute
+    fields = GROUP_FIELDS
     prepopulated_fields = {'slug': ('name',)}
     verbose_name = "Term"
     verbose_name_plural = "Attribute Terms"
     # autocomplete_fields = ['stores', 'warehouses']
 
 
-@admin.register(itemsapp.models.ItemAttribute)
-class ItemAttributeAdmin(admin.ModelAdmin):
+@admin.register(itemsapp.models.Attribute)
+class AttributeAdmin(admin.ModelAdmin):
+    fields = GROUP_FIELDS
+    readonly_fields = ['terms_display']
     list_display = [
-        'name',
-        'slug',
-    ]
+        'slug', 'name', 'terms_display', 'is_primary', 'is_secondary',
+        'is_tertiary', 'order'
+        ]
+
+    list_display_links = GROUP_LIST_DISPLAY_LINKS
     search_fields = ['name', 'id']
-    exclude = ['group_type', 'subgroup']
     prepopulated_fields = {'slug': ('name',)}
     inlines = [SubAttributeInline, ]
 
     def get_search_results(self, request, queryset, search_term):
+        field_name = request.GET.get('field_name', 'attribute')
 
-        queryset, use_distinct = super(ItemAttributeAdmin, self) \
-            .get_search_results(request, queryset, search_term)
-        field_name = request.GET.get('field_name', '')
+        if field_name == "term" or field_name == "terms":
+            queryset = queryset.filter(parent__isnull=False)
+        elif field_name == "attribute":
+            queryset = queryset.filter(parent__isnull=True)
 
-        queryset = queryset.filter(group_type="ITEMATT")
+        return super().get_search_results(request, queryset, search_term)
 
-        if field_name == 'terms':
-            print("in fieldname")
-        return queryset, use_distinct
+    def terms_display(self, obj):
+        terms = obj.subgroups.all()
+        terms_str = 'none'
+        if terms:
+            terms_str = ", ".join([term.name for term in terms])
+        return terms_str
 
-    def save_model(self, request, obj, form, change):
-        obj.group_type = "ITEMATT"
-        super().save_model(request, obj, form, change)
-
-    def get_model_perms(self, request):
-        """
-        Return empty perms dict thus hiding the model from admin index.
-        """
-        return {}
+    terms_display.short_description = "Terms"
 
 
 class NoteInline(admin.TabularInline):
@@ -169,36 +137,33 @@ class NoteInline(admin.TabularInline):
     classes = ['collapse']
     verbose_name = "note"
     verbose_name_plural = "notes"
-    # exclude = ['pos', 'asns']
+
+    def get_exclude(self, request, obj):
+        if obj.__class__.__name__ == "Component":
+            return ['part', 'product']
+        if obj.__class__.__name__ == "Part":
+            return ['component', 'product']
+        if obj.__class__.__name__ == "Product":
+            return ['component', 'part']
+        return
 
 
-class BidComponentInline(admin.TabularInline):
+class BidInline(admin.TabularInline):
     model = itemsapp.models.Bid
-    exclude = ['part', 'product']
     extra = 0
     classes = ['collapse']
     verbose_name = "bid"
     verbose_name_plural = "bids"
-    # autocomplete_fields = ['unit_inventory', 'supplier']
+    # autocomplete_fields = ['supplier', 'unit']
 
-
-class BidPartInline(admin.TabularInline):
-    model = itemsapp.models.Bid
-    exclude = ['component', 'product']
-    extra = 0
-    classes = ['collapse']
-    verbose_name = "bid"
-    verbose_name_plural = "bids"
-    # autocomplete_fields = ['unit_inventory', 'supplier']
-
-
-class BidProductInline(admin.TabularInline):
-    model = itemsapp.models.Bid
-    exclude = ['component', 'part']
-    extra = 0
-    classes = ['collapse']
-    verbose_name = "bid"
-    verbose_name_plural = "bids"
+    def get_exclude(self, request, obj):
+        if obj.__class__.__name__ == "Component":
+            return ['part', 'product']
+        if obj.__class__.__name__ == "Part":
+            return ['component', 'product']
+        if obj.__class__.__name__ == "Product":
+            return ['component', 'part']
+        return
 
 
 class IdentifierInline(admin.TabularInline):
@@ -244,174 +209,87 @@ class ImageInline(admin.StackedInline):
     classes = ['collapse']
     verbose_name = "marketing options"
     fields = [
-        ('name', 'order'),
-        ('img_lg', 'img_md', 'img_sm'),
-        ('img_1x1_lg', 'img_1x1_md', 'img_1x1_sm'),
-        ('img_2x1_lg', 'img_2x1_md', 'img_2x1_sm'),
-        ('img_1x2_lg', 'img_1x2_md', 'img_1x2_sm'),
-        ('img_16x9', 'img_191x1')
+        ('title', 'caption'),
+        ('featured', 'order'),
+        ('lg_11', 'md_11', 'sm_11'),
+        ('lg_21', 'md_21', 'sm_21'),
+        'lg_191',
+        'custom',
     ]
+    readonly_fields = ['md_11', 'sm_11', 'md_21', 'sm_21']
     verbose_name = "image"
     verbose_name_plural = "images"
-
-# class DigitalOptionInline(nested_admin.NestedTabularInline):
-    # model = DigitalOption
-    # extra = 0
-    # verbose_name = "option"
-#     verbose_name_plural = "digital options"
+    extra = 0
 
 
-class ProductTypesFilter(admin.SimpleListFilter):
-    # Human-readable title which will be displayed in the
-    # right admin sidebar just above the filter options.
-    title = _('product types')
+class DigitalInline(admin.StackedInline):
+    model = itemsapp.models.Digital
+    verbose_name = "Digital Option"
+    verbose_name_plural = "Digital Options"
+    classes = ['collapse']
 
-    # Parameter for the filter that will be used in the URL query.
-    parameter_name = 'type'
-
-    def lookups(self, request, model_admin):
-        """
-        Returns a list of tuples. The first element in each
-        tuple is the coded value for the option that will
-        appear in the URL query. The second element is the
-        human-readable name for the option that will appear
-        in the right sidebar.
-        """
-        return (
-            # ('simp', _('is_simple')),
-            ('digi', _('is_digital')),
-            ('bund', _('is_bundle')),
-            ('vari', _('is_variable')),
-            # ('bund', _('is_bundle')),
-        )
-
-    def queryset(self, request, queryset):
-        """
-        Returns the filtered queryset based on the value
-        provided in the query string and retrievable via
-        `self.value()`.
-        """
-        # Compare the requested value (either '80s' or '90s')
-        # to decide how to filter the queryset.
-#         if self.value() == 'simp':
-#             return queryset.all()
-        if self.value() == 'digi':
-            return queryset.filter(digital_options__isnull=False).distinct()
-
-        if self.value() == 'bund':
-            return queryset.filter(bundle_parents__isnull=False).distinct()
-
-        if self.value() == 'vari':
-            return queryset.filter(variation_parents__isnull=False).distinct()
+    def get_exclude(self, request, obj):
+        if obj.__class__.__name__ == "Part":
+            return ['product']
+        if obj.__class__.__name__ == "Product":
+            return ['part']
+        return
 
 
-class ComponentInlineForm(forms.ModelForm):
+class AssemblyInline(admin.TabularInline):
+    """Item cost assembly."""
 
-    to_item = forms.ModelChoiceField(
-            queryset=itemsapp.models.Item.objects
-            .filter(item_type="COMP"),
-            empty_label="-----")
-
-
-class ComponentInline(admin.TabularInline):
-    """Component is an Item with item_type='COMP'."""
-
-    model = itemsapp.models.Item.components.through
-    form = ComponentInlineForm
-    fk_name = 'from_item'
+    model = itemsapp.models.Item.assembly.through
+    fk_name = 'item'
+    fields = ['assembly', 'assembly_ecpu', 'quantity', 'is_unlimited' ,'use_all']
+    # autocomplete_fields = ['assembly']
+    readonly_fields = ['assembly_ecpu']
     extra = 0
     classes = ['collapse']
-    verbose_name = 'Component'
-    verbose_name_plural = 'Components'
-    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
+    verbose_name = 'Assembly'
+    verbose_name_plural = 'Assembled Items'
 
-
-class PartInlineForm(forms.ModelForm):
-
-    to_item = forms.ModelChoiceField(
-            queryset=itemsapp.models.Item.objects
-            .filter(item_type="PART"),
-            label="Cost Componets",
-            empty_label="-----")
-
-
-class PartInline(admin.TabularInline):
-    """Component, part is an Item with item_type='PART'."""
-
-    model = itemsapp.models.Item.components.through
-    form = PartInlineForm
-    fk_name = 'from_item'
-    extra = 0
-    classes = ['collapse']
-    verbose_name = 'Part'
-    verbose_name_plural = 'Parts'
-    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
-
-
-class AttributeInlineForm(forms.ModelForm):
-
-    class Meta:
-        model = itemsapp.models.Item.attributes.through
-        fields = '__all__'
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self.fields['attributes'].queryset = configapp.models.Group.objects \
-            .filter(group_type="ITEMATT", parent__isnull=True)
-
-        _attrid = None
-        if self.instance.attributes:
-            _attrid = self.instance.attributes.id
-        if _attrid:
-            TERM_CHOICES = configapp.models.Group.objects \
-                .values_list('id', 'name') \
-                .filter(group_type="ITEMATT", parent=_attrid)
-            self.fields['terms'].choices = TERM_CHOICES
-            self.fields['terms'].to_field_name = 'id'
-        else:
-            self.fields['terms'].queryset = configapp.models.Group.objects \
-                .none()
+    def assembly_ecpu(self, model):
+        return model.assembly.ecpu
 
 
 class AttributeInline(admin.TabularInline):
-    """Collection is an Item with item_type='PROD'."""
 
-    form = AttributeInlineForm
-    model = itemsapp.models.Item.attributes.through
+    model = itemsapp.models.Product.attributes.through
     extra = 0
     classes = ['collapse']
-    filter_horizontal = ['terms']
     ordering = ['order', ]
     verbose_name = "Attribute"
     verbose_name_plural = "Attributes"
-    # autocomplete_fields = ['attributes', 'terms']
+    autocomplete_fields = ['attribute', 'terms']
 
 
-class CollectionInlineForm(forms.ModelForm):
+class VariationInline(admin.TabularInline):
 
-    included_products = forms.ModelChoiceField(
-            queryset=itemsapp.models.Item.objects
-            .filter(item_type="PROD"),
-            empty_label="-----")
+    model = itemsapp.models.Product.variations.through
+    fk_name = 'item'
+    extra = 0
+    classes = ['collapse']
+    verbose_name = "Variation"
+    verbose_name_plural = "Variations"
+    # autocomplete_fields = ['variation', 'attribute', 'term']
 
 
 class CollectionInline(admin.TabularInline):
-    """Collection is an Item with item_type='PROD'."""
+    """Item collection."""
 
     model = itemsapp.models.Item.collections.through
-    form = CollectionInlineForm
-    fk_name = 'product'
+    fk_name = 'item'
+    autocomplete_fields = ['collection']
     extra = 0
     classes = ['collapse']
     verbose_name = 'Item'
     verbose_name_plural = 'Collection'
-    # autocomplete_fields = ['categories', 'tags', 'unit_inventory']
 
 
-@admin.register(itemsapp.models.UnitInventory)
+@admin.register(itemsapp.models.Unit)
 class UnitInventoryAdmin(admin.ModelAdmin):
-    search_fields = ['singular']
+    search_fields = ['inv_singular', 'dis_singular']
 
     def get_model_perms(self, request):
         """
@@ -419,171 +297,135 @@ class UnitInventoryAdmin(admin.ModelAdmin):
         """
         return {}
 
+    pass
 
-@admin.register(itemsapp.models.UnitDisplay)
-class UnitDisplayAdmin(admin.ModelAdmin):
-    search_fields = ['singular']
+
+ITEM_FIELDS = [
+        ('name', 'sku'),
+        ('description', 'keywords'),
+        ('categories', 'tags'),
+        ('cost', 'cost_shipping', 'cost_quantity', 'unit'),
+        'ecpu_display',
+        'inv_display',
+        ]
+ITEM_READONLY_FIELDS = ['ecpu_display', 'inv_display']
+ITEM_AUTOCOMPLETE_FIELDS = ['categories', 'tags', 'unit']
+ITEM_PREPOPULATED_FIELDS = {'sku': ('name',), }
+ITEM_LIST_DISPLAY = [
+        'sku',
+        'name',
+        'ecpu'
+        ]
+ITEM_LIST_FILTER = [
+        'categories',
+        'tags'
+        ]
+ITEM_LIST_DISPLAY_LINKS = [
+        'sku',
+        'name'
+        ]
+ITEM_SEARCH_FIELDS = [
+        'sku',
+        'name'
+        ]
+ITEM_ORDERING = ['sku']
+
+
+@admin.register(itemsapp.models.Item)
+class ItemAdmin(admin.ModelAdmin):
+    search_fields = ['sku', 'name']
+
+    def save_related(self, request, form, formsets, change):
+        print("change", change)
+        super().save_related(request, form, formsets, change)
 
     def get_model_perms(self, request):
         """
         Return empty perms dict thus hiding the model from admin index.
         """
         return {}
-
-
-# class ComponentForm(forms.ModelForm):
-
-    # class Meta:
-        # model = itemsapp.models.Component
-        # fields = '__all__'
-
-    # ecpu = forms.CharField(
-            # max_length=200,
-            # disabled=True,
-            # widget=forms.TextInput(
-                # attrs={
-                    # 'style': 'width: 350px;'}
-                # )
-            # )
-
-    # def __init__(self, *args, **kwargs):
-        # """Return the initial data to use for forms on this view."""
-        # super(ComponentForm, self).__init__(*args, **kwargs)
-        # object_ids = []
-        # obj = self.instance
-        # object_ids.append(obj.id)
-        # main_dict = {'start_ids': object_ids}
-        # main = calc_ecpu(main=main_dict)
-        # print(main)
-#         self.fields['ecpu'].initial = main
 
 
 @admin.register(itemsapp.models.Component)
 class ComponentAdmin(admin.ModelAdmin):
+    fields = ITEM_FIELDS
+    readonly_fields = ITEM_READONLY_FIELDS
+    autocomplete_fields = ITEM_AUTOCOMPLETE_FIELDS
+    prepopulated_fields = ITEM_PREPOPULATED_FIELDS
+    list_display = ITEM_LIST_DISPLAY
+    list_filter = ITEM_LIST_FILTER
+    list_display_links = ITEM_LIST_DISPLAY_LINKS
+    search_fields = ITEM_SEARCH_FIELDS
+    ordering = ITEM_ORDERING
 
-    fields = [
-            ('name', 'sku'),
-            ('description', 'keywords'),
-            ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-            'ecpu',
-    ]
-    prepopulated_fields = {'sku': ('name',), }
-    readonly_fields = ['ecpu']
-    list_display = (
-        'sku',
-        'name',
-        'ecpu'
-    )
-    list_display_links = (
-        'sku',
-        'name',
-    )
-    search_fields = (
-        'sku',
-        'name',
-    )
-    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
-    ordering = ['sku']
+    def get_inlines(self, request, obj):
+        return [BidInline, NoteInline]
 
-    inlines = [
-        BidComponentInline,
-        NoteInline,
-    ]
-
-    def get_queryset(self, request):
-        """Use custom model manager."""
-        qs = self.model.objects.components()
-        return qs
+    def unit_inv(self, obj):
+        return f"{obj.unit.inv_singular} ({obj.unit.inv_plural})"
 
 
 @admin.register(itemsapp.models.Part)
 class PartAdmin(admin.ModelAdmin):
+    fields = ITEM_FIELDS
+    readonly_fields = ITEM_READONLY_FIELDS
+    autocomplete_fields = ITEM_AUTOCOMPLETE_FIELDS
+    prepopulated_fields = ITEM_PREPOPULATED_FIELDS
+    list_display = ITEM_LIST_DISPLAY
+    list_filter = ITEM_LIST_FILTER
+    list_display_links = ITEM_LIST_DISPLAY_LINKS
+    search_fields = ITEM_SEARCH_FIELDS
+    ordering = ITEM_ORDERING
 
-    fields = [
-            ('name', 'sku'),
-            ('description', 'keywords'),
-            ('categories', 'tags'),
-            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-            'ecpu',
-    ]
-    prepopulated_fields = {'sku': ('name',), }
-    readonly_fields = ['ecpu']
-    list_display = (
-        'sku',
-        'name',
-        'ecpu'
-    )
-    list_display_links = (
-        'sku',
-        'name',
-    )
-    search_fields = (
-        'sku',
-        'name',
-    )
-    autocomplete_fields = ['categories', 'tags', 'unit_inventory']
-    ordering = ['sku']
-
-    inlines = [
-        BidPartInline,
-        ComponentInline,
-        NoteInline,
-    ]
-
-    def get_queryset(self, request):
-        """Use custom model manager."""
-        qs = self.model.objects.parts()
-        return qs
+    def get_inlines(self, request, obj):
+        return [BidInline, AssemblyInline, NoteInline]
 
 
 @admin.register(itemsapp.models.Product)
 class ProductAdmin(admin.ModelAdmin):
+    fields = ITEM_FIELDS
+    readonly_fields = ITEM_READONLY_FIELDS
+    autocomplete_fields = ITEM_AUTOCOMPLETE_FIELDS
+    prepopulated_fields = ITEM_PREPOPULATED_FIELDS
+    list_display = ITEM_LIST_DISPLAY
+    list_filter = ITEM_LIST_FILTER
+    list_display_links = ITEM_LIST_DISPLAY_LINKS
+    search_fields = ITEM_SEARCH_FIELDS
+    ordering = ITEM_ORDERING
 
-    fields = [
-            ('name', 'sku'),
-            ('description', 'keywords'),
-            ('departments', 'categories', 'tags'),
-            ('cost', 'cost_shipping', 'cost_quantity', 'unit_inventory'),
-            'ecpu'
+    def get_inlines(self, request, obj):
+        return [
+                BidInline,
+                AssemblyInline,
+                NoteInline,
+                AttributeInline,
+                VariationInline,
+                CollectionInline,
+                DigitalInline,
+                IdentifierInline,
+                MeasurementInline,
+                MarketingOptionInline,
+                ImageInline,
+                ]
+
+
+@admin.register(itemsapp.models.Ledger)
+class LedgerAdmin(admin.ModelAdmin):
+
+    list_display = [
+        'date',
+        'account',
+        'item_sku',
+        'location',
+        'lot',
+        'debit_quantity',
+        'debit_amount',
+        'credit_quantity',
+        'credit_amount',
+        'note',
     ]
-    readonly_fields = ['ecpu']
-    prepopulated_fields = {'sku': ('name',), }
-    list_display = (
-        'sku',
-        'name',
-        'ecpu',
-        'price',
-    )
-    list_filter = (
-        ProductTypesFilter,
-    )
-    list_display_links = (
-        'sku',
-        'name',
-    )
-    search_fields = (
-        'sku',
-        'name',
-    )
-    autocomplete_fields = ['departments', 'categories', 'tags']
+    readonly_fields = ['item_sku']
+    autocomplete_fields = ['location', 'item']
 
-    inlines = (
-        BidProductInline,
-        PartInline,
-        AttributeInline,
-        CollectionInline,
-        IdentifierInline,
-        MeasurementInline,
-        MarketingOptionInline,
-        ImageInline,
-        # ProdAttrJoinInline,  # <-- trouble here
-        # DigitalOptionInline,
-        # BundleInline,
-        # VariationInline,
-    )
-
-    def get_queryset(self, request):
-        """Use custom model manager."""
-        qs = self.model.objects.products()
-        return qs
+    def item_sku(self, obj):
+        return obj.item.sku if obj.item else "hello"

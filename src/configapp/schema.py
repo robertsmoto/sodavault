@@ -31,7 +31,7 @@ class GroupNode(DjangoObjectType):
         filter_fields = [
                 'category_posts__websites__domain',
                 'tag_posts__websites__domain',
-                'group_type',
+                # 'group_type',
                 'id',
                 'is_primary',
                 'is_secondary',
@@ -50,7 +50,7 @@ class GroupDistinctFilter(django_filters.FilterSet):
         fields = [
                 'category_posts__websites__domain',
                 'tag_posts__websites__domain',
-                'group_type',
+                # 'group_type',
                 'id',
                 'is_primary',
                 'is_secondary',
