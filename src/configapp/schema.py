@@ -29,8 +29,8 @@ class GroupNode(DjangoObjectType):
     class Meta:
         model = configapp.models.Group
         filter_fields = [
-                'category_posts__websites__domain',
-                'tag_posts__websites__domain',
+                # 'category_posts__websites__domain',
+                # 'tag_posts__websites__domain',
                 # 'group_type',
                 'id',
                 'is_primary',
@@ -48,8 +48,8 @@ class GroupDistinctFilter(django_filters.FilterSet):
     class Meta:
         model = configapp.models.Group
         fields = [
-                'category_posts__websites__domain',
-                'tag_posts__websites__domain',
+                # 'category_posts__websites__domain',
+                # 'tag_posts__websites__domain',
                 # 'group_type',
                 'id',
                 'is_primary',
