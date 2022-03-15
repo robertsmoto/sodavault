@@ -69,7 +69,7 @@ class PostNode(DjangoObjectType):
                 'tags',
                 'is_primary',
                 'is_secondary',
-                'is_teriary',
+                'is_tertiary',
                 'is_featured',
                 'status',
                 'post_type'
