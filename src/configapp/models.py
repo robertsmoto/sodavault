@@ -4,7 +4,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
+# from rest_framework.authtoken.models import Token
 from sodavault.utils_logging import svlog_info
 import uuid
 
@@ -15,6 +15,66 @@ class Timestamps(models.Model):
 
     class Meta:
         abstract = True
+
+
+class GroupABC(models.Model):
+
+    parent = models.ForeignKey(
+            'self',
+            related_name="subgroups",
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    slug = models.SlugField(
+            max_length=50,
+            unique=True,
+            help_text="Is required and must be unique.")
+    name = models.CharField(max_length=200, blank=True)
+    description = models.CharField(
+            max_length=100,
+            blank=True)
+    kwd_list = models.CharField(
+            max_length=100,
+            blank=True,
+            help_text="Comma-separated values.")
+
+    is_primary = models.BooleanField(default=False)
+    is_secondary = models.BooleanField(default=False)
+    is_tertiary = models.BooleanField(default=False)
+    order = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['slug']
+
+    @property
+    def parent_name(self):
+        return self.parent.name
+
+    def save(self, *args, **kwargs):
+        if self.parent and not self.slug.startswith(self.parent.name):
+            parent_slug = self.parent.name.lower().replace(' ', '-')
+            self.slug = f"{parent_slug}-{self.slug}"
+        super(GroupABC, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return '{}'.format(self.name)
+
+
+class NoteABC(models.Model):
+    date = models.DateField(
+            blank=True,
+            null=True)
+    note = models.TextField(
+            max_length=3000,
+            blank=True)
+
+    class Meta:
+        abstract = True
+        ordering = ['-date']
+
+    def __str__(self):
+        return self.date.isoformat()
 
 
 class ImageABC(models.Model):
@@ -216,83 +276,6 @@ class CurrencyConfig(Timestamps, models.Model):
         return f"{self.currency}"
 
 
-class GroupABC(models.Model):
-
-    parent = models.ForeignKey(
-            'self',
-            related_name="subgroups",
-            on_delete=models.CASCADE,
-            blank=True,
-            null=True)
-    slug = models.SlugField(
-            max_length=50,
-            unique=True,
-            help_text="Is required and must be unique.")
-    name = models.CharField(max_length=200, blank=True)
-    description = models.CharField(
-            max_length=100,
-            blank=True)
-    kwd_list = models.CharField(
-            max_length=100,
-            blank=True,
-            help_text="Comma-separated values.")
-
-    is_primary = models.BooleanField(default=False)
-    is_secondary = models.BooleanField(default=False)
-    is_tertiary = models.BooleanField(default=False)
-    order = models.IntegerField(blank=True, null=True)
-
-    class Meta:
-        abstract = True
-        ordering = ['slug']
-
-    @property
-    def parent_name(self):
-        return self.parent.name
-
-    def save(self, *args, **kwargs):
-        if self.parent and not self.slug.startswith(self.parent.name):
-            parent_slug = self.parent.name.lower().replace(' ', '-')
-            self.slug = f"{parent_slug}-{self.slug}"
-        super(GroupABC, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return '{}'.format(self.name)
-
-
-class NoteABC(models.Model):
-    date = models.DateField(
-            blank=True,
-            null=True)
-    note = models.TextField(
-            max_length=3000,
-            blank=True)
-
-    class Meta:
-        abstract = True
-        ordering = ['-date']
-
-    def __str__(self):
-        return self.date.isoformat()
-
-
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
-
-
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
-
-
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
-
-
 class Profile(models.Model):
     user = models.OneToOneField(
             User,
@@ -309,7 +292,7 @@ class Profile(models.Model):
     birth_date = models.DateField(null=True, blank=True)
     cdn_dir = models.CharField(
             max_length=20,
-            default=str(uuid.uuid4())[:13],
+            blank=True,
             help_text="User root cdn dir.eg. "
             "https://cdn.sodavault.com/image_dir/Y/m/d/image.webp"
             )
@@ -321,5 +304,27 @@ class Profile(models.Model):
             ("change_token", "Can change token."),
         ]
 
+    def save(self, *args, **kwargs):
+        if not self.cdn_dir:
+            self.cdn_dir = str(uuid.uuid4())[:13]
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return self.user.username
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        Profile.objects.create(user=instance)
+
+
+@receiver(post_save, sender=User)
+def save_user_profile(sender, instance, **kwargs):
+    instance.profile.save()
+
+
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+    # if created:
+#         Token.objects.create(user=instance)
