@@ -64,23 +64,23 @@ class ReviewMovieNode(DjangoObjectType):
 class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
-        filter_fields = {
-                # 'categories__id': ['isnull'],
-                # 'categories__slug': ['exact'],
-                # 'tags__id': ['isnull'],
-                # 'tags__slug': ['exact'],
-                # 'websites__domain': ['exact'],
-                'is_primary': ['exact'],
-                'is_secondary': ['exact'],
-                'is_tertiary': ['exact'],
-                'is_featured': ['exact'],
-                # 'post_type': ['exact'],
-                'slug': ['exact'],
-                'status': ['exact'],
-                'title': ['icontains'],
-                'excerpt': ['icontains'],
-                'body': ['icontains'],
-                }
+        # filter_fields = {
+                # # 'categories__id': ['isnull'],
+                # # 'categories__slug': ['exact'],
+                # # 'tags__id': ['isnull'],
+                # # 'tags__slug': ['exact'],
+                # # 'websites__domain': ['exact'],
+                # # 'is_primary': ['exact'],
+                # # 'is_secondary': ['exact'],
+                # # 'is_tertiary': ['exact'],
+                # # 'is_featured': ['exact'],
+                # # 'post_type': ['exact'],
+                # # 'slug': ['exact'],
+                # # 'status': ['exact'],
+                # # 'title': ['icontains'],
+                # # 'excerpt': ['icontains'],
+                # # 'body': ['icontains'],
+        #         }
         interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
