@@ -11,9 +11,10 @@ class CampaignNode(DjangoObjectType):
 
     class Meta:
         model = advertisingapp.models.Campaign
-        # filter_fields = {
-            # 'name': ['iexact', 'icontains', 'istartswith'],
-        #     'date_expires': ['isnull']}
+        filter_fields = [
+            'name',
+            'date_expires',
+            ]
         interfaces = (relay.Node, )
 
 
