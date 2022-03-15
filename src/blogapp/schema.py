@@ -65,6 +65,7 @@ class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
         filter_fields = [
+                'websites__domain',
                 'categories',
                 'tags',
                 'is_primary',
