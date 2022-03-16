@@ -25,51 +25,6 @@ class UserProfileNode(DjangoObjectType):
         return self.avatar.url
 
 
-# class GroupNode(DjangoObjectType):
-    # class Meta:
-        # model = configapp.models.Group
-        # filter_fields = [
-                # # 'category_posts__websites__domain',
-                # # 'tag_posts__websites__domain',
-                # # 'group_type',
-                # 'id',
-                # 'is_primary',
-                # 'is_secondary',
-                # 'is_tertiary',
-                # 'name',
-                # 'order',
-                # 'slug',
-                # ]
-        # interfaces = (relay.Node, )
-
-
-# class GroupDistinctFilter(django_filters.FilterSet):
-
-    # class Meta:
-        # model = configapp.models.Group
-        # fields = [
-                # # 'category_posts__websites__domain',
-                # # 'tag_posts__websites__domain',
-                # # 'group_type',
-                # 'id',
-                # 'is_primary',
-                # 'is_secondary',
-                # 'is_tertiary',
-                # 'name',
-                # 'order',
-                # 'slug',
-                # ]
-
-    # @property
-    # def qs(self):
-        # return super(GroupDistinctFilter, self).qs.distinct('name')
-
-
-# class Query(graphene.ObjectType):
-    # group = relay.Node.Field(GroupNode)
-    # node = relay.Node.Field()
-    # all_groups = DjangoFilterConnectionField(GroupNode)
-
-    # all_groups_distinct = DjangoFilterConnectionField(
-            # GroupNode,
-#             filterset_class=GroupDistinctFilter)
+class Query(graphene.ObjectType):
+    user = relay.Node.Field(UserNode)
+    all_users = DjangoFilterConnectionField(UserNode)

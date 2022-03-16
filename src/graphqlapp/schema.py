@@ -1,15 +1,13 @@
 import advertisingapp.schema
 import blogapp.schema
-# import configapp.schema
-# import contactapp.schema
+import configapp.schema
 import graphene
 
 
 class Query(
         advertisingapp.schema.Query,
         blogapp.schema.Query,
-        # configapp.schema.Query,
-        # contactapp.schema.Query,
+        configapp.schema.Query,
         ):
     pass
 
