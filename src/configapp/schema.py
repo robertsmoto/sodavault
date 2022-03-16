@@ -67,9 +67,9 @@ class UserProfileNode(DjangoObjectType):
 
 # class Query(graphene.ObjectType):
     # group = relay.Node.Field(GroupNode)
-#     node = relay.Node.Field()
+    # node = relay.Node.Field()
     # all_groups = DjangoFilterConnectionField(GroupNode)
 
     # all_groups_distinct = DjangoFilterConnectionField(
             # GroupNode,
-    #         filterset_class=GroupDistinctFilter)
+#             filterset_class=GroupDistinctFilter)
