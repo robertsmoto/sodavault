@@ -61,6 +61,12 @@ class ReviewMovieNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
 
+class ImageNode(DjangoObjectType):
+    class Meta:
+        model = blogapp.models.Image
+        interfaces = (relay.Node, )
+
+
 class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post

@@ -492,7 +492,6 @@ class Post(models.Model):
         ('DOCU', 'Documentation'),
         ('PAGE', 'Page'),
     ]
-
     post_type = models.CharField(
             choices=POST_TYPE_CHOICES,
             max_length=4,
