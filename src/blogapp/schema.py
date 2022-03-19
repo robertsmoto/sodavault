@@ -70,6 +70,7 @@ class ImageNode(DjangoObjectType):
 class PostNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Post
+        interfaces = (relay.Node, )
         filter_fields = [
                 'websites__domain',
                 'categories',
@@ -81,8 +82,6 @@ class PostNode(DjangoObjectType):
                 'status',
                 'post_type'
                 ]
-
-        interfaces = (relay.Node, )
 
     def resolve_image_featured(self, info):
         return self.image_featured.url
@@ -161,7 +160,7 @@ class PostNode(DjangoObjectType):
 class Query(graphene.ObjectType):
     posts = relay.Node.Field(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
-    post_categories = relay.Node.Field(CategoryNode)
-    all_post_categories = DjangoFilterConnectionField(CategoryNode)
-    post_tags = relay.Node.Field(TagNode)
-    all_post_tags = DjangoFilterConnectionField(TagNode)
+    # post_categories = relay.Node.Field(CategoryNode)
+    # all_post_categories = DjangoFilterConnectionField(CategoryNode)
+    # post_tags = relay.Node.Field(TagNode)
+    # all_post_tags = DjangoFilterConnectionField(TagNode)
