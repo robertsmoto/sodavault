@@ -4,7 +4,7 @@ from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import configapp.models
 import graphene
-import django_filters
+# import django_filters
 
 
 class UserNode(DjangoObjectType):

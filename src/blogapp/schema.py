@@ -11,6 +11,9 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
         interfaces = (relay.Node, )
+        filter_fields = [
+                'name',
+                ]
 
 
 class TagNode(DjangoObjectType):
@@ -160,7 +163,7 @@ class PostNode(DjangoObjectType):
 class Query(graphene.ObjectType):
     posts = relay.Node.Field(PostNode)
     all_posts = DjangoFilterConnectionField(PostNode)
-    # post_categories = relay.Node.Field(CategoryNode)
-    # all_post_categories = DjangoFilterConnectionField(CategoryNode)
+    categories = relay.Node.Field(CategoryNode)
+    all_categories = DjangoFilterConnectionField(CategoryNode)
     # post_tags = relay.Node.Field(TagNode)
     # all_post_tags = DjangoFilterConnectionField(TagNode)
