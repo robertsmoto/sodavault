@@ -87,6 +87,7 @@ class PostNode(DjangoObjectType):
                 'is_secondary',
                 'is_tertiary',
                 'is_featured',
+                'slug',
                 'status',
                 'post_type'
                 ]
