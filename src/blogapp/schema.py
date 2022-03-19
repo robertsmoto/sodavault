@@ -14,6 +14,9 @@ class CategoryNode(DjangoObjectType):
         filter_fields = [
                 'id',
                 'name',
+                'is_primary',
+                'is_secondary',
+                'is_tertiary',
                 'post__post_type',
                 ]
 
