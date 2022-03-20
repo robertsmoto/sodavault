@@ -582,7 +582,7 @@ class ArticleManager(models.Manager):
 
     def get_queryset(self):
         return super(ArticleManager, self).get_queryset().filter(
-                post_type="ARTI")
+                post_type="ARTICLE")
 
 
 class Article(Post):
@@ -592,7 +592,7 @@ class Article(Post):
         proxy = True
 
     def save(self, **kwargs):
-        self.post_type = "ARTI"
+        self.post_type = "ARTICLE"
         return super().save(**kwargs)
 
     def get_absolute_url(self):
@@ -612,7 +612,7 @@ class DocManager(models.Manager):
 
     def get_queryset(self):
         return super(DocManager, self).get_queryset().filter(
-                post_type="DOCU")
+                post_type="DOCUMENTION")
 
 
 class Doc(Post):
@@ -622,7 +622,7 @@ class Doc(Post):
         proxy = True
 
     def save(self, **kwargs):
-        self.post_type = "DOCU"
+        self.post_type = "DOCUMENTION"
         return super().save(**kwargs)
 
 
