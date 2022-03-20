@@ -488,13 +488,13 @@ class Post(models.Model):
         ('TRASH', 'Trash'),
     ]
     POST_TYPE_CHOICES = [
-        ('ARTI', 'Article'),
-        ('DOCU', 'Documentation'),
+        ('ARTICLE', 'Article'),
+        ('DOCUMENTION', 'Documentation'),
         ('PAGE', 'Page'),
     ]
     post_type = models.CharField(
             choices=POST_TYPE_CHOICES,
-            max_length=4,
+            max_length=11,
             blank=True,)
     slug = models.SlugField(
             unique=True,
