@@ -1,10 +1,8 @@
 from ckeditor_uploader.fields import RichTextUploadingField
-# from configapp.utils import utils_images
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.urls import reverse
-# from sodavault.utils_logging import svlog_info
 import configapp.models
 import contactapp.models
 import datetime
@@ -645,6 +643,7 @@ class Page(Post):
 
 
 class Image(configapp.models.ImageABC):
+
     user = models.ForeignKey(
             settings.AUTH_USER_MODEL,
             related_name='blog_user_images',

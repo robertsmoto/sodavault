@@ -1,11 +1,10 @@
-from configapp.utils import utils_images
+from configapp.utils import images, logging
+from decouple import config
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-# from rest_framework.authtoken.models import Token
-from sodavault.utils_logging import svlog_info
 import uuid
 
 
@@ -80,31 +79,31 @@ class NoteABC(models.Model):
 class ImageABC(models.Model):
 
     lg_21 = models.ImageField(
-            upload_to=utils_images.new_filename,
-            storage=utils_images.OverwriteStorage(),
+            upload_to=images.new_filename,
+            storage=images.OverwriteStorage(),
             null=True,
             blank=True,
-            help_text="Recommended size: 2100px x 600px. "
+            help_text="Recommended size: 1200px x 600px. "
             "Recommended name: name-21.jpg")
     lg_11 = models.ImageField(
-            upload_to=utils_images.new_filename,
-            storage=utils_images.OverwriteStorage(),
+            upload_to=images.new_filename,
+            storage=images.OverwriteStorage(),
             null=True,
             blank=True,
             help_text="Recommended size: 500px x 500px "
             "Recommended name: name-11.jpg")
     custom = models.ImageField(
-            upload_to=utils_images.new_filename,
-            storage=utils_images.OverwriteStorage(),
+            upload_to=images.new_filename,
+            storage=images.OverwriteStorage(),
             null=True,
             blank=True,
             help_text="Image with custom size.")
     lg_191 = models.ImageField(
-            upload_to=utils_images.new_filename,
-            storage=utils_images.OverwriteStorage(),
+            upload_to=images.new_filename,
+            storage=images.OverwriteStorage(),
             null=True,
             blank=True,
-            help_text="1.9:1 ratio recommended size 2100px x 630px "
+            help_text="1.9:1 ratio recommended size 1200px x 630px "
             "Recommended name: name-191.jpg")
     title = models.CharField(
             max_length=200,
@@ -117,8 +116,10 @@ class ImageABC(models.Model):
     featured = models.BooleanField(default=False)
     order = models.IntegerField(default=0)
 
-    """The following are automatically generated using the
-    model's save method."""
+    """The following are automatically generated in the model save
+    method, however, the user instance (which is required to create the file
+    path) is created in the admin."""
+
     md_21 = models.CharField(
             max_length=200,
             blank=True,
@@ -143,6 +144,9 @@ class ImageABC(models.Model):
         super(ImageABC, self).__init__(*args, **kwargs)
         self._orig_lg_21 = self.lg_21
         self._orig_lg_11 = self.lg_11
+        self._orig_lg_191 = self.lg_191
+        self._orig_custom = self.custom
+
 
     def save(self, *args, **kwargs):
         """Creates new image sizes. Save new images directly to media server
@@ -150,52 +154,83 @@ class ImageABC(models.Model):
 
         index = {}
 
-        if (
-                self._orig_lg_21 != self.lg_21
-                and self.lg_21):
+        if self._orig_lg_21 != self.lg_21 and self.lg_21:
 
-            svlog_info("Creating blog featured image variations.")
+            logging.SVlog().info("Creating blog featured image variations.")
 
-            index['Md21'] = [
-                    utils_images.Md21WebP,
+            index['md_21'] = [
+                    images.Md21WebP,
                     self.lg_21,
                     (800, 400),
                     "subdir/not-currently-used"]
-            index['Sm21'] = [
-                    utils_images.Sm21WebP,
+
+            index['sm_21'] = [
+                    images.Sm21WebP,
                     self.lg_21,
                     (400, 200),
                     "subdir/not-currently-used"]
 
-        if (
-                self._orig_lg_11 != self.lg_11
-                and self.lg_11):
+        if self._orig_lg_11 != self.lg_11 and self.lg_11:
 
-            svlog_info("Creating blog thumbnail image variations.")
+            logging.SVlog().info("Creating blog thumbnail image variations.")
 
-            index['Md11'] = [
-                    utils_images.Md11WebP,
+            index['md_11'] = [
+                    images.Md11WebP,
                     self.lg_11,
                     (250, 250),
                     "subdir/not-currently-used"]
-            index['Sm11'] = [
-                    utils_images.Sm11WebP,
+
+            index['sm_11'] = [
+                    images.Sm11WebP,
                     self.lg_11,
                     (200, 200),
                     "subdir/not-currently-used"]
 
         for k, v in index.items():
 
-            file_path = utils_images.process_images(self=self, k=k, v=v)
+            file_path = images.process_images(self=self, k=k, v=v)
 
-            if k == "Md21":
+            if k == "md_21":
                 self.md_21 = file_path
-            if k == "Sm21":
+            if k == "sm_21":
                 self.sm_21 = file_path
-            if k == "Md11":
+            if k == "md_11":
                 self.md_11 = file_path
-            if k == "Sm11":
+            if k == "sm_11":
                 self.sm_11 = file_path
+
+        # removes auto-gen images
+        image_set = set()
+        if self._orig_lg_11 != self.lg_11 and self._orig_lg_11:
+            image_set = image_set | {self._orig_lg_11.path, self.md_11, self.sm_11}
+
+        if self._orig_lg_21 != self.lg_21 and self._orig_lg_21:
+            image_set = image_set | {self._orig_lg_21.path, self.md_21, self.sm_21}
+
+        if self._orig_lg_191 != self.lg_191 and self._orig_lg_191:
+            image_set = image_set | {self._orig_lg_191.path}
+
+        if self._orig_custom != self.custom and self._orig_custom:
+            image_set = image_set | {self._orig_custom.path}
+
+        self._orig_custom = self.custom
+
+        if image_set and config('ENV_USE_SPACES', cast=bool):
+            for image in image_set:
+                images.check_and_remove_s3(file_path=image)
+        if image_set and not config('ENV_USE_SPACES', cast=bool):
+            for image in image_set:
+                print("image", image)
+                images.check_and_remove_file(file_path=image)
+
+        # resets the field values in model
+        if self._orig_lg_11 != self.lg_11 and self._orig_lg_11:
+            self.md_11 = ''
+            self.sm_11 = ''
+
+        if self._orig_lg_21 != self.lg_21 and self._orig_lg_21:
+            self.md_21 = ''
+            self.sm_21 = ''
 
         super(ImageABC, self).save(*args, **kwargs)
 

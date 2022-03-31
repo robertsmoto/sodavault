@@ -4,7 +4,6 @@ from django.views.generic.list import ListView
 from django.db.models import Q
 from homeapp.mixins import Navigation  #, MetaData
 from docsapp.views import BrCrumb
-import pickle
 
 
 # class HomeView(Navigation, TemplateView):

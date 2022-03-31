@@ -1,8 +1,7 @@
 from ckeditor.fields import RichTextField
 from django.db import models
 from django.utils import timezone
-from sodavault.utils_logging import svlog_info
-from configapp.utils import utils_images
+from configapp.utils import images, logging
 
 
 class Campaign(models.Model):
@@ -61,32 +60,32 @@ class Banner(models.Model):
             blank=True,
             help_text="End url with '/'")
     ban_square = models.ImageField(
-            upload_to=utils_images.new_filename,
+            upload_to=images.new_filename,
             blank=True,
             null=True,
             help_text="recommended size: 500px x 500px")
     ban_leaderboard = models.ImageField(
-            upload_to=utils_images.new_filename,
+            upload_to=images.new_filename,
             blank=True,
             null=True,
             help_text="recommended size: 728px x 90px")
     ban_lg_leaderboard = models.ImageField(
-            upload_to=utils_images.new_filename,
+            upload_to=images.new_filename,
             blank=True,
             null=True,
             help_text="recommended size: 970px x 90px")
     ban_inline_rectangle = models.ImageField(
-            upload_to=utils_images.new_filename,
+            upload_to=images.new_filename,
             blank=True,
             null=True,
             help_text="recommended size: 300px x 250px")
     ban_lg_rectangle = models.ImageField(
-            upload_to=utils_images.new_filename,
+            upload_to=images.new_filename,
             blank=True,
             null=True,
             help_text="recommended size: 336px x 280px")
     ban_skyscraper = models.ImageField(
-            upload_to=utils_images.new_filename,
+            upload_to=images.new_filename,
             blank=True,
             null=True,
             help_text="recommended size: 160px x 600px")
@@ -124,20 +123,20 @@ class Banner(models.Model):
         img_index = {}
 
         if self._orig_ban_square != self.ban_square and self.ban_square:
-            svlog_info("Creating ban_square image variations.")
+            logging.SVlog().info("Creating ban_square image variations.")
 
             img_index['ban_lg_square'] = [
-                    utils_images.BannerLgSqWebp,
+                    images.BannerLgSqWebp,
                     self.ban_square,
                     (500, 500),
                     "advertisingapp/banner"]
             img_index['ban_md_square'] = [
-                    utils_images.BannerMdSqWebp,
+                    images.BannerMdSqWebp,
                     self.ban_square,
                     (250, 250),
                     "advertisingapp/banner"]
             img_index['ban_sm_square'] = [
-                    utils_images.BannerSmSqWebp,
+                    images.BannerSmSqWebp,
                     self.ban_square,
                     (200, 200),
                     "advertisingapp/banner"]
@@ -146,10 +145,10 @@ class Banner(models.Model):
                 self._orig_ban_leaderboard != self.ban_leaderboard
                 and self.ban_leaderboard):
 
-            svlog_info("Creating ban_leaderboard image variations.")
+            logging.SVlog().info("Creating ban_leaderboard image variations.")
 
             img_index['ban_leaderboard'] = [
-                    utils_images.BannerLeaderboardWebp,
+                    images.BannerLeaderboardWebp,
                     self.ban_leaderboard,
                     (728, 90),
                     "advertisingapp/banner"]
@@ -158,10 +157,11 @@ class Banner(models.Model):
                 self._orig_ban_lg_leaderboard != self.ban_lg_leaderboard
                 and self.ban_lg_leaderboard):
 
-            svlog_info("Creating ban_lg_leaderboard image variations.")
+            logging.SVlog().info(
+                    "Creating ban_lg_leaderboard image variations.")
 
             img_index['ban_lg_lederboard'] = [
-                    utils_images.BannerLgLeaderboardWebp,
+                    images.BannerLgLeaderboardWebp,
                     self.ban_lg_leaderboard,
                     (790, 90),
                     "advertisingapp/banner"]
@@ -170,10 +170,11 @@ class Banner(models.Model):
                 self._orig_ban_inline_rectangle != self.ban_inline_rectangle
                 and self.ban_inline_rectangle):
 
-            svlog_info("Creating ban_inline_rectangle image variations.")
+            logging.SVlog().info(
+                    "Creating ban_inline_rectangle image variations.")
 
             img_index['ban_inline_rectangle'] = [
-                    utils_images.BannerInlineRectangleWebp,
+                    images.BannerInlineRectangleWebp,
                     self.ban_inline_rectangle,
                     (300, 250),
                     "advertisingapp/banner"]
@@ -182,10 +183,10 @@ class Banner(models.Model):
                 self._orig_ban_lg_rectangle != self.ban_lg_rectangle
                 and self.ban_lg_rectangle):
 
-            svlog_info("Creating ban_lg_rectangle image variations.")
+            logging.SVlog().info("Creating ban_lg_rectangle image variations.")
 
             img_index['ban_lg_rectangle'] = [
-                    utils_images.BannerLgRectangleWebp,
+                    images.BannerLgRectangleWebp,
                     self.ban_lg_rectangle,
                     (336, 280),
                     "advertisingapp/banner"]
@@ -194,17 +195,17 @@ class Banner(models.Model):
                 self._orig_ban_skyscraper != self.ban_skyscraper
                 and self.ban_skyscraper):
 
-            svlog_info("Creating ban_skyscraper image variations.")
+            logging.SVlog().info("Creating ban_skyscraper image variations.")
 
             img_index['ban_skyscraper'] = [
-                    utils_images.BannerSkyScraperWebp,
+                    images.BannerSkyScraperWebp,
                     self.ban_skyscraper,
                     (160, 600),
                     "advertisingapp/banner"]
 
         for k, v in img_index.items():
 
-            file_path = utils_images.process_images(k=k, v=v)
+            file_path = images.process_images(k=k, v=v)
 
             if k == "ban_lg_square":
                 self.ban_lg_square = file_path

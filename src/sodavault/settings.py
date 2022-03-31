@@ -1,6 +1,5 @@
 from decouple import config, Csv
 from pathlib import Path
-import logging
 import os
 
 # ENVIRONMENT
@@ -15,10 +14,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # LOGGING
 LOGGING_CONFIG = None  # disables django standard logging
-logging.basicConfig(
-        format="%(asctime)s - %(message)s",
-        level=logging.INFO,
-        filename=config('ENV_LOG_FILE'))
 
 # Admins
 ADMINS = [
@@ -54,15 +49,12 @@ INSTALLED_APPS = [
     'blogapp',
     'configapp',
     'contactapp',
-    # 'coreapp',
     'docsapp',
     'graphqlapp',
     'homeapp',
     'itemsapp',
     'ledgerapp',
     'peopleapp',
-    'restapp',
-    'shippingapp',
     'transactionsapp',
 ]
 

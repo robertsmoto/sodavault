@@ -4,7 +4,7 @@ from django.utils import timezone
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
 from pathlib import Path
-from sodavault.utils_logging import svlog_info
+from . import logging
 import boto3
 import botocore
 import os
@@ -21,19 +21,18 @@ def check_and_remove_s3(file_path: str) -> None:
                 'ENV_AWS_SECRET_ACCESS_KEY'))
 
     try:
-        s3resource.Object(
-                config('ENV_AWS_STORAGE_BUCKET_NAME'),
-                file_path).load()
+        s3resource.Object(config(
+            'ENV_AWS_STORAGE_BUCKET_NAME'), file_path).load()
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
             # The object does not exist.
-            svlog_info("The s3 object does not exist.")
+            logging.SVlog().warn(f"The s3 object does not exist: {e}")
         else:
             # Something else has gone wrong.
-            svlog_info(f"Something went wrong with s3: {e}")
+            logging.SVlog().error(f"Something went wrong with s3: {e}")
     else:
         # The object does exist.
-        svlog_info(
+        logging.SVlog().info(
                 "s3 object exists, deleted it before "
                 "uploading.")
         s3resource.Object(
@@ -52,68 +51,52 @@ def check_and_remove_file(file_path: str) -> None:
     if path.is_file():
         os.remove(file_path)
     else:
-        svlog_info(
-                "The file does not exist.",
-                field=file_path)
+        logging.SVlog().error(f"The file does not exist: {file_path}")
     return
 
 
 class OverwriteStorage(FileSystemStorage):
 
+    print("in overwite storage")
+
     def get_available_name(self, name, max_length=None):
-        """Returns a filename that's free on the target storage system, and
-        available for new content to be written to.
 
-        Found at http://djangosnippets.org/snippets/976/
-
-        This file storage solves overwrite on upload problem. Another
-        proposed solution was to override the save method on the model
-        like so (from https://code.djangoproject.com/ticket/11663):
-
-        def save(self, *args, **kwargs):
-            try:
-                this = MyModelName.objects.get(id=self.id)
-                if this.MyImageFieldName != self.MyImageFieldName:
-                    this.MyImageFieldName.delete()
-            except: pass
-            super(MyModelName, self).save(*args, **kwargs)
-        """
-
-        print("***name", name)
-        # If the filename already exists, remove it as if it was a true file system
         if config('ENV_USE_SPACES', cast=bool):
             check_and_remove_s3(file_path=name)
         else:
             check_and_remove_file(file_path=name)
 
-        return super(OverwriteStorage, self).get_available_name(name, max_length)
+        return super().get_available_name(name, max_length)
 
 
 def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
     """Creates the base dir and filename variations for user uploads."""
     # create the directory
     now = timezone.now()
-    print("instance", instance)
-    print("instance", instance.user)
     user_dir = instance.user.profile.cdn_dir
     date_dir = now.strftime('%Y/%m/%d/')
     user_date = os.path.join(user_dir, date_dir)
 
+    print("### instance", instance)
     # build the filename
+
+    print("01")
     base_fn = os.path.basename(filename)
     fn = os.path.splitext(base_fn)[0]
     fn = "".join(x for x in fn if x.isalnum())
 
+    print("02")
     size = kwargs.get('size', '')
     if size:
         fn = f"{fn}-{size[0]}x{size[1]}.webp"
     else:
         fn = f"{fn}.webp"
 
+    print(f"endof new_filename {user_date}, {fn}")
     return os.path.join(user_date, fn)
 
 
-def write_image_to_local(image_read: object, dirs: dict) -> None:
+def write_image_to_temp(image_read: object, dirs: dict) -> None:
     """Need dirs['mroot_user_date'] and dirs['mroot_user_date_filename'] """
 
     # create the dir if it doesn't exist
@@ -131,6 +114,27 @@ def write_image_to_local(image_read: object, dirs: dict) -> None:
 
     return
 
+
+def write_image_to_local(image_read: object, dirs: dict) -> None:
+    """This writes to local filesystem for development server."""
+
+    # create the dir if it doesn't exist
+    # write only creates the file, not the dir
+    mroot = dirs.get('mroot', '')
+    user_date = dirs.get('user_date', '')
+    user_date_fn = dirs.get('user_date_fn', '')
+
+    local_dir = os.path.join(mroot, user_date)
+    if not os.path.exists(local_dir):
+        os.makedirs(local_dir)
+
+    local_file_path = os.path.join(mroot, user_date_fn)
+    check_and_remove_file(file_path=local_file_path)
+
+    dest = open(local_file_path, 'wb')
+    dest.write(image_read)
+
+    return
 
 # class Lg21WebP(ImageSpec):
     # processors = [ResizeToFill(1600, 800)]
@@ -222,9 +226,7 @@ def process_images(self, k: str, v) -> None:
     dirs['fn'] = ''.join(x for x in dirs['fn'] if x.isalnum())
 
     # Generate new image
-    print('before')
     new_image = processor(source=source).generate()
-    print('after new image', new_image)
     # use django api to read processed image
     image_read = new_image.read()
 
@@ -246,7 +248,7 @@ def process_images(self, k: str, v) -> None:
         # s3_upload_path = os.path.join('media', dirs['full_path'])
 
         # need to save image to temp dir before uploading to s3
-        write_image_to_local(
+        write_image_to_temp(
                 image_read=image_read,
                 dirs=dirs)
 
@@ -264,10 +266,7 @@ def process_images(self, k: str, v) -> None:
         # should check if s3 file exists and if so delete it
         # before uploading image with same name
 
-#################
-
         check_and_remove_s3(file_path=dirs['mroot_user_date_fn'])
-################
 
         try:
             with open(dirs['local_filepath'], 'rb') as file_contents:
@@ -280,22 +279,21 @@ def process_images(self, k: str, v) -> None:
                     CacheControl='max-age=86400',
                     ACL='public-read')
         except Exception as e:
-            svlog_info("S3 open exception", field=e)
+            logging.SVlog().error(f"S3 open exception: {e}")
 
         # then delete the local file (local_filepath)
         check_and_remove_file(dirs=dirs)
 
     else:
-        print("im here")
+        print("### before write to local")
         # first check if file exists and remove it
         # for the development server, write file directly
         # to final location
         # print("image_read", image_read)
-        write_image_to_local(
-                image_read=image_read,
-                dirs=dirs)
+        write_image_to_local(image_read=image_read, dirs=dirs)
 
     # assign the file path to the correct field
-    svlog_info(f"Assign file_path {k}.", field=dirs['temp_filepath'])
+    logging.SVlog().info(
+            f"Assign file_path {k} {dirs.get('user_date_fn', '')}")
 
-    return dirs['temp_filepath']
+    return dirs.get('user_date_fn', '')

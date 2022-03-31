@@ -135,6 +135,16 @@ class ArticleAdmin(admin.ModelAdmin):
 
     prepopulated_fields = {"slug": ("title",)}
 
+    def save_formset(self, request, form, formset, change):
+        """This method ensures that there is a user saved in the Image
+        model before the image file paths are updated."""
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if isinstance(instance, blogapp.models.Image):
+                instance.user = request.user
+                instance.save()
+        formset.save()
+
 
 @admin.register(blogapp.models.Doc)
 class DocAdmin(ArticleAdmin):
