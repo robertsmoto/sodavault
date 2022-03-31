@@ -1,65 +1,65 @@
 from django.test import TestCase
 # from headlines.models import HeadlinePost
-import redis
+# import redis
 
-from decouple import config
+# from decouple import config
 
-# Create your tests here.
-print("hello world")
+# # Create your tests here.
+# print("hello world")
 
-"""
-REDIS_ACCK=A1al1gwtr7wr9ilq04fyejygk6tenezf2wc0isdfmirpipohaj6
-REDIS_USRK=S69k77gxn0lfl3z2rwlwuf6ay7lm5jdjaeljmpwb2jah82s1ik7
-REDIS_APIN=sodavault_access_key
-"""
+# """
+# REDIS_ACCK=A1al1gwtr7wr9ilq04fyejygk6tenezf2wc0isdfmirpipohaj6
+# REDIS_USRK=S69k77gxn0lfl3z2rwlwuf6ay7lm5jdjaeljmpwb2jah82s1ik7
+# REDIS_APIN=sodavault_access_key
+# """
 
-def main():
+# def main():
 
-    r = redis.Redis(
-            host=config('REDIS_ENDP'),
-            port=config('REDIS_PORT'),
-            password=config('REDIS_PASS'),
-            )
+    # r = redis.Redis(
+            # host=config('REDIS_ENDP'),
+            # port=config('REDIS_PORT'),
+            # password=config('REDIS_PASS'),
+            # )
 
-    print(f"Connected to db: {r}")
+    # print(f"Connected to db: {r}")
 
-    graph = r.graph(index_name='items')
-    print(f"Graph instance: {graph}")
-    # from r.graph import Node, Edge, Graph, Path
+    # graph = r.graph(index_name='items')
+    # print(f"Graph instance: {graph}")
+    # # from r.graph import Node, Edge, Graph, Path
 
-    from redis.commands.graph import node
+    # from redis.commands.graph import node
 
-    product = node.Node(
-            node_id='SKU004',
-            alias='SKU004',
-            label='product',
-            properties={
-                'sku': 'SKU0004',
-                'nam': 'A good product',
-                'des': 'This is a description',
-                'rpr': 1244,
-                'spr': 933,
-                }
-            )
+    # product = node.Node(
+            # node_id='SKU004',
+            # alias='SKU004',
+            # label='product',
+            # properties={
+                # 'sku': 'SKU0004',
+                # 'nam': 'A good product',
+                # 'des': 'This is a description',
+                # 'rpr': 1244,
+                # 'spr': 933,
+                # }
+            # )
 
-    print("product", product, type(product))
+    # print("product", product, type(product))
 
-    graph.add_node(product)
-    graph.commit()
+    # graph.add_node(product)
+    # graph.commit()
 
-    query = """
-        MATCH (p:product)
-        RETURN p.sku, p.nam, p.des, p.rpr"""
+    # query = """
+        # MATCH (p:product)
+        # RETURN p.sku, p.nam, p.des, p.rpr"""
 
-    result = graph.query(query, timeout=10)
+    # result = graph.query(query, timeout=10)
 
 
-    print("\n####")
-    for result in result.result_set:
-        print(f"result: {result}")
-        print(result[0])
-        print(result[1])
-        print(result[2])
+    # print("\n####")
+    # for result in result.result_set:
+        # print(f"result: {result}")
+        # print(result[0])
+        # print(result[1])
+        # print(result[2])
 
 
 #     product = graph.Node(
