@@ -24,13 +24,20 @@
 
         <div class="dropdown-menu">
 
-          {% for page in navigation.pages %}
-          <a 
+        {% for page in navigation.pages %}
+            <a 
             class="dropdown-item" 
             href="{% url 'blogapp-detail' post_type=page.post_type slug=page.slug %}"
-          >{{page.title}}
-          </a>
-          {% endfor %}
+            >{{page.title}}
+            </a>
+        {% empty %}
+            <a 
+            class="dropdown-item" 
+            href="#"
+            >## add a page ##
+            </a>
+        {% endfor %}
+
 
         <hr class="dropdown-divider">
         <a class="dropdown-item" href="{% url 'blogapp-docs-list' post_type='DOCS' %}">Docs</a>
