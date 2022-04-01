@@ -13,7 +13,24 @@ ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # LOGGING
-# LOGGING_CONFIG = None  # disables django standard logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'level': config('LOG_LEVEL'),
+            'class': 'logging.FileHandler',
+            'filename': config('LOG_FILE'),
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+}
 
 # Admins
 ADMINS = [

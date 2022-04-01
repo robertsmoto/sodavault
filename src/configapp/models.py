@@ -1,4 +1,4 @@
-from configapp.utils import images, logging
+from configapp.utils import images
 from decouple import config
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -156,7 +156,7 @@ class ImageABC(models.Model):
 
         if self._orig_lg_21 != self.lg_21 and self.lg_21:
 
-            logging.SVlog().info("Creating blog featured image variations.")
+            print("Creating blog featured image variations.")
 
             index['md_21'] = [
                     images.Md21WebP,
@@ -172,7 +172,7 @@ class ImageABC(models.Model):
 
         if self._orig_lg_11 != self.lg_11 and self.lg_11:
 
-            logging.SVlog().info("Creating blog thumbnail image variations.")
+            print("Creating blog thumbnail image variations.")
 
             index['md_11'] = [
                     images.Md11WebP,

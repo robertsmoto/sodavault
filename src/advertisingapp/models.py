@@ -1,7 +1,7 @@
 from ckeditor.fields import RichTextField
 from django.db import models
 from django.utils import timezone
-from configapp.utils import images, logging
+from configapp.utils import images
 
 
 class Campaign(models.Model):
@@ -123,7 +123,7 @@ class Banner(models.Model):
         img_index = {}
 
         if self._orig_ban_square != self.ban_square and self.ban_square:
-            logging.SVlog().info("Creating ban_square image variations.")
+            print("Creating ban_square image variations.")
 
             img_index['ban_lg_square'] = [
                     images.BannerLgSqWebp,
@@ -145,7 +145,7 @@ class Banner(models.Model):
                 self._orig_ban_leaderboard != self.ban_leaderboard
                 and self.ban_leaderboard):
 
-            logging.SVlog().info("Creating ban_leaderboard image variations.")
+            print("Creating ban_leaderboard image variations.")
 
             img_index['ban_leaderboard'] = [
                     images.BannerLeaderboardWebp,
@@ -157,8 +157,7 @@ class Banner(models.Model):
                 self._orig_ban_lg_leaderboard != self.ban_lg_leaderboard
                 and self.ban_lg_leaderboard):
 
-            logging.SVlog().info(
-                    "Creating ban_lg_leaderboard image variations.")
+            print("Creating ban_lg_leaderboard image variations.")
 
             img_index['ban_lg_lederboard'] = [
                     images.BannerLgLeaderboardWebp,
@@ -170,8 +169,7 @@ class Banner(models.Model):
                 self._orig_ban_inline_rectangle != self.ban_inline_rectangle
                 and self.ban_inline_rectangle):
 
-            logging.SVlog().info(
-                    "Creating ban_inline_rectangle image variations.")
+            print("Creating ban_inline_rectangle image variations.")
 
             img_index['ban_inline_rectangle'] = [
                     images.BannerInlineRectangleWebp,
@@ -183,7 +181,7 @@ class Banner(models.Model):
                 self._orig_ban_lg_rectangle != self.ban_lg_rectangle
                 and self.ban_lg_rectangle):
 
-            logging.SVlog().info("Creating ban_lg_rectangle image variations.")
+            print("Creating ban_lg_rectangle image variations.")
 
             img_index['ban_lg_rectangle'] = [
                     images.BannerLgRectangleWebp,
@@ -195,7 +193,7 @@ class Banner(models.Model):
                 self._orig_ban_skyscraper != self.ban_skyscraper
                 and self.ban_skyscraper):
 
-            logging.SVlog().info("Creating ban_skyscraper image variations.")
+            print("Creating ban_skyscraper image variations.")
 
             img_index['ban_skyscraper'] = [
                     images.BannerSkyScraperWebp,
