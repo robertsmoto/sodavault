@@ -99,6 +99,8 @@ def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
 def write_image_to_temp(image_read: object, dirs: dict) -> None:
     """Need dirs['mroot_user_date'] and dirs['mroot_user_date_filename'] """
 
+    print("###in write_image_to_temp")
+    print("###dirs", dirs)
     # create the dir if it doesn't exist
     # write only creates the file, not the dir
     temp_dir = dirs.get('temp_dir', '')
@@ -241,16 +243,12 @@ def process_images(self, k: str, v) -> None:
     dirs['temp_dir'] = config('ENV_TEMP_DIR')
     dirs['temp_filepath'] = os.path.join(dirs['temp_dir'], dirs['fn'])
 
-    print("dirs", dirs)
-
     # upload image
     if config('ENV_USE_SPACES', cast=bool):
-        # s3_upload_path = os.path.join('media', dirs['full_path'])
+        print("###in spaces")
 
         # need to save image to temp dir before uploading to s3
-        write_image_to_temp(
-                image_read=image_read,
-                dirs=dirs)
+        write_image_to_temp(image_read=image_read, dirs=dirs)
 
         # now upload the local file to CDN
         session = boto3.session.Session()
@@ -282,7 +280,8 @@ def process_images(self, k: str, v) -> None:
             logging.SVlog().error(f"S3 open exception: {e}")
 
         # then delete the local file (local_filepath)
-        check_and_remove_file(dirs=dirs)
+        temp_filepath = dirs.get('temp_filepath', '')
+        check_and_remove_file(file_path=temp_filepath)
 
     else:
         print("### before write to local")
