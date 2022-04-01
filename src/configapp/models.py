@@ -215,10 +215,12 @@ class ImageABC(models.Model):
 
         self._orig_custom = self.custom
 
-        if image_set and config('ENV_USE_SPACES', cast=bool):
+        if config('ENV_USE_SPACES', cast=bool):
             for image in image_set:
+                print("image", image)
                 images.check_and_remove_s3(file_path=image)
-        if image_set and not config('ENV_USE_SPACES', cast=bool):
+
+        if not config('ENV_USE_SPACES', cast=bool):
             for image in image_set:
                 print("image", image)
                 images.check_and_remove_file(file_path=image)

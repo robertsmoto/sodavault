@@ -11,6 +11,9 @@ import os
 
 def check_and_remove_s3(file_path: str) -> None:
 
+    if not file_path:
+        return
+
     s3resource = boto3.resource(
             's3',
             region_name=config('ENV_AWS_S3_REGION_NAME'),
@@ -173,8 +176,8 @@ def create_dirs(self, processor=None, source=None, size=None) -> dict:
     # modifies dirs['fn'] and creates dirs['user_date_fn']
     dirs['user_date_fn'] = new_filename(
             instance=self, filename=dirs['fn'], size=size)
-
     dirs['user_date'], dirs['fn'] = os.path.split(dirs['user_date_fn'])
+
     dirs['mroot'] = config('ENV_MEDIA_ROOT')
     dirs['mroot_user_date'] = os.path.join(dirs['mroot'], dirs['user_date'])
     dirs['mroot_user_date_fn'] = os.path.join(dirs['mroot'], dirs['user_date_fn'])
