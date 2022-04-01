@@ -68,15 +68,12 @@ def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
     date_dir = now.strftime('%Y/%m/%d/')
     user_date = os.path.join(user_dir, date_dir)
 
-    print("### instance", instance)
     # build the filename
 
-    print("01")
     base_fn = os.path.basename(filename)
     fn = os.path.splitext(base_fn)[0]
     fn = "".join(x for x in fn if x.isalnum())
 
-    print("02")
     size = kwargs.get('size', '')
     if size:
         fn = f"{fn}-{size[0]}x{size[1]}.webp"
@@ -87,53 +84,12 @@ def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
     return os.path.join(user_date, fn)
 
 
-def write_image_to_temp(image_read: object, dirs: dict) -> None:
-    """Need dirs['mroot_user_date'] and dirs['mroot_user_date_filename'] """
-
-    # create the dir if it doesn't exist
+def write_image_to_path(image_read: object, file_path: dict) -> None:
+    """Writes file to given file_path."""
     # write only creates the file, not the dir
-    temp_dir = dirs.get('temp_dir', '')
-    temp_filepath = dirs.get('temp_filepath', '')
-
-    if not os.path.exists(temp_dir):
-        os.makedirs(temp_dir)
-
-    check_and_remove_file(file_path=temp_filepath)
-
-    dest = open(temp_filepath, 'wb')
+    dest = open(file_path, 'wb')
     dest.write(image_read)
-
-    print("Writing image to temp", temp_filepath)
-    print("Dirs", dirs)
-
     return
-
-
-def write_image_to_local(image_read: object, dirs: dict) -> None:
-    """This writes to local filesystem for development server."""
-
-    # create the dir if it doesn't exist
-    # write only creates the file, not the dir
-    mroot = dirs.get('mroot', '')
-    user_date = dirs.get('user_date', '')
-    user_date_fn = dirs.get('user_date_fn', '')
-
-    local_dir = os.path.join(mroot, user_date)
-    if not os.path.exists(local_dir):
-        os.makedirs(local_dir)
-
-    local_file_path = os.path.join(mroot, user_date_fn)
-    check_and_remove_file(file_path=local_file_path)
-
-    dest = open(local_file_path, 'wb')
-    dest.write(image_read)
-
-    return
-
-# class Lg21WebP(ImageSpec):
-    # processors = [ResizeToFill(1600, 800)]
-    # format = 'WEBP'
-    # options = {'quality': 80}
 
 
 class Md21WebP(ImageSpec):
@@ -208,24 +164,11 @@ class BannerSkyScraperWebp(ImageSpec):
     options = {'quality': 80}
 
 
-def process_images(self, k: str, v) -> None:
-
-    print("##In process images", k)
-
-    processor = v[0]
-    source = v[1]
-    size = v[2]
-    # subdir = v[3]
-
+def create_dirs(self, processor=None, source=None, size=None) -> dict:
     dirs = {}
     dirs['fn_base'] = os.path.basename(source.url)
     dirs['fn'] = os.path.splitext(dirs['fn_base'])[0]
     dirs['fn'] = ''.join(x for x in dirs['fn'] if x.isalnum())
-
-    # Generate new image
-    new_image = processor(source=source).generate()
-    # use django api to read processed image
-    image_read = new_image.read()
 
     # modifies dirs['fn'] and creates dirs['user_date_fn']
     dirs['user_date_fn'] = new_filename(
@@ -238,12 +181,42 @@ def process_images(self, k: str, v) -> None:
     dirs['temp_dir'] = config('ENV_TEMP_DIR')
     dirs['temp_filepath'] = os.path.join(dirs['temp_dir'], dirs['fn'])
 
+    return dirs
+
+
+def process_images(self, k: str, v) -> None:
+
+    processor = v[0]
+    source = v[1]
+    size = v[2]
+    # subdir=v[3] not currently used
+
+    dirs = create_dirs(
+            self=self,
+            processor=processor,
+            source=source,
+            size=size
+            )
+
+    # Generate new image
+    new_image = processor(source=source).generate()
+    # use django api to read processed image
+    image_read = new_image.read()
+
     # upload image
+    assigned_path = ""
     if config('ENV_USE_SPACES', cast=bool):
-        print("###in spaces")
 
         # need to save image to temp dir before uploading to s3
-        write_image_to_temp(image_read=image_read, dirs=dirs)
+        # create the dir if it doesn't exist
+        temp_dir = dirs.get('temp_dir', '')
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+
+        temp_filepath = dirs.get('temp_filepath', '')
+        check_and_remove_file(file_path=temp_filepath)
+
+        write_image_to_path(image_read=image_read, file_path=temp_filepath)
 
         # now upload the local file to CDN
         session = boto3.session.Session()
@@ -258,14 +231,14 @@ def process_images(self, k: str, v) -> None:
 
         # should check if s3 file exists and if so delete it
         # before uploading image with same name
-
-        check_and_remove_s3(file_path=dirs['mroot_user_date_fn'])
+        mroot_user_date_fn = dirs.get('mroot_user_date_fn', '')
+        check_and_remove_s3(file_path=mroot_user_date_fn)
 
         try:
             with open(dirs['local_filepath'], 'rb') as file_contents:
                 s3client.put_object(
                     Bucket=config('ENV_AWS_STORAGE_BUCKET_NAME'),
-                    Key=dirs['mroot_user_date_fn'],
+                    Key=mroot_user_date_fn,
                     Body=file_contents,
                     ContentEncoding='webp',
                     ContentType='image/webp',
@@ -275,18 +248,25 @@ def process_images(self, k: str, v) -> None:
             print(f"S3 open exception: {e}")
 
         # then delete the local file (local_filepath)
-        temp_filepath = dirs.get('temp_filepath', '')
         check_and_remove_file(file_path=temp_filepath)
+        assigned_path = mroot_user_date_fn
 
     else:
-        print("### before write to local")
-        # first check if file exists and remove it
-        # for the development server, write file directly
-        # to final location
-        # print("image_read", image_read)
-        write_image_to_local(image_read=image_read, dirs=dirs)
+        # for the development server, write file directly to final location
 
-    # assign the file path to the correct field
-    print(f"Assign file_path {k} {dirs.get('user_date_fn', '')}")
+        mroot = dirs.get('mroot', '')
+        user_date = dirs.get('user_date', '')
+        user_date_fn = dirs.get('user_date_fn', '')
 
-    return dirs.get('user_date_fn', '')
+        # create the dir if it doesn't exist
+        local_dir = os.path.join(mroot, user_date)
+        if not os.path.exists(local_dir):
+            os.makedirs(local_dir)
+
+        local_file_path = os.path.join(mroot, user_date_fn)
+        check_and_remove_file(file_path=local_file_path)
+
+        write_image_to_path(image_read=image_read, file_path=local_file_path)
+        assigned_path = user_date_fn
+
+    return assigned_path
