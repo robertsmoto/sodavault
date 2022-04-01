@@ -4,7 +4,6 @@ from django.utils import timezone
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
 # from pathlib import Path
-from . import logging
 import boto3
 import botocore
 import os
@@ -26,15 +25,13 @@ def check_and_remove_s3(file_path: str) -> None:
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
             # The object does not exist.
-            logging.SVlog().warn(f"The s3 object does not exist: {e}")
+            print(f"The s3 object does not exist: {e}")
         else:
             # Something else has gone wrong.
-            logging.SVlog().error(f"Something went wrong with s3: {e}")
+            print(f"Something went wrong with s3: {e}")
     else:
         # The object does exist.
-        logging.SVlog().info(
-                "s3 object exists, deleted it before "
-                "uploading.")
+        print("s3 object exists, deleted it before uploading.")
         s3resource.Object(
                 config('ENV_AWS_STORAGE_BUCKET_NAME'),
                 file_path).delete()
@@ -44,16 +41,14 @@ def check_and_remove_s3(file_path: str) -> None:
 
 def check_and_remove_file(file_path: str) -> None:
     """Checks if file exists and removes it."""
-    if file_path.is_file():
+    if os.path.isfile(file_path):
         os.remove(file_path)
     else:
-        logging.SVlog().error(f"The file does not exist: {file_path}")
+        print(f"The file does not exist: {file_path}")
     return
 
 
 class OverwriteStorage(FileSystemStorage):
-
-    print("in overwite storage")
 
     def get_available_name(self, name, max_length=None):
 
@@ -108,8 +103,8 @@ def write_image_to_temp(image_read: object, dirs: dict) -> None:
     dest = open(temp_filepath, 'wb')
     dest.write(image_read)
 
-    logging.SVlog().debug("Writing image to temp", field=temp_filepath)
-    logging.SVlog().debug("Dirs", field=dirs)
+    print("Writing image to temp", temp_filepath)
+    print("Dirs", dirs)
 
     return
 
@@ -214,6 +209,9 @@ class BannerSkyScraperWebp(ImageSpec):
 
 
 def process_images(self, k: str, v) -> None:
+
+    print("##In process images", k)
+
     processor = v[0]
     source = v[1]
     size = v[2]
@@ -274,7 +272,7 @@ def process_images(self, k: str, v) -> None:
                     CacheControl='max-age=86400',
                     ACL='public-read')
         except Exception as e:
-            logging.SVlog().error(f"S3 open exception: {e}")
+            print(f"S3 open exception: {e}")
 
         # then delete the local file (local_filepath)
         temp_filepath = dirs.get('temp_filepath', '')
@@ -289,7 +287,6 @@ def process_images(self, k: str, v) -> None:
         write_image_to_local(image_read=image_read, dirs=dirs)
 
     # assign the file path to the correct field
-    logging.SVlog().info(
-            f"Assign file_path {k} {dirs.get('user_date_fn', '')}")
+    print(f"Assign file_path {k} {dirs.get('user_date_fn', '')}")
 
     return dirs.get('user_date_fn', '')
