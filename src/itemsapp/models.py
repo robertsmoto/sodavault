@@ -385,16 +385,16 @@ class Bid(models.Model):
             return "{} {}".format(self.supplier, self.item)
 
 
-class Digital(models.Model):
-    item = models.OneToOneField(
-            Item,
-            null=True,
-            on_delete=models.CASCADE)
-    new_int_field = models.BigIntegerField(null=True, blank=True)
-    new_char_tield = models.CharField(max_length=100, blank=True)
+# class Digital(models.Model):
+    # item = models.OneToOneField(
+            # Item,
+            # null=True,
+            # on_delete=models.CASCADE)
+    # new_int_field = models.BigIntegerField(null=True, blank=True)
+    # new_char_tield = models.CharField(max_length=100, blank=True)
 
-    def __str__(self):
-        return '{}'.format(self.item.name)
+    # def __str__(self):
+#         return '{}'.format(self.item.name)
 
 
 class Identifier(models.Model):

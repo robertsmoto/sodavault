@@ -222,18 +222,18 @@ class ImageInline(admin.StackedInline):
     extra = 0
 
 
-class DigitalInline(admin.StackedInline):
-    model = itemsapp.models.Digital
-    verbose_name = "Digital Option"
-    verbose_name_plural = "Digital Options"
-    classes = ['collapse']
+# class DigitalInline(admin.StackedInline):
+    # model = itemsapp.models.Digital
+    # verbose_name = "Digital Option"
+    # verbose_name_plural = "Digital Options"
+    # classes = ['collapse']
 
-    def get_exclude(self, request, obj):
-        if obj.__class__.__name__ == "Part":
-            return ['product']
-        if obj.__class__.__name__ == "Product":
-            return ['part']
-        return
+    # def get_exclude(self, request, obj):
+        # if obj.__class__.__name__ == "Part":
+            # return ['product']
+        # if obj.__class__.__name__ == "Product":
+            # return ['part']
+#         return
 
 
 class AssemblyInline(admin.TabularInline):
