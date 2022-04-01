@@ -73,6 +73,10 @@ class ImageNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Image
         interfaces = (relay.Node, )
+        filter_fields = [
+                'featured',
+                'order',
+                ]
 
 
 class PostNode(DjangoObjectType):
