@@ -3,7 +3,7 @@ from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
-from pathlib import Path
+# from pathlib import Path
 from . import logging
 import boto3
 import botocore
@@ -44,11 +44,7 @@ def check_and_remove_s3(file_path: str) -> None:
 
 def check_and_remove_file(file_path: str) -> None:
     """Checks if file exists and removes it."""
-
-    if not file_path.startswith(config('ENV_MEDIA_ROOT')):
-        file_path = os.path.join(config('ENV_MEDIA_ROOT'), file_path)
-    path = Path(file_path)
-    if path.is_file():
+    if file_path.is_file():
         os.remove(file_path)
     else:
         logging.SVlog().error(f"The file does not exist: {file_path}")
@@ -99,8 +95,6 @@ def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
 def write_image_to_temp(image_read: object, dirs: dict) -> None:
     """Need dirs['mroot_user_date'] and dirs['mroot_user_date_filename'] """
 
-    print("###in write_image_to_temp")
-    print("###dirs", dirs)
     # create the dir if it doesn't exist
     # write only creates the file, not the dir
     temp_dir = dirs.get('temp_dir', '')
@@ -113,6 +107,9 @@ def write_image_to_temp(image_read: object, dirs: dict) -> None:
 
     dest = open(temp_filepath, 'wb')
     dest.write(image_read)
+
+    logging.SVlog().debug("Writing image to temp", field=temp_filepath)
+    logging.SVlog().debug("Dirs", field=dirs)
 
     return
 
