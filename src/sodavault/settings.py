@@ -13,7 +13,7 @@ ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # LOGGING
-LOGGING_CONFIG = None  # disables django standard logging
+# LOGGING_CONFIG = None  # disables django standard logging
 
 # Admins
 ADMINS = [
