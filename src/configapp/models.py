@@ -1,3 +1,4 @@
+from sodavault.custom_storage import MediaStorage
 from configapp.utils import images
 from decouple import config
 from django.conf import settings
@@ -79,28 +80,28 @@ class NoteABC(models.Model):
 class ImageABC(models.Model):
 
     lg_21 = models.ImageField(
-            upload_to=images.new_filename,
-            storage=images.OverwriteStorage(),
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             null=True,
             blank=True,
             help_text="Recommended size: 1200px x 600px. "
             "Recommended name: name-21.jpg")
     lg_11 = models.ImageField(
-            upload_to=images.new_filename,
-            storage=images.OverwriteStorage(),
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             null=True,
             blank=True,
             help_text="Recommended size: 500px x 500px "
             "Recommended name: name-11.jpg")
     custom = models.ImageField(
-            upload_to=images.new_filename,
-            storage=images.OverwriteStorage(),
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             null=True,
             blank=True,
             help_text="Image with custom size.")
     lg_191 = models.ImageField(
-            upload_to=images.new_filename,
-            storage=images.OverwriteStorage(),
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             null=True,
             blank=True,
             help_text="1.9:1 ratio recommended size 1200px x 630px "
@@ -146,7 +147,6 @@ class ImageABC(models.Model):
         self._orig_lg_11 = self.lg_11
         self._orig_lg_191 = self.lg_191
         self._orig_custom = self.custom
-
 
     def save(self, *args, **kwargs):
         """Creates new image sizes. Save new images directly to media server
@@ -202,28 +202,20 @@ class ImageABC(models.Model):
         # removes auto-gen images
         image_set = set()
         if self._orig_lg_11 != self.lg_11 and self._orig_lg_11:
-            image_set = image_set | {self._orig_lg_11.path, self.md_11, self.sm_11}
+            image_set = image_set | {self._orig_lg_11.url, self.md_11, self.sm_11}
 
         if self._orig_lg_21 != self.lg_21 and self._orig_lg_21:
-            image_set = image_set | {self._orig_lg_21.path, self.md_21, self.sm_21}
+            image_set = image_set | {self._orig_lg_21.url, self.md_21, self.sm_21}
 
         if self._orig_lg_191 != self.lg_191 and self._orig_lg_191:
-            image_set = image_set | {self._orig_lg_191.path}
+            image_set = image_set | {self._orig_lg_191.url}
 
         if self._orig_custom != self.custom and self._orig_custom:
-            image_set = image_set | {self._orig_custom.path}
+            image_set = image_set | {self._orig_custom.url}
 
-        self._orig_custom = self.custom
-
-        if config('ENV_USE_SPACES', cast=bool):
-            for image in image_set:
-                print("image", image)
-                images.check_and_remove_s3(file_path=image)
-
-        if not config('ENV_USE_SPACES', cast=bool):
-            for image in image_set:
-                print("image", image)
-                images.check_and_remove_file(file_path=image)
+        for image in image_set:
+            print("image", image)
+            images.check_and_remove_s3(file_path=image)
 
         # resets the field values in model
         if self._orig_lg_11 != self.lg_11 and self._orig_lg_11:

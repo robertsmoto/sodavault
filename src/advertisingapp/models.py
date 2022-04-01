@@ -2,6 +2,7 @@ from ckeditor.fields import RichTextField
 from django.db import models
 from django.utils import timezone
 from configapp.utils import images
+from sodavault.custom_storage import MediaStorage
 
 
 class Campaign(models.Model):
@@ -60,32 +61,38 @@ class Banner(models.Model):
             blank=True,
             help_text="End url with '/'")
     ban_square = models.ImageField(
-            upload_to=images.new_filename,
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 500px x 500px")
     ban_leaderboard = models.ImageField(
-            upload_to=images.new_filename,
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 728px x 90px")
     ban_lg_leaderboard = models.ImageField(
-            upload_to=images.new_filename,
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 970px x 90px")
     ban_inline_rectangle = models.ImageField(
-            upload_to=images.new_filename,
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 300px x 250px")
     ban_lg_rectangle = models.ImageField(
-            upload_to=images.new_filename,
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 336px x 280px")
     ban_skyscraper = models.ImageField(
-            upload_to=images.new_filename,
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 160px x 600px")

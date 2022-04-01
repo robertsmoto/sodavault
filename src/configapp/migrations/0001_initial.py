@@ -4,6 +4,7 @@ import configapp.utils.images
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
+from sodavault.custom_storage import MediaStorage
 
 
 class Migration(migrations.Migration):
@@ -52,10 +53,10 @@ class Migration(migrations.Migration):
             name='Image',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('lg_21', models.ImageField(blank=True, help_text='Recommended size: 1200px x 600px. Recommended name: name-21.jpg', null=True, storage=configapp.utils.images.OverwriteStorage(), upload_to=configapp.utils.images.new_filename)),
-                ('lg_11', models.ImageField(blank=True, help_text='Recommended size: 500px x 500px Recommended name: name-11.jpg', null=True, storage=configapp.utils.images.OverwriteStorage(), upload_to=configapp.utils.images.new_filename)),
-                ('custom', models.ImageField(blank=True, help_text='Image with custom size.', null=True, storage=configapp.utils.images.OverwriteStorage(), upload_to=configapp.utils.images.new_filename)),
-                ('lg_191', models.ImageField(blank=True, help_text='1.9:1 ratio recommended size 1200px x 630px Recommended name: name-191.jpg', null=True, storage=configapp.utils.images.OverwriteStorage(), upload_to=configapp.utils.images.new_filename)),
+                ('lg_21', models.ImageField(blank=True, help_text='Recommended size: 1200px x 600px. Recommended name: name-21.jpg', null=True, storage=MediaStorage(), upload_to=configapp.utils.images.user_file_path)),
+                ('lg_11', models.ImageField(blank=True, help_text='Recommended size: 500px x 500px Recommended name: name-11.jpg', null=True, storage=MediaStorage(), upload_to=configapp.utils.images.user_file_path)),
+                ('custom', models.ImageField(blank=True, help_text='Image with custom size.', null=True, storage=MediaStorage(), upload_to=configapp.utils.images.user_file_path)),
+                ('lg_191', models.ImageField(blank=True, help_text='1.9:1 ratio recommended size 1200px x 630px Recommended name: name-191.jpg', null=True, storage=MediaStorage(), upload_to=configapp.utils.images.user_file_path)),
                 ('title', models.CharField(blank=True, help_text='Alt text for image.', max_length=200)),
                 ('caption', models.CharField(blank=True, help_text='Caption for image.', max_length=200)),
                 ('featured', models.BooleanField(default=False)),

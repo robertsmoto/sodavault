@@ -14,49 +14,50 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import *
+from blogapp import views
 
 
 urlpatterns = [
     # POSTS
     path(
         '',
-        BlogListView.as_view(
+        views.BlogListView.as_view(
             extra_context={"doc_slug": "blogapp-blog-list"}
         ),
         name="blogapp-blog-list",
     ),
     path(
         '<post_type>/',
-        BlogListView.as_view(
+        views.BlogListView.as_view(
             extra_context={'doc_slug': 'blogapp-docs-list'}
         ),
         name='blogapp-docs-list'
     ),
+    # should post detail include : Y/M/d ??
     path(
         '<post_type>/<slug:slug>/',
-        BlogDetailView.as_view(
+        views.BlogDetailView.as_view(
             extra_context={'doc_slug': 'blogapp-detail'}
         ),
         name='blogapp-detail'
     ),
     path(
         "category/<int:category_id>/<category_name>/",
-        CategoryListView.as_view(
+        views.CategoryListView.as_view(
             extra_context={"doc_slug": "blogapp-category-list"}
         ),
         name="blogapp-category-list",
     ),
     path(
         "tag/<int:tag_id>/<tag_name>/",
-        TagListView.as_view(
+        views.TagListView.as_view(
             extra_context={"doc_slug": "blogapp-tag-list"}
         ),
         name="blogapp-tag-list",
     ),
     path(
         "search/",
-        DocSearchListView.as_view(
+        views.DocSearchListView.as_view(
             extra_context={"doc_slug": "blogapp-search"}
         ),
         name="blogapp-search",

@@ -595,12 +595,10 @@ class Article(Post):
 
     def get_absolute_url(self):
         return reverse(
-            'blogapp-post-detail',
+            'blogapp-detail',
+            # should this include Y/M/d ?
             args=[
                 str.lower(self.post_type),
-                str(self.date_published.year),
-                str(self.date_published.month),
-                str(self.date_published.day),
                 str(self.slug)
             ],
         )

@@ -1,18 +1,28 @@
 from decouple import config
-from django.core.files.storage import FileSystemStorage
 from django.utils import timezone
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
-# from pathlib import Path
 import boto3
 import botocore
 import os
+import shutil
 
 
 def check_and_remove_s3(file_path: str) -> None:
 
     if not file_path:
         return
+
+    """
+    ENV_MEDIA_URL=https://cdn-stage.sodavault.com/media/
+    """
+    media_url = config('ENV_MEDIA_URL')
+    if file_path.startswith(media_url):
+        print("###starts_with: True")
+        file_path = file_path.replace(media_url, '')
+
+    file_path = os.path.join('media', file_path)
+    print(f"###check and remove_s3_file:{file_path}")
 
     s3resource = boto3.resource(
             's3',
@@ -42,49 +52,23 @@ def check_and_remove_s3(file_path: str) -> None:
     return
 
 
+def check_and_remove_dir(dir_path=None):
+    try:
+        shutil.rmtree(dir_path)
+    except OSError as e:
+        print("Error: %s : %s" % (dir_path, e.strerror))
+
+
 def check_and_remove_file(file_path: str) -> None:
     """Checks if file exists and removes it."""
+
+    print(f"###check and remove_file:{file_path}")
+
     if os.path.isfile(file_path):
         os.remove(file_path)
     else:
         print(f"The file does not exist: {file_path}")
     return
-
-
-class OverwriteStorage(FileSystemStorage):
-
-    def get_available_name(self, name, max_length=None):
-
-        if config('ENV_USE_SPACES', cast=bool):
-            check_and_remove_s3(file_path=name)
-        else:
-            check_and_remove_file(file_path=name)
-
-        return super().get_available_name(name, max_length)
-
-
-def new_filename(instance: object, filename: str, **kwargs) -> (str, str):
-    """Creates the base dir and filename variations for user uploads."""
-    # create the directory
-    now = timezone.now()
-    user_dir = instance.user.profile.cdn_dir
-    date_dir = now.strftime('%Y/%m/%d/')
-    user_date = os.path.join(user_dir, date_dir)
-
-    # build the filename
-
-    base_fn = os.path.basename(filename)
-    fn = os.path.splitext(base_fn)[0]
-    fn = "".join(x for x in fn if x.isalnum())
-
-    size = kwargs.get('size', '')
-    if size:
-        fn = f"{fn}-{size[0]}x{size[1]}.webp"
-    else:
-        fn = f"{fn}.webp"
-
-    print(f"endof new_filename {user_date}, {fn}")
-    return os.path.join(user_date, fn)
 
 
 def write_image_to_path(image_read: object, file_path: dict) -> None:
@@ -167,39 +151,49 @@ class BannerSkyScraperWebp(ImageSpec):
     options = {'quality': 80}
 
 
-def create_dirs(self, processor=None, source=None, size=None) -> dict:
-    dirs = {}
-    dirs['fn_base'] = os.path.basename(source.url)
-    dirs['fn'] = os.path.splitext(dirs['fn_base'])[0]
-    dirs['fn'] = ''.join(x for x in dirs['fn'] if x.isalnum())
+def user_file_path(instance: object, filename: str, **kwargs) -> str:
+    """Creates the user_dir and filename variations for media uploads."""
 
-    # modifies dirs['fn'] and creates dirs['user_date_fn']
-    dirs['user_date_fn'] = new_filename(
-            instance=self, filename=dirs['fn'], size=size)
-    dirs['user_date'], dirs['fn'] = os.path.split(dirs['user_date_fn'])
+    user = instance.user.profile.cdn_dir
+    date = timezone.now().strftime('%Y/%m/%d/')
 
-    dirs['mroot'] = config('ENV_MEDIA_ROOT')
-    dirs['mroot_user_date'] = os.path.join(dirs['mroot'], dirs['user_date'])
-    dirs['mroot_user_date_fn'] = os.path.join(dirs['mroot'], dirs['user_date_fn'])
-    dirs['temp_dir'] = config('ENV_TEMP_DIR')
-    dirs['temp_filepath'] = os.path.join(dirs['temp_dir'], dirs['fn'])
+    # get the basename
+    basename = filename
+    if not isinstance(filename, str):
+        basename = os.path.basename(filename.url)
 
-    return dirs
+    # splits the filename
+    fn, ext = os.path.splitext(basename)
+    # allows only alpha-numeric characters in the filename
+    fn = "".join(x for x in fn if x.isalnum())
+
+    size = kwargs.get('size', '')
+    if size:
+        fn = f"{fn}-{size[0]}x{size[1]}.webp"
+    else:
+        fn = f"{fn}.webp"
+
+    return os.path.join(user, date, fn)
 
 
 def process_images(self, k: str, v) -> None:
 
     processor = v[0]
-    source = v[1]
+    source = v[1]  # source is the fn
     size = v[2]
     # subdir=v[3] not currently used
 
-    dirs = create_dirs(
-            self=self,
-            processor=processor,
-            source=source,
-            size=size
-            )
+    print(f"###source.url: {source.url} type: {type(source.url)}")
+
+    img_path = user_file_path(instance=self, filename=source, size=size)
+    img_dir, img_fn = os.path.split(img_path)
+
+    print("###image_path", img_path, img_dir, img_fn)
+    """
+    img_path = media/18fe4fa7-287d/2022/04/01/tree11-250x250.webp
+    img_dir = media/18fe4fa7-287d/2022/04/01
+    img_fn = tree11-250x250.webp
+    """
 
     # Generate new image
     new_image = processor(source=source).generate()
@@ -207,17 +201,16 @@ def process_images(self, k: str, v) -> None:
     image_read = new_image.read()
 
     # upload image
-    assigned_path = ""
     if config('ENV_USE_SPACES', cast=bool):
 
         # need to save image to temp dir before uploading to s3
         # create the dir if it doesn't exist
-        temp_dir = dirs.get('temp_dir', '')
+        temp_dir = os.path.join(config('ENV_TEMP_DIR'), img_dir)
         if not os.path.exists(temp_dir):
             os.makedirs(temp_dir)
 
-        temp_filepath = dirs.get('temp_filepath', '')
-        check_and_remove_file(file_path=temp_filepath)
+        temp_filepath = os.path.join(temp_dir, img_fn)
+        # check_and_remove_file(file_path=temp_filepath)
 
         write_image_to_path(image_read=image_read, file_path=temp_filepath)
 
@@ -232,44 +225,40 @@ def process_images(self, k: str, v) -> None:
                 aws_secret_access_key=config(
                     'ENV_AWS_SECRET_ACCESS_KEY'))
 
-        # should check if s3 file exists and if so delete it
-        # before uploading image with same name
-        mroot_user_date_fn = dirs.get('mroot_user_date_fn', '')
-        check_and_remove_s3(file_path=mroot_user_date_fn)
+        # # should check if s3 file exists and if so delete it
+        # # before uploading image with same name
+        s3_filepath = os.path.join('media', img_path)
+        # check_and_remove_s3(file_path=s3_filepath)
 
         try:
-            with open(dirs['local_filepath'], 'rb') as file_contents:
+            with open(temp_filepath, 'rb') as file_contents:
                 s3client.put_object(
                     Bucket=config('ENV_AWS_STORAGE_BUCKET_NAME'),
-                    Key=mroot_user_date_fn,
+                    Key=s3_filepath,
                     Body=file_contents,
                     ContentEncoding='webp',
                     ContentType='image/webp',
                     CacheControl='max-age=86400',
                     ACL='public-read')
+
         except Exception as e:
             print(f"S3 open exception: {e}")
 
-        # then delete the local file (local_filepath)
-        check_and_remove_file(file_path=temp_filepath)
-        assigned_path = mroot_user_date_fn
+        # then delete the local dir (and file)
+        check_and_remove_dir(dir_path=temp_dir)
 
     else:
         # for the development server, write file directly to final location
-
-        mroot = dirs.get('mroot', '')
-        user_date = dirs.get('user_date', '')
-        user_date_fn = dirs.get('user_date_fn', '')
+        # add the media root the the temp file and then save it
 
         # create the dir if it doesn't exist
-        local_dir = os.path.join(mroot, user_date)
+        local_filepath = os.path.join(config('ENV_MEDIA_ROOT'), img_path)
+        local_dir, _ = os.path.split(local_filepath)
         if not os.path.exists(local_dir):
             os.makedirs(local_dir)
 
-        local_file_path = os.path.join(mroot, user_date_fn)
-        check_and_remove_file(file_path=local_file_path)
+        check_and_remove_file(file_path=local_filepath)
 
-        write_image_to_path(image_read=image_read, file_path=local_file_path)
-        assigned_path = user_date_fn
+        write_image_to_path(image_read=image_read, file_path=local_filepath)
 
-    return assigned_path
+    return img_path

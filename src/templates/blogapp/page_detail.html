@@ -7,17 +7,17 @@
 
 <div class='row'>
   <article class='col-12 col-xl-8'>
-    {% if post.featured_image %}
+    {% if images.featured %}
       <figure>
         <img 
-          src="{{ post.image_featured.url }}" 
-          title="{{post.title}}" 
+          src="{{ images.featured.lg_21.url }}" 
+          title="{{images.featured.title}}" 
           class="bfp-photofeatured" 
           style="width: 100%;">
       {% endif %}
-      {% if post.image_caption %}
+      {% if images.featured.caption %}
         <figcaption class="border bg-light py-1 px-3 mt-2 text-center">
-          <i>{{post.image_caption}}</i>
+          <i>{{images.featured.caption}}</i>
         </figcaption>
       </figure>
     {% endif %}

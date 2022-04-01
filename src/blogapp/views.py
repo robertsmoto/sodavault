@@ -2,28 +2,9 @@ from blogapp.models import Post
 from django.views.generic import DetailView
 from django.views.generic.list import ListView
 from django.db.models import Q
-from homeapp.mixins import Navigation  #, MetaData
+from homeapp.mixins import Navigation
 from docsapp.views import BrCrumb
 
-
-# class HomeView(Navigation, TemplateView):
-    # template_name = "blogapp/page_detail.html"
-
-    # def get_context_data(self, **kwargs):
-        # context = super(HomeView, self).get_context_data(**kwargs)
-        # context["context"] = context
-        # slug = 'home'
-        # post_val = Post.objects.values_list(
-            # 'body', 'categories', 'excerpt', 'featured_image', 'footer',
-            # 'image_caption', 'image_title', 'keyword_list', 'post_type', 
-            # 'slug', 'tags', 'thumbnail_image', 'title'
-        # )
-        # post_q = Post.objects.get(slug=slug)
-        # post_q.query = pickle.loads(pickle.dumps(post_val.query))
-        # context["post"] = post_q
-       
-        # # context["post_type"] = 'PAGE'
-#         return context
 
 class BlogListView(Navigation, ListView):
 
@@ -107,10 +88,20 @@ class BlogDetailView(Navigation, DetailView):
 
     def get_object(self):
         slug = self.kwargs["slug"]
-        queryset = Post.objects.get(slug=slug)
+        queryset = Post.objects.prefetch_related('image_set').get(slug=slug)
+        for image in queryset.image_set.all():
+            images = {}
+            check_featured = image.__dict__.get('featured', '')
+            if check_featured:
+                images['featured'] = image.__dict__
+            order = image.__dict__.get('order', 0)
+            images[order] = image.__dict__
+            print("###images", images)
+
+        self.images = images
         return queryset
 
-#     def get_template_names(self):
+    # def get_template_names(self):
         # post_type = self.kwargs["post_type"]
         # if post_type == "article":
             # template_name = "blogapp/article_detail.html"
@@ -122,9 +113,10 @@ class BlogDetailView(Navigation, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(BlogDetailView, self).get_context_data(**kwargs)
-        context["context"] = context
+        context['context'] = context
+        context['images'] = self.images
         # context["metadata"] = Post.metadata_func(self)
-        context["post_type"] = self.kwargs["post_type"]
+        context['post_type'] = self.kwargs['post_type']
         return context
 
 
