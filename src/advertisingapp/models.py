@@ -210,7 +210,7 @@ class Banner(models.Model):
 
         for k, v in img_index.items():
 
-            file_path = images.process_images(k=k, v=v)
+            file_path = images.process_images(self=self, k=k, v=v)
 
             if k == "ban_lg_square":
                 self.ban_lg_square = file_path

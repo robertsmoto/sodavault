@@ -1,6 +1,5 @@
 from sodavault.custom_storage import MediaStorage
 from configapp.utils import images
-from decouple import config
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
