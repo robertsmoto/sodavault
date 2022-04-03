@@ -1,7 +1,8 @@
 from ckeditor.fields import RichTextField
+from configapp.utils import images
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
-from configapp.utils import images
 from sodavault.custom_storage import MediaStorage
 
 
@@ -38,6 +39,12 @@ class Campaign(models.Model):
 
 
 class Banner(models.Model):
+    user = models.ForeignKey(
+            settings.AUTH_USER_MODEL,
+            related_name='advertisingapp_user_banner',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
     campaign = models.ForeignKey(
             Campaign,
             related_name='banners',
