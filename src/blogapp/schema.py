@@ -103,6 +103,9 @@ class PostNode(DjangoObjectType):
         return self.lg_11.url
 
     def resolve_md_11(self, info):
+        print("###env med url", config('ENV_MEDIA_URL'))
+        print("###self.md_11", self.md_11)
+        print("###os.path", os.path.join(config('ENV_MEDIA_URL'), self.md_11))
         return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
     def resolve_sm_11(self, info):
