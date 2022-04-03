@@ -27,14 +27,14 @@ class BannerNode(DjangoObjectType):
                 ]
         interfaces = (relay.Node, )
 
-    def resolve_ban_square(self, info):
-        return self.ban_square.url
+    def resolve_lg_11(self, info):
+        return self.lg_11.url
 
-    def resolve_ban_lg_square(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.ban_lg_square)
+    def resolve_md_11(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
-    def resolve_ban_md_square(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.ban_md_square)
+    def resolve_ban_sm_11(self, info):
+        return os.path.join(config('ENV_MEDIA_URL'), self.sm_11)
 
     def resolve_ban_sm_square(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.ban_sm_square)

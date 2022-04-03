@@ -78,13 +78,6 @@ class NoteABC(models.Model):
 
 class ImageABC(models.Model):
 
-    lg_21 = models.ImageField(
-            upload_to=images.user_file_path,
-            storage=MediaStorage(),
-            null=True,
-            blank=True,
-            help_text="Recommended size: 1200px x 600px. "
-            "Recommended name: name-21.jpg")
     lg_11 = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
@@ -92,12 +85,13 @@ class ImageABC(models.Model):
             blank=True,
             help_text="Recommended size: 500px x 500px "
             "Recommended name: name-11.jpg")
-    custom = models.ImageField(
+    lg_21 = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
             null=True,
             blank=True,
-            help_text="Image with custom size.")
+            help_text="Recommended size: 1200px x 600px. "
+            "Recommended name: name-21.jpg")
     lg_191 = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
@@ -105,6 +99,12 @@ class ImageABC(models.Model):
             blank=True,
             help_text="1.9:1 ratio recommended size 1200px x 630px "
             "Recommended name: name-191.jpg")
+    custom = models.ImageField(
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
+            null=True,
+            blank=True,
+            help_text="Image with custom size.")
     title = models.CharField(
             max_length=200,
             blank=True,

@@ -7,6 +7,9 @@ import graphene
 import os
 
 
+MEDIA_URL = config('ENV_MEDIA_URL')
+
+
 class CategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
@@ -96,8 +99,8 @@ class PostNode(DjangoObjectType):
                 'post_type'
                 ]
 
-    def resolve_image_featured(self, info):
-        return self.image_featured.url
+    def resolve_lg_11(self, info):
+        return self.lg_11.url
 
     def resolve_image_191(self, info):
         return self.image_191.url
