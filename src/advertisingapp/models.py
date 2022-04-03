@@ -67,37 +67,46 @@ class Banner(models.Model):
             max_length=100,
             blank=True,
             help_text="End url with '/'")
-    ban_square = models.ImageField(
+
+    lg_11 = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
             blank=True,
             null=True,
-            help_text="recommended size: 500px x 500px")
-    ban_leaderboard = models.ImageField(
-            upload_to=images.user_file_path,
-            storage=MediaStorage(),
-            blank=True,
-            null=True,
-            help_text="recommended size: 728px x 90px")
-    ban_lg_leaderboard = models.ImageField(
+            help_text="Recommended size: 500px x 500px "
+            "Recommended name: name-11.jpg")
+    lg_leaderboard = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 970px x 90px")
-    ban_inline_rectangle = models.ImageField(
+    md_leaderboard = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
             blank=True,
             null=True,
-            help_text="recommended size: 300px x 250px")
-    ban_lg_rectangle = models.ImageField(
+            help_text="recommended size: 790px x 90px")
+    sm_leaderboard = models.ImageField(
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
+            blank=True,
+            null=True,
+            help_text="recommended size: 728px x 90px")
+    md_rectangle = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
             blank=True,
             null=True,
             help_text="recommended size: 336px x 280px")
-    ban_skyscraper = models.ImageField(
+    sm_rectangle = models.ImageField(
+            upload_to=images.user_file_path,
+            storage=MediaStorage(),
+            blank=True,
+            null=True,
+            help_text="recommended size: 300px x 250px")
+
+    skyscraper = models.ImageField(
             upload_to=images.user_file_path,
             storage=MediaStorage(),
             blank=True,
@@ -107,15 +116,11 @@ class Banner(models.Model):
     """The following images are automatically generated using
     the model's save method."""
 
-    ban_lg_square = models.CharField(
-            max_length=200,
-            blank=True,
-            help_text="automatic size: 500px x 500px")
-    ban_md_square = models.CharField(
+    md_11 = models.CharField(
             max_length=200,
             blank=True,
             help_text="automatic size: 250px x 250px")
-    ban_sm_square = models.CharField(
+    sm_11 = models.CharField(
             max_length=200,
             blank=True,
             help_text="automatic size: 200px x 200px")
@@ -123,108 +128,83 @@ class Banner(models.Model):
     def __init__(self, *args, **kwargs):
         super(Banner, self).__init__(*args, **kwargs)
         # this needs to change for each image
-        self._orig_ban_square = self.ban_square
-        self._orig_ban_leaderboard = self.ban_leaderboard
-        self._orig_ban_lg_leaderboard = self.ban_lg_leaderboard
-        self._orig_ban_inline_rectangle = self.ban_inline_rectangle
-        self._orig_ban_lg_rectangle = self.ban_lg_rectangle
-        self._orig_ban_skyscraper = self.ban_skyscraper
+        self._orig_lg_11 = self.lg_11
+        self._orig_lg_leaderboard = self.lg_leaderboard
+        self._orig_md_leaderboard = self.md_leaderboard
+        self._orig_sm_leaderboard = self.sm_leaderboard
+        self._orig_md_rectangle = self.md_rectangle
+        self._orig_sm_rectangle = self.sm_rectangle
+        self._orig_skyscraper = self.skyscraper
 
     def save(self, *args, **kwargs):
         """Creates new banner sizes. Save new images directly to media server
         and save the url in a char field."""
 
-        img_index = {}
+        index = {}
 
-        if self._orig_ban_square != self.ban_square and self.ban_square:
-            print("Creating ban_square image variations.")
+        if self._orig_lg_11 != self.lg_11 and self.lg_11:
 
-            img_index['ban_lg_square'] = [
-                    images.BannerLgSqWebp,
-                    self.ban_square,
-                    (500, 500),
-                    "advertisingapp/banner"]
-            img_index['ban_md_square'] = [
-                    images.BannerMdSqWebp,
-                    self.ban_square,
+            print("Creating blog thumbnail image variations.")
+
+            index['md_11'] = [
+                    images.Md11WebP,
+                    self.lg_11,
                     (250, 250),
-                    "advertisingapp/banner"]
-            img_index['ban_sm_square'] = [
-                    images.BannerSmSqWebp,
-                    self.ban_square,
+                    "subdir/not-currently-used"]
+
+            index['sm_11'] = [
+                    images.Sm11WebP,
+                    self.lg_11,
                     (200, 200),
-                    "advertisingapp/banner"]
+                    "subdir/not-currently-used"]
 
-        if (
-                self._orig_ban_leaderboard != self.ban_leaderboard
-                and self.ban_leaderboard):
-
-            print("Creating ban_leaderboard image variations.")
-
-            img_index['ban_leaderboard'] = [
-                    images.BannerLeaderboardWebp,
-                    self.ban_leaderboard,
-                    (728, 90),
-                    "advertisingapp/banner"]
-
-        if (
-                self._orig_ban_lg_leaderboard != self.ban_lg_leaderboard
-                and self.ban_lg_leaderboard):
-
-            print("Creating ban_lg_leaderboard image variations.")
-
-            img_index['ban_lg_lederboard'] = [
-                    images.BannerLgLeaderboardWebp,
-                    self.ban_lg_leaderboard,
-                    (790, 90),
-                    "advertisingapp/banner"]
-
-        if (
-                self._orig_ban_inline_rectangle != self.ban_inline_rectangle
-                and self.ban_inline_rectangle):
-
-            print("Creating ban_inline_rectangle image variations.")
-
-            img_index['ban_inline_rectangle'] = [
-                    images.BannerInlineRectangleWebp,
-                    self.ban_inline_rectangle,
-                    (300, 250),
-                    "advertisingapp/banner"]
-
-        if (
-                self._orig_ban_lg_rectangle != self.ban_lg_rectangle
-                and self.ban_lg_rectangle):
-
-            print("Creating ban_lg_rectangle image variations.")
-
-            img_index['ban_lg_rectangle'] = [
-                    images.BannerLgRectangleWebp,
-                    self.ban_lg_rectangle,
-                    (336, 280),
-                    "advertisingapp/banner"]
-
-        if (
-                self._orig_ban_skyscraper != self.ban_skyscraper
-                and self.ban_skyscraper):
-
-            print("Creating ban_skyscraper image variations.")
-
-            img_index['ban_skyscraper'] = [
-                    images.BannerSkyScraperWebp,
-                    self.ban_skyscraper,
-                    (160, 600),
-                    "advertisingapp/banner"]
-
-        for k, v in img_index.items():
+        for k, v in index.items():
 
             file_path = images.process_images(self=self, k=k, v=v)
 
-            if k == "ban_lg_square":
-                self.ban_lg_square = file_path
-            if k == "ban_md_square":
-                self.ban_md_square = file_path
-            if k == "ban_sm_square":
-                self.ban_sm_square = file_path
+            if k == "md_11":
+                self.md_11 = file_path
+            if k == "sm_11":
+                self.sm_11 = file_path
+
+        # deletes images
+        image_set = set()
+
+        if self._orig_lg_11 != self.lg_11 and self._orig_lg_11:
+            image_set = image_set | {self._orig_lg_11.url, self.md_11, self.sm_11}
+
+        # resets the field values in model
+        if self._orig_lg_11 != self.lg_11 and self._orig_lg_11:
+            self.md_11 = ''
+            self.sm_11 = ''
+
+        if self._orig_lg_leaderboard != self.lg_leaderboard \
+                and self._orig_lg_leaderboard:
+            image_set = image_set | {self._orig_lg_leaderboard.url}
+
+        if self._orig_md_leaderboard != self.md_leaderboard \
+                and self._orig_md_leaderboard:
+            image_set = image_set | {self._orig_md_leaderboard.url}
+
+        if self._orig_sm_leaderboard != self.sm_leaderboard \
+                and self._orig_sm_leaderboard:
+            image_set = image_set | {self._orig_sm_leaderboard.url}
+
+        if self._orig_md_rectangle != self.md_rectangle \
+                and self._orig_md_rectangle:
+            image_set = image_set | {self._orig_md_rectangle.url}
+
+        if self._orig_sm_rectangle != self.sm_rectangle \
+                and self._orig_sm_rectangle:
+            image_set = image_set | {self._orig_sm_rectangle.url}
+
+        if self._orig_skyscraper != self.skyscraper \
+                and self._orig_skyscraper:
+            image_set = image_set | {self._orig_skyscraper.url}
+
+        for image in image_set:
+            print("image", image)
+            images.check_and_remove_s3(file_path=image)
 
         super(Banner, self).save(*args, **kwargs)
 

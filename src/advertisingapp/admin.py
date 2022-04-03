@@ -5,7 +5,18 @@ from .models import Banner, Campaign
 class BannersInline(admin.StackedInline):
     model = Banner
     extra = 0
-    exclude = ['user', 'ban_lg_square', 'ban_md_square', 'ban_sm_square']
+    fields = [
+            'name',
+            'excerpt',
+            'url_name',
+            'url_link',
+            ('lg_11', 'md_11', 'sm_11'),
+            ('lg_leaderboard', 'md_leaderboard', 'sm_leaderboard'),
+            ('md_rectangle', 'sm_rectangle'),
+            'skyscraper',
+            ]
+
+    readonly_fields = ['md_11', 'sm_11']
     verbose_name = "bannner"
     verbose_name_plural = "banner"
 
