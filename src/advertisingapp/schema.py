@@ -33,26 +33,26 @@ class BannerNode(DjangoObjectType):
     def resolve_md_11(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
-    def resolve_ban_sm_11(self, info):
+    def resolve_sm_11(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.sm_11)
 
-    def resolve_ban_sm_square(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.ban_sm_square)
+    def resolve_lg_leaderboard(self, info):
+        return self.lg_leaderboard.url
 
-    def resolve_ban_leaderboard(self, info):
-        return self.ban_leaderboard.url
+    def resolve_md_leaderboard(self, info):
+        return self.md_leaderboard.url
 
-    def resolve_ban_lg_leaderboard(self, info):
-        return self.ban_lg_leaderboard.url
+    def resolve_sm_leaderboard(self, info):
+        return self.sm_leaderboard.url
 
-    def resolve_ban_inline_rectangle(self, info):
-        return self.ban_inline_rectangle.url
+    def resolve_md_rectangle(self, info):
+        return self.md_rectangle.url
 
-    def resolve_ban_lg_rectangle(self, info):
-        return self.ban_lg_rectangle.url
+    def resolve_sm_rectangle(self, info):
+        return self.sm_rectangle.url
 
-    def resolve_ban_skyscraper(self, info):
-        return self.ban_skyscraper.url
+    def resolve_skyscraper(self, info):
+        return self.skyscraper.url
 
 
 class Query(graphene.ObjectType):
