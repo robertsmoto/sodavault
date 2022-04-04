@@ -136,8 +136,10 @@ class PostNode(DjangoObjectType):
         interfaces = (relay.Node, )
         filter_fields = [
                 'websites__domain',
-                'categories',
-                'tags',
+                'categories__slug',
+                'categories__id',
+                'tags__slug',
+                'tags__id',
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
