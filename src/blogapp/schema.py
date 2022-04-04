@@ -99,8 +99,6 @@ class PostNode(DjangoObjectType):
                 'post_type'
                 ]
 
-    lg_11 = String()
-
     def resolve_lg_11(self, info):
         return "hello"
 
@@ -152,7 +150,7 @@ class PostNode(DjangoObjectType):
             timestr = "1 minute"
         return timestr
 
-    # md_11 = graphene.Field(String, resolver=resolve_md_11)
+    lg_11 = graphene.Field(String, resolver=resolve_lg_11)
     # sm_11 = graphene.Field(String, resolver=resolve_sm_11)
     # lg_21 = graphene.Field(String, resolver=resolve_lg_21)
     # md_21 = graphene.Field(String, resolver=resolve_md_21)
