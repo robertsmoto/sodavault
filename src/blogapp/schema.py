@@ -21,6 +21,7 @@ class CategoryNode(DjangoObjectType):
                 'is_secondary',
                 'is_tertiary',
                 'post__post_type',
+                'post__websites__domain'
                 ]
 
 
@@ -28,6 +29,15 @@ class TagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
         interfaces = (relay.Node, )
+        filter_fields = [
+                'id',
+                'name',
+                'is_primary',
+                'is_secondary',
+                'is_tertiary',
+                'post__post_type',
+                'post__websites__domain'
+                ]
 
 
 class OpeningHoursNode(DjangoObjectType):
