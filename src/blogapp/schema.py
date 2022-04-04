@@ -28,9 +28,7 @@ class CategoryNode(DjangoObjectType):
 
     @classmethod
     def get_queryset(cls, queryset, info):
-        if info.context.user.is_anonymous:
-            return queryset.order_by('order', 'id').distinct('id')
-        return queryset
+        return queryset.order_by('order', 'id').distinct('id')
 
 
 class TagNode(DjangoObjectType):
