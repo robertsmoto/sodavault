@@ -103,7 +103,7 @@ class ImageNode(DjangoObjectType):
         return self.lg_191.url
 
     def resolve_custom(self, info):
-        return self.lg_custom.url
+        return self.custom.url
 
     lg_11 = graphene.Field(String, resolver=resolve_lg_11)
     sm_11 = graphene.Field(String, resolver=resolve_sm_11)
