@@ -28,24 +28,38 @@ class BannerNode(DjangoObjectType):
         interfaces = (relay.Node, )
 
     def resolve_lg_11(self, info):
+        if not self.lg_11:
+            return ""
         return self.lg_11.url
 
     def resolve_md_11(self, info):
+        if not self.md_11:
+            return ""
         return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
     def resolve_sm_11(self, info):
+        if not self.sm_11:
+            return ""
         return os.path.join(config('ENV_MEDIA_URL'), self.sm_11)
 
     def resolve_lg_leaderboard(self, info):
+        if not self.lg_leaderboard:
+            return ""
         return self.lg_leaderboard.url
 
     def resolve_md_leaderboard(self, info):
+        if not self.md_leaderboard:
+            return ""
         return self.md_leaderboard.url
 
     def resolve_sm_leaderboard(self, info):
+        if not self.sm_leaderboard:
+            return ""
         return self.sm_leaderboard.url
 
     def resolve_md_rectangle(self, info):
+        if not self.md_rectangle:
+            return ""
         return self.md_rectangle.url
 
     def resolve_sm_rectangle(self, info):
@@ -54,6 +68,8 @@ class BannerNode(DjangoObjectType):
         return self.sm_rectangle.url
 
     def resolve_skyscraper(self, info):
+        if not self.skyscraper:
+            return ""
         return self.skyscraper.url
 
     lg_11 = graphene.Field(String, resolver=resolve_lg_11)

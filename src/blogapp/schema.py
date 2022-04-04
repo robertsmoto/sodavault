@@ -82,27 +82,43 @@ class ImageNode(DjangoObjectType):
                 ]
 
     def resolve_lg_11(self, info):
+        if not self.lg_11:
+            return ""
         return self.lg_11.url
 
     def resolve_md_11(self, info):
+        if not self.md_11:
+            return ""
         return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
     def resolve_sm_11(self, info):
+        if not self.sm_11:
+            return ""
         return os.path.join(config('ENV_MEDIA_URL'), self.sm_11)
 
     def resolve_lg_21(self, info):
+        if not self.lg_21:
+            return ""
         return self.lg_21.url
 
     def resolve_md_21(self, info):
+        if not self.md_21:
+            return ""
         return os.path.join(config('ENV_MEDIA_URL'), self.md_21)
 
     def resolve_sm_21(self, info):
+        if not self.sm_21:
+            return ""
         return os.path.join(config('ENV_MEDIA_URL'), self.sm_21)
 
     def resolve_lg_191(self, info):
+        if not self.lg_191:
+            return ""
         return self.lg_191.url
 
     def resolve_custom(self, info):
+        if not self.custom:
+            return ""
         return self.custom.url
 
     lg_11 = graphene.Field(String, resolver=resolve_lg_11)
