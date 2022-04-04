@@ -16,13 +16,21 @@ class CategoryNode(DjangoObjectType):
         interfaces = (relay.Node, )
         filter_fields = [
                 'id',
+                'slug',
                 'name',
+                'order',
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
                 'post__post_type',
                 'post__websites__domain'
                 ]
+
+    @classmethod
+    def get_queryset(cls, queryset, info):
+        if info.context.user.is_anonymous:
+            return queryset.order_by('order', 'id').distinct('id')
+        return queryset
 
 
 class TagNode(DjangoObjectType):
