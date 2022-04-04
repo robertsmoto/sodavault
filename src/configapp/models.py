@@ -40,7 +40,7 @@ class GroupABC(models.Model):
     is_primary = models.BooleanField(default=False)
     is_secondary = models.BooleanField(default=False)
     is_tertiary = models.BooleanField(default=False)
-    order = models.IntegerField(blank=True, null=True)
+    order = models.IntegerField(default=0)
 
     class Meta:
         abstract = True
