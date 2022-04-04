@@ -52,7 +52,7 @@ class BannerNode(DjangoObjectType):
         return self.sm_rectangle.url
 
     def resolve_skyscraper(self, info):
-        return self.skyscraper.url
+        return 'hello'
 
     lg_11 = graphene.Field(String, resolver=resolve_lg_11)
     md_11 = graphene.Field(String, resolver=resolve_md_11)
