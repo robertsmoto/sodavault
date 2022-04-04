@@ -49,6 +49,8 @@ class BannerNode(DjangoObjectType):
         return self.md_rectangle.url
 
     def resolve_sm_rectangle(self, info):
+        if not self.sm_rectangle:
+            return ""
         return self.sm_rectangle.url
 
     def resolve_skyscraper(self, info):
