@@ -45,6 +45,10 @@ class TagNode(DjangoObjectType):
                 'post__websites__domain'
                 ]
 
+    @classmethod
+    def get_queryset(cls, queryset, info):
+        return queryset.order_by('order', 'id').distinct('order', 'id')
+
 
 class OpeningHoursNode(DjangoObjectType):
     class Meta:
