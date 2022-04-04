@@ -100,7 +100,7 @@ class PostNode(DjangoObjectType):
                 ]
 
     def resolve_lg_11(self, info):
-        return self.lg_11.url
+        return "hello"
 
     def resolve_md_11(self, info):
         return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
