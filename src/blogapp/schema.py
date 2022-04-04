@@ -28,7 +28,7 @@ class CategoryNode(DjangoObjectType):
 
     @classmethod
     def get_queryset(cls, queryset, info):
-        return queryset.order_by('order', 'id').distinct('id')
+        return queryset.order_by('order', 'id').distinct('order', 'id')
 
 
 class TagNode(DjangoObjectType):
