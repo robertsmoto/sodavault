@@ -104,26 +104,26 @@ class PostNode(DjangoObjectType):
     def resolve_lg_11(self, info):
         return "hello"
 
-    def resolve_md_11(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
+    # def resolve_md_11(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
-    def resolve_sm_11(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.sm_11)
+    # def resolve_sm_11(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.sm_11)
 
-    def resolve_lg_21(self, info):
-        return self.lg_21.url
+    # def resolve_lg_21(self, info):
+        # return self.lg_21.url
 
-    def resolve_md_21(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.md_21)
+    # def resolve_md_21(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.md_21)
 
-    def resolve_sm_21(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.sm_21)
+    # def resolve_sm_21(self, info):
+        # return os.path.join(config('ENV_MEDIA_URL'), self.sm_21)
 
-    def resolve_lg_191(self, info):
-        return self.lg_191.url
+    # def resolve_lg_191(self, info):
+        # return self.lg_191.url
 
-    def resolve_custom(self, info):
-        return self.lg_custom.url
+    # def resolve_custom(self, info):
+    #     return self.lg_custom.url
 
     def resolve_pub_year(self, info):
         return self.date_published.strftime("%Y")
