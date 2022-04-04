@@ -39,11 +39,29 @@ class RecipeInline(admin.StackedInline):
 @admin.register(blogapp.models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     search_fields = ['name']
+    fields = [
+            'parent',
+            ('name', 'slug'),
+            'description',
+            'kwd_list',
+            ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
+            ]
+    prepopulated_fields = {'slug': ('name',), }
+    autocomplete_fields = ['parent']
 
 
 @admin.register(blogapp.models.Tag)
 class TagAdmin(admin.ModelAdmin):
     search_fields = ['name']
+    fields = [
+            'parent',
+            ('name', 'slug'),
+            'description',
+            'kwd_list',
+            ('order', 'is_primary', 'is_secondary', 'is_tertiary'),
+            ]
+    prepopulated_fields = {'slug': ('name',), }
+    autocomplete_fields = ['parent']
 
 
 @admin.register(blogapp.models.LocalBusiness)
