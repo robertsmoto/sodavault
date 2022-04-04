@@ -103,9 +103,6 @@ class PostNode(DjangoObjectType):
         return self.lg_11.url
 
     def resolve_md_11(self, info):
-        print("###env med url", config('ENV_MEDIA_URL'))
-        print("###self.md_11", self.md_11)
-        print("###os.path", os.path.join(config('ENV_MEDIA_URL'), self.md_11))
         return os.path.join(config('ENV_MEDIA_URL'), self.md_11)
 
     def resolve_sm_11(self, info):
@@ -122,12 +119,6 @@ class PostNode(DjangoObjectType):
 
     def resolve_lg_191(self, info):
         return self.lg_191.url
-
-    def resolve_md_191(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.md_191)
-
-    def resolve_sm_191(self, info):
-        return os.path.join(config('ENV_MEDIA_URL'), self.sm_191)
 
     def resolve_custom(self, info):
         return self.lg_custom.url
@@ -159,6 +150,14 @@ class PostNode(DjangoObjectType):
             timestr = "1 minute"
         return timestr
 
+    lg_11 = graphene.Field(String, resolver=resolve_lg_11)
+    md_11 = graphene.Field(String, resolver=resolve_md_11)
+    sm_11 = graphene.Field(String, resolver=resolve_sm_11)
+    lg_21 = graphene.Field(String, resolver=resolve_lg_21)
+    md_21 = graphene.Field(String, resolver=resolve_md_21)
+    sm_21 = graphene.Field(String, resolver=resolve_sm_21)
+    lg_191 = graphene.Field(String, resolver=resolve_lg_191)
+    custom = graphene.Field(String, resolver=resolve_custom)
     pub_year = graphene.Field(String, resolver=resolve_pub_year)
     pub_month = graphene.Field(String, resolver=resolve_pub_month)
     pub_day = graphene.Field(String, resolver=resolve_pub_day)

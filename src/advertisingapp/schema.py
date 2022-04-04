@@ -1,5 +1,5 @@
 from decouple import config
-from graphene import relay
+from graphene import relay, String
 from graphene_django import DjangoObjectType
 from graphene_django.filter import DjangoFilterConnectionField
 import advertisingapp.models
@@ -53,6 +53,16 @@ class BannerNode(DjangoObjectType):
 
     def resolve_skyscraper(self, info):
         return self.skyscraper.url
+
+    lg_11 = graphene.Field(String, resolver=resolve_lg_11)
+    md_11 = graphene.Field(String, resolver=resolve_md_11)
+    sm_11 = graphene.Field(String, resolver=resolve_sm_11)
+    lg_leaderboard = graphene.Field(String, resolver=resolve_lg_leaderboard)
+    md_leaderboard = graphene.Field(String, resolver=resolve_md_leaderboard)
+    sm_leaderboard = graphene.Field(String, resolver=resolve_sm_leaderboard)
+    md_rectangle = graphene.Field(String, resolver=resolve_md_rectangle)
+    sm_rectangle = graphene.Field(String, resolver=resolve_sm_rectangle)
+    skyscraper = graphene.Field(String, resolver=resolve_skyscraper)
 
 
 class Query(graphene.ObjectType):
