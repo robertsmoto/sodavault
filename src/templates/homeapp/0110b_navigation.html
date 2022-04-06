@@ -27,7 +27,7 @@
         {% for page in navigation.pages %}
             <a 
             class="dropdown-item" 
-            href="{% url 'blogapp-detail' post_type=page.post_type slug=page.slug %}"
+            href="{% url 'blogapp-detail' post_type=page.postType slug=page.slug %}"
             >{{page.title}}
             </a>
         {% empty %}
