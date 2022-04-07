@@ -14,17 +14,23 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
-from .views import HomeView
+from homeapp import views
 
 urlpatterns = [
-    # using the blogapp to serve the homepage
     path(
-        '',
-        HomeView.as_view(
-            extra_context={
-                'doc_slug': 'home',
-            }
-        ),
-        name='home',
-       )
+        'homeapp/',
+        views.EmptyView.as_view(),
+        name="blogapp-article-list",
+    ),
+
+    # # using the blogapp to serve the homepage
+    # path(
+        # '',
+        # HomeView.as_view(
+            # extra_context={
+                # 'doc_slug': 'home',
+            # }
+        # ),
+        # name='home',
+       # )
 ]
