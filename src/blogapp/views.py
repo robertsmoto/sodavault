@@ -89,16 +89,13 @@ class BlogDetailView(Navigation, DetailView):
     def get_object(self):
         slug = self.kwargs["slug"]
         queryset = Post.objects.prefetch_related('image_set').get(slug=slug)
+        self.images = {}
         for image in queryset.image_set.all():
             images = {}
-            check_featured = image.__dict__.get('featured', '')
+            check_featured = image.featured
             if check_featured:
-                images['featured'] = image.__dict__
-            order = image.__dict__.get('order', 0)
-            images[order] = image.__dict__
-            print("###images", images)
-
-        self.images = images
+                images['featured'] = image
+            self.images = images
         return queryset
 
     # def get_template_names(self):
