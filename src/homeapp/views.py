@@ -11,10 +11,10 @@ class HomeView(MetaData, BrCrumb, Navigation, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        queryset = []
         try:
             queryset = Page.objects.get(slug='home')
-        except Exception as e:
-            print("homeapp.view HomeView", e)
+        except queryset.DoesNotExist:
+            print("homeapp.view HomeView")
+            queryset = []
         context['object'] = queryset
         return context
