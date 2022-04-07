@@ -17,20 +17,14 @@ from django.urls import path
 from homeapp import views
 
 urlpatterns = [
+    # using the blogapp to serve the homepage
     path(
-        'homeapp/',
-        views.EmptyView.as_view(),
-        name="blogapp-article-list",
-    ),
-
-    # # using the blogapp to serve the homepage
-    # path(
-        # '',
-        # HomeView.as_view(
-            # extra_context={
-                # 'doc_slug': 'home',
-            # }
-        # ),
-        # name='home',
-       # )
+        '',
+        views.as_view(
+            extra_context={
+                'doc_slug': 'home',
+            }
+        ),
+        name='home',
+       )
 ]
