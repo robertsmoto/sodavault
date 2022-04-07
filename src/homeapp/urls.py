@@ -20,7 +20,7 @@ urlpatterns = [
     # using the blogapp to serve the homepage
     path(
         '',
-        views.as_view(
+        views.HomeView.as_view(
             extra_context={
                 'doc_slug': 'home',
             }
