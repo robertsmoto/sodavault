@@ -3,7 +3,7 @@ from .forms import CampaignForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView, ListView
 from django.views.generic import CreateView, UpdateView, DeleteView
-from homeapp.mixins import Navigation
+from homeapp.mixins.navigation import Navigation
 from django.urls import reverse
 
 

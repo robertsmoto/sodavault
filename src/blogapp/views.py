@@ -1,149 +1,186 @@
-from blogapp.models import Post
+from blogapp.models import Article, Doc, Page
 from django.views.generic import DetailView
 from django.views.generic.list import ListView
 from django.db.models import Q
-from homeapp.mixins import Navigation
-from docsapp.views import BrCrumb
+from homeapp.mixins.breadcrumbs import BrCrumb
+from homeapp.mixins.metadata import MetaData
+from homeapp.mixins.navigation import Navigation
 
 
-class BlogListView(Navigation, ListView):
+class ArticleListView(BrCrumb, MetaData, Navigation, ListView):
 
-    template_name = "blogapp/page_list.html"
+    template_name = "blogapp/article_list.html"
     paginate_by = 30
 
     def get_queryset(self, *args, **kwargs):
-        post_type = 'DOCS'
-        if "post_type" in self.kwargs:
-            post_type = self.kwargs["post_type"]
-        # post_val = Post.objects.values_list(
-            # 'body', 'categories', 'excerpt', 'featured_image', 'footer',
-            # 'image_caption', 'image_title', 'keyword_list', 'post_type', 
-            # 'slug', 'tags', 'thumbnail_image', 'title'
-        # )
-        # post_q = Post.objects.get(slug=slug)
-        # post_q.query = pickle.loads(pickle.dumps(post_val.query))
-        list_q = Post.objects.filter(
-            post_type=post_type,
+        list_q = Article.objects.filter(
             status="PUBLI",
-            parent__isnull=True
-        ).prefetch_related('children').only(
-            'title', 'excerpt', 'slug', 'post_type', 'parent', 
-            'image_featured', 'image_thumb'
+            parent__isnull=True,
+            websites__domain="sodavault.com"
+        ).prefetch_related('children', 'image_set').only(
+            'title', 'excerpt', 'slug', 'parent'
         ).order_by('menu_order', 'id')
         return list_q
 
-#     def get_template_names(self):
-        # post_type = "article"
-        # if "post_type" in self.kwargs:
-            # post_type = self.kwargs["post_type"]
-
-        # if post_type == "article":
-            # template_name = "blogapp/article_list.html"
-        # elif post_type == "editorial":
-            # template_name = "blogapp/editorial_list.html"
-        # else:
-            # template_name = "blogapp/page_list.html"
-        # return template_name
-
     def get_context_data(self, **kwargs):
-        context = super(BlogListView, self).get_context_data(**kwargs)
-        post_type = "article"
-        if "post_type" in self.kwargs:
-            post_type = self.kwargs["post_type"]
-        context["context"] = context
-        context["post_type"] = post_type
+        context = super().get_context_data(**kwargs)
         return context
 
-# class PostListView(
-    # BrCrumb, Navigation, MetaData, ListView
-# ):
 
-    # paginate_by = 30
+class ArticleDetailView(BrCrumb, MetaData, Navigation, DetailView):
 
-    # def get_queryset(self, *args, **kwargs):
-        # post_type = self.kwargs["post_type"].upper()
-        # queryset = Post.objects.filter(post_type=post_type, status="PUBLI")
-        # return queryset
+    template_name = "blogapp/article_detail.html"
 
-    # def get_template_names(self):
-        # post_type = self.kwargs["post_type"]
-        # if post_type == "article":
-            # template_name = "blogapp/article_list.html"
-        # elif post_type == "editorial":
-            # template_name = "blogapp/editorial_list.html"
-        # else:
-            # template_name = "blogapp/page_list.html"
-        # return template_name
-
-    # def get_context_data(self, **kwargs):
-        # context = super(PostListView, self).get_context_data(**kwargs)
-        # context["context"] = context
-        # context["post_type"] = self.kwargs["post_type"]
-        # return context
-
-
-class BlogDetailView(Navigation, DetailView):
-
-    template_name = "blogapp/page_detail.html"
-
-    def get_object(self):
+    def dispatch(self, request, *args, **kwargs):
         slug = self.kwargs["slug"]
-        queryset = Post.objects.prefetch_related('image_set').get(slug=slug)
+        article = Article.objects.prefetch_related('image_set').get(slug=slug)
         self.images = {}
-        for image in queryset.image_set.all():
+        for image in article.image_set.all():
             images = {}
             check_featured = image.featured
             if check_featured:
                 images['featured'] = image
             self.images = images
-        return queryset
 
-    # def get_template_names(self):
-        # post_type = self.kwargs["post_type"]
-        # if post_type == "article":
-            # template_name = "blogapp/article_detail.html"
-        # elif post_type == "editorial":
-            # template_name = "blogapp/editorial_detail.html"
-        # else:
-            # template_name = "blogapp/page_detail.html"
-        # return template_name
+        self.queryset = article
+        self.mdata = article.mdata()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        return self.queryset
 
     def get_context_data(self, **kwargs):
-        context = super(BlogDetailView, self).get_context_data(**kwargs)
-        context['context'] = context
+        context = super().get_context_data(**kwargs)
         context['images'] = self.images
-        # context["metadata"] = Post.metadata_func(self)
-        context['post_type'] = self.kwargs['post_type']
         return context
 
 
-class CategoryListView(BrCrumb, Navigation, ListView):
+class DocListView(BrCrumb, MetaData, Navigation, ListView):
 
-    model = Post
+    template_name = "blogapp/doc_list.html"
+    paginate_by = 30
+
+    def get_queryset(self, *args, **kwargs):
+        list_q = Doc.objects.filter(
+            status="PUBLI",
+            parent__isnull=True,
+            websites__domain="sodavault.com"
+        ).prefetch_related('children', 'image_set').only(
+            'title', 'excerpt', 'slug', 'parent'
+        ).order_by('menu_order', 'id')
+        return list_q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class DocDetailView(BrCrumb, MetaData, Navigation, DetailView):
+
+    template_name = "blogapp/doc_detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        slug = self.kwargs["slug"]
+        doc = Doc.objects.prefetch_related('image_set').get(slug=slug)
+        self.images = {}
+        for image in doc.image_set.all():
+            images = {}
+            check_featured = image.featured
+            if check_featured:
+                images['featured'] = image
+            self.images = images
+
+        self.queryset = doc
+        self.mdata = doc.mdata()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        return self.queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['images'] = self.images
+        return context
+
+
+class PageListView(BrCrumb, MetaData, Navigation, ListView):
+
+    template_name = "blogapp/page_list.html"
+    paginate_by = 30
+
+    def get_queryset(self, *args, **kwargs):
+        list_q = Page.objects.filter(
+            status="PUBLI",
+            parent__isnull=True,
+            websites__domain="sodavault.com"
+        ).prefetch_related('children', 'image_set').only(
+            'title', 'excerpt', 'slug', 'parent'
+        ).order_by('menu_order', 'id')
+        return list_q
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class PageDetailView(BrCrumb, MetaData, Navigation, DetailView):
+
+    template_name = "blogapp/page_detail.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        slug = self.kwargs["slug"]
+        page = Page.objects.prefetch_related('image_set').get(slug=slug)
+        self.images = {}
+        for image in page.image_set.all():
+            images = {}
+            check_featured = image.featured
+            if check_featured:
+                images['featured'] = image
+            self.images = images
+
+        self.queryset = page
+        self.mdata = page.mdata()
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_object(self):
+        return self.queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['images'] = self.images
+        return context
+
+
+# ########################
+# these can be done better
+# ########################
+class CategoryListView(BrCrumb, MetaData, Navigation, ListView):
+
+    model = Article
     template_name = "blogapp/article_list.html"
     paginate_by = 30
 
     def get_queryset(self):
         cat_id = self.kwargs["category_id"]
-        queryset = Post.objects.filter(topics__id=cat_id, status="PUBLI")
+        queryset = Article.objects.filter(topics__id=cat_id, status="PUBLI")
         return queryset
 
     def get_context_data(self, **kwargs):
-        context = super(CategoryListView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         context["context"] = context
         context['robots'] = 'no'
         return context
 
 
-class TagListView(BrCrumb, Navigation, ListView):
+class TagListView(BrCrumb, MetaData, Navigation, ListView):
 
-    model = Post
+    model = Article
     paginate_by = 30
     template_name = "blogapp/article_list.html"
 
     def get_queryset(self):
         tag_id = self.kwargs["tag_id"]
-        queryset = Post.objects.filter(interests__id=tag_id, status="PUBLI")
+        queryset = Article.objects.filter(interests__id=tag_id, status="PUBLI")
         return queryset
 
     def get_context_data(self, **kwargs):
@@ -153,9 +190,9 @@ class TagListView(BrCrumb, Navigation, ListView):
         return context
 
 
-class DocSearchListView(BrCrumb, Navigation, ListView):
+class DocSearchListView(BrCrumb, MetaData, Navigation, ListView):
 
-    model = Post
+    model = Doc
     paginate_by = 30
     template_name = "blogapp/article_list.html"
     http_method_names = ["get"]
@@ -163,9 +200,9 @@ class DocSearchListView(BrCrumb, Navigation, ListView):
     def get_queryset(self):
         search_query = self.request.GET.get("search_box", None)
         if len(search_query) < 4:
-            queryset = Post.on_site.none()
+            queryset = Doc.objects.none()
         else:
-            queryset = Post.objects.filter(
+            queryset = Doc.objects.filter(
                 Q(post_type="ARTICLE")
                 & (
                     Q(keyword_list__icontains=search_query)

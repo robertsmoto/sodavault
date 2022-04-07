@@ -1,0 +1,40 @@
+{% if breadcrumbs %}
+    <div class='col mt-2 alert' style="background-color: {{breadcrumb_bg_color}};">
+
+        {% for item in breadcrumbs %}
+
+            {% if forloop.last %}
+                {% if metadata.person %}
+                    {% include 'docsapp/se_breadcrumbs/person.html' %}
+                {% elif item.name == 'title' %}
+                    {{metadata.title}}
+                {% else %}
+                    {{item.name}}
+                {% endif %}
+            {% else %}
+                {% if item.var5 %}
+                    <a href="{% url item.namespace item.var1 item.var2 item.var3 item.var4 item.var5  %}">{{item.name}}</a>
+                {% elif item.var4 %}
+                    <a href="{% url item.namespace item.var1 item.var2 item.var3 item.var4 %}">{{item.name}}</a>
+                {% elif item.var3 %}
+                    <a href="{% url item.namespace item.var1 item.var2 item.var3 %}">{{item.name}}</a>
+                {% elif item.var2 %}
+                    <a href="{% url item.namespace item.var1 item.var2 %}">{{item.name}}</a>
+                {% elif item.var1 %}
+                    <a href="{% url item.namespace item.var1 %}">{{item.name}}</a>
+                {% else %}
+                    {% if item.var1 == 'get_success_url' %}
+                        <a href="{{ view.get_success_url }}">{{item.name}}</a>
+                    {% else %}
+                        <a href="{% url item.namespace %}">{{item.name}}</a>
+
+
+                    {% endif %}
+                {% endif %}
+                &nbsp;&gt;
+            {% endif %}
+
+        {% endfor %}
+
+    </div>
+{% endif %}

@@ -1,18 +1,19 @@
+from blogapp.models import Page
 from django.views.generic import TemplateView
-from homeapp.mixins import Navigation
-from blogapp.models import Post
+from homeapp.mixins.breadcrumbs import BrCrumb
+from homeapp.mixins.metadata import MetaData
+from homeapp.mixins.navigation import Navigation
 
 
-class HomeView(Navigation, TemplateView):
+class HomeView(MetaData, BrCrumb, Navigation, TemplateView):
     template_name = "blogapp/page_detail.html"
+    queryset = Page.objects.get(slug='home')
 
     def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context["context"] = context
-        slug = 'home'
+        context = super().get_context_data(**kwargs)
         try:
-            post_q = Post.objects.get(slug=slug)
-        except Post.DoesNotExist:
-            post_q = None
-        context["post"] = post_q
+            queryset = Page.objects.get(slug='home')
+        except Page.DoesNotExist:
+            queryset = None
+        context['object'] = queryset
         return context

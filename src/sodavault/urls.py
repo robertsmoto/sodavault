@@ -19,7 +19,7 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
 from django_registration.backends.one_step.views import RegistrationView
-from homeapp.mixins import Navigation  # , MetaData
+from homeapp.mixins.navigation import Navigation
 import debug_toolbar
 
 

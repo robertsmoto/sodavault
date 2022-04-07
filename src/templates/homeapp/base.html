@@ -2,7 +2,6 @@
 {% load static %}
 <html>
 <head>
-{% include "homeapp/0010h_webmaster_tools.html" %}
 {% include "homeapp/0020h_viewport_encoding.html" %}
 {% if metadata %}{% include "homeapp/0030h_metadata.html" %}{% endif %}
 
@@ -10,13 +9,13 @@
 {% block meta %}{% endblock %}
 {% block metadata %}{% endblock %}
 
-{% comment %}{% block styling %}{% endblock %}{% endcomment %}
 {% include "homeapp/0060h_bootstrap.html" %}
 <link rel="icon" type="image/x-icon" href="{% static 'homeapp/favicon.ico' %}">
 <link rel="preconnect" href="https://fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&family=Courier+Prime&family=Open+Sans:wght@400;600;800&display=swap" rel="stylesheet">
 
 <style>
+{% block styling %}{% endblock %}
 h1 {
   font-family: 'Open Sans', sans-serif;
   font-weight: 800;
@@ -56,17 +55,10 @@ p code {
 
 </style>
 
-{% comment %}
-<link rel="stylesheet" href="{% static '/css/styles.css' %}">
-{% endcomment %}
-
-
-
 {% block header %}{% endblock %}
 </head>
 
 <body>
-{% comment %}{% include "homeapp/0080b_webmaster_tools.html" %}{% endcomment %}
 {% include "homeapp/0110b_navigation.html" %}
 <div class='container' style="margin-top: 30px;">
 
@@ -76,7 +68,7 @@ p code {
 </div>
 {% endcomment %}
 
-{% comment %}{% if doc_slug  %}{% include "homeapp/0150b_breadcrumbs.html" %}{% endif %}{% endcomment %}
+{% include "homeapp/0150b_breadcrumbs.html" %}
 
 {% block content %}{% endblock %}
 

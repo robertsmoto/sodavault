@@ -18,48 +18,49 @@ from blogapp import views
 
 
 urlpatterns = [
-    # POSTS
     path(
-        '',
-        views.BlogListView.as_view(
-            extra_context={"doc_slug": "blogapp-blog-list"}
-        ),
-        name="blogapp-blog-list",
+        'articles/',
+        views.ArticleListView.as_view(),
+        name="blogapp-article-list",
     ),
     path(
-        '<post_type>/',
-        views.BlogListView.as_view(
-            extra_context={'doc_slug': 'blogapp-docs-list'}
-        ),
-        name='blogapp-docs-list'
+        'article/<slug:slug>/',
+        views.ArticleDetailView.as_view(),
+        name='blogapp-article-detail'
     ),
-    # should post detail include : Y/M/d ??
     path(
-        '<post_type>/<slug:slug>/',
-        views.BlogDetailView.as_view(
-            extra_context={'doc_slug': 'blogapp-detail'}
-        ),
-        name='blogapp-detail'
+        'docs/',
+        views.DocListView.as_view(),
+        name="blogapp-doc-list",
+    ),
+    path(
+        'doc/<slug:slug>/',
+        views.DocDetailView.as_view(),
+        name='blogapp-doc-detail'
+    ),
+    path(
+        'pages/',
+        views.PageListView.as_view(),
+        name="blogapp-page-list",
+    ),
+    path(
+        'page/<slug:slug>/',
+        views.PageDetailView.as_view(),
+        name='blogapp-page-detail'
     ),
     path(
         "category/<int:category_id>/<category_name>/",
-        views.CategoryListView.as_view(
-            extra_context={"doc_slug": "blogapp-category-list"}
-        ),
+        views.CategoryListView.as_view(),
         name="blogapp-category-list",
     ),
     path(
         "tag/<int:tag_id>/<tag_name>/",
-        views.TagListView.as_view(
-            extra_context={"doc_slug": "blogapp-tag-list"}
-        ),
+        views.TagListView.as_view(),
         name="blogapp-tag-list",
     ),
     path(
         "search/",
-        views.DocSearchListView.as_view(
-            extra_context={"doc_slug": "blogapp-search"}
-        ),
+        views.DocSearchListView.as_view(),
         name="blogapp-search",
     ),
 ]

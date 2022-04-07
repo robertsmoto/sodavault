@@ -1,40 +1,33 @@
-{% if breadcrumbs %}
-    <div class='col mt-2 alert' style="background-color: {{breadcrumb_bg_color}};">
+<div class='col mt-2 alert' style="background-color: {{breadcrumb_bg_color}};">
 
-        {% for item in breadcrumbs %}
+{% for brdcrm in breadcrumbs %}
+    {% if forloop.last %}
 
-            {% if forloop.last %}
-                {% if metadata.person %}
-                    {% include 'docsapp/se_breadcrumbs/person.html' %}
-                {% elif item.name == 'title' %}
-                    {{metadata.title}}
-                {% else %}
-                    {{item.name}}
-                {% endif %}
-            {% else %}
-                {% if item.var5 %}
-                    <a href="{% url item.namespace item.var1 item.var2 item.var3 item.var4 item.var5  %}">{{item.name}}</a>
-                {% elif item.var4 %}
-                    <a href="{% url item.namespace item.var1 item.var2 item.var3 item.var4 %}">{{item.name}}</a>
-                {% elif item.var3 %}
-                    <a href="{% url item.namespace item.var1 item.var2 item.var3 %}">{{item.name}}</a>
-                {% elif item.var2 %}
-                    <a href="{% url item.namespace item.var1 item.var2 %}">{{item.name}}</a>
-                {% elif item.var1 %}
-                    <a href="{% url item.namespace item.var1 %}">{{item.name}}</a>
-                {% else %}
-                    {% if item.var1 == 'get_success_url' %}
-                        <a href="{{ view.get_success_url }}">{{item.name}}</a>
-                    {% else %}
-                        <a href="{% url item.namespace %}">{{item.name}}</a>
+        {% if brdcrm.hrn == "metadata" %}
+            {{metadata.brcm_title}}
+        {% else %}
+            {{brdcrm.hrn}}
+        {% endif %}
 
+    {% else %}
 
-                    {% endif %}
-                {% endif %}
-                &nbsp;&gt;
-            {% endif %}
+        {% if brdcrm.hrn == "metadata" %}
+        {{metadata.topic}}
+            <a href="{{brdcrm.url}}">{{metadata.brcm_title}}</a>&nbsp;&gt;
+        {% else %}
+            <a href="{{brdcrm.url}}">{{brdcrm.hrn}}</a>&nbsp;&gt;
+        {% endif %}
 
-        {% endfor %}
+    {% endif %}
 
-    </div>
+{% empty %}
+    <p>### add breadcrum ###</p>
+{% endfor %}
+
+{% if person_breadcrumb %}
+{% include 'headlines/se_breadcrumbs/person.html' %}
 {% endif %}
+
+</div>
+
+

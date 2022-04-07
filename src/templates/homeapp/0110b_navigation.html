@@ -27,7 +27,7 @@
         {% for page in navigation.pages %}
             <a 
             class="dropdown-item" 
-            href="{% url 'blogapp-detail' post_type=page.post_type slug=page.slug %}"
+            href="{% url 'blogapp-page-detail' slug=page.slug %}"
             >{{page.title}}
             </a>
         {% empty %}
@@ -40,14 +40,27 @@
 
 
         <hr class="dropdown-divider">
-        <a class="dropdown-item" href="{% url 'blogapp-docs-list' post_type='DOCS' %}">Docs</a>
+
+        {% for doc in navigation.docs %}
+            <a 
+            class="dropdown-item" 
+            href="{% url 'blogapp-doc-detail' slug=doc.slug %}"
+            >{{doc.title}}
+            </a>
+        {% empty %}
+            <a 
+            class="dropdown-item" 
+            href="#"
+            >## add a doc ##
+            </a>
+        {% endfor %}
 
         </div>
       </li>
     </ul>
 
     <div class="float-right nav-item" style="margin-left: auto;">
-      <a class="btn btn-success" href="{% url 'blogapp-docs-list' post_type='DOCS' %}">Docs</a>
+      <a class="btn btn-success" href="{% url 'blogapp-doc-list' %}">Docs</a>
       <a class="btn btn-outline-danger" href="{% url 'django-registration-logout' %}">Logout</a>
     </div>
 
@@ -72,7 +85,7 @@
           {% for page in navigation.pages %}
             <a 
               class="dropdown-item" 
-              href="{% url 'blogapp-detail' post_type=page.post_type slug=page.slug %}"
+              href="{% url 'blogapp-page-detail' slug=page.slug %}"
             >{{page.title}}
             </a>
           {% endfor %}

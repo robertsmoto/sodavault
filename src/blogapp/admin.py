@@ -1,4 +1,3 @@
-from django import forms
 from django.contrib import admin
 import blogapp.models
 
@@ -118,40 +117,55 @@ class RecipeAdmin(admin.ModelAdmin):
         return {}
 
 
-class ArticleForm(forms.ModelForm):
+# class ArticleForm(forms.ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super(ArticleForm, self).__init__(*args, **kwargs)
-        self.fields['parent'].queryset = blogapp.models.Article.objects.all()
+    # def __init__(self, *args, **kwargs):
+        # super(ArticleForm, self).__init__(*args, **kwargs)
+        # self.fields['parent'].queryset = blogapp.models.Article.objects.all()
 
-    class Meta:
-        model = blogapp.models.Post
-        fields = '__all__'
+    # class Meta:
+        # model = blogapp.models.Post
+        # fields = '__all__'
+
+
+# @admin.register(blogapp.models.Post)
+# class PostAdmin(admin.ModelAdmin):
+    # search_fields = ['id']
+
+
+POST_FIELDS = [
+    ("websites", "parent"),
+    ("title", "slug"),
+    ("menu_order", "is_primary", "is_secondary", "is_tertiary"),
+    ("author", "status", "is_featured"),
+    ("date_published", "date_modified"),
+    "excerpt",
+    "body",
+    "footer",
+    ("categories", "tags", "kwd_list"),
+    ]
+POST_SEARCH_FIELDS = ['title']
+POST_AUTOCOMPLETE = ["websites", "categories", "tags", "parent"]
+POST_INLINES = [ImageInline, ]
+POST_LIST_DISPLAY = ["title", "author", "status", "date_published"]
+POST_LIST_EDITABLE = ["author", "status"]
+POST_LIST_FILTER = ["author", "status", "websites__domain"]
+POST_PREPOPULATED_FIELDS = {"slug": ("title",)}
 
 
 @admin.register(blogapp.models.Article)
 class ArticleAdmin(admin.ModelAdmin):
 
-    form = ArticleForm
-    fields = [
-        ("websites", "parent"),
-        ("title", "slug"),
-        ("menu_order", "is_primary", "is_secondary", "is_tertiary"),
-        ("author", "status", "is_featured"),
-        ("date_published", "date_modified"),
-        "excerpt",
-        "body",
-        "footer",
-        ("categories", "tags", "kwd_list"),
-        ("local_business", "book", "movie", "recipe")
-    ]
-    autocomplete_fields = ["websites", "categories", "tags"]
-    inlines = [ImageInline, ]
-    list_display = ["title", "author", "status", "date_published", ]
-    list_filter = ["author", "status", "websites__domain"]
-    list_editable = ["author", "status"]
-
-    prepopulated_fields = {"slug": ("title",)}
+    # form = ArticleForm
+    fields = POST_FIELDS.copy()
+    fields.append(("local_business", "book", "movie", "recipe"))
+    search_fields = POST_SEARCH_FIELDS
+    autocomplete_fields = POST_AUTOCOMPLETE
+    inlines = POST_INLINES
+    list_display = POST_LIST_DISPLAY
+    list_filter = POST_LIST_FILTER
+    list_editable = POST_LIST_EDITABLE
+    prepopulated_fields = POST_PREPOPULATED_FIELDS
 
     def save_formset(self, request, form, formset, change):
         """This method ensures that there is a user saved in the Image
@@ -165,10 +179,48 @@ class ArticleAdmin(admin.ModelAdmin):
 
 
 @admin.register(blogapp.models.Doc)
-class DocAdmin(ArticleAdmin):
-    pass
+class DocAdmin(admin.ModelAdmin):
+
+    # form = ArticleForm
+    fields = POST_FIELDS  # .append(("local_business", "book", "movie", "recipe"))
+    search_fields = POST_SEARCH_FIELDS
+    autocomplete_fields = POST_AUTOCOMPLETE
+    inlines = POST_INLINES
+    list_display = POST_LIST_DISPLAY
+    list_filter = POST_LIST_FILTER
+    list_editable = POST_LIST_EDITABLE
+    prepopulated_fields = POST_PREPOPULATED_FIELDS
+
+    def save_formset(self, request, form, formset, change):
+        """This method ensures that there is a user saved in the Image
+        model before the image file paths are updated."""
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if isinstance(instance, blogapp.models.Image):
+                instance.user = request.user
+                instance.save()
+        formset.save()
 
 
 @admin.register(blogapp.models.Page)
-class PageAdmin(ArticleAdmin):
-    pass
+class PageAdmin(admin.ModelAdmin):
+
+    # form = ArticleForm
+    fields = POST_FIELDS  # .append(("local_business", "book", "movie", "recipe"))
+    search_fields = POST_SEARCH_FIELDS
+    autocomplete_fields = POST_AUTOCOMPLETE
+    inlines = POST_INLINES
+    list_display = POST_LIST_DISPLAY
+    list_filter = POST_LIST_FILTER
+    list_editable = POST_LIST_EDITABLE
+    prepopulated_fields = POST_PREPOPULATED_FIELDS
+
+    def save_formset(self, request, form, formset, change):
+        """This method ensures that there is a user saved in the Image
+        model before the image file paths are updated."""
+        instances = formset.save(commit=False)
+        for instance in instances:
+            if isinstance(instance, blogapp.models.Image):
+                instance.user = request.user
+                instance.save()
+        formset.save()

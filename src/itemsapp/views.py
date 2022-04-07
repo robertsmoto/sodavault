@@ -3,9 +3,10 @@ from django.views.generic import ListView
 # from .forms import ProductForm
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django.urls import reverse
-from homeapp.mixins import Navigation
+from django.views.generic import (
+        ListView, CreateView, UpdateView, DeleteView)
+# from django.urls import reverse
+from homeapp.mixins.navigation import Navigation
 
 
 class ProductHomeView(LoginRequiredMixin, Navigation, TemplateView):

@@ -6,6 +6,7 @@ from django.urls import reverse
 import configapp.models
 import contactapp.models
 import datetime
+import random
 
 
 NOREC = (0, 'Not Recommended')
@@ -439,6 +440,9 @@ class Ingredient(models.Model):
         return '%s' % (self.name)
 
 
+# #####################################
+# this one will be deleted eventually
+# #####################################
 class Post(models.Model):
 
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
@@ -449,6 +453,7 @@ class Post(models.Model):
             null=True)
     parent = models.ForeignKey(
             'self',
+            related_name='children',
             on_delete=models.CASCADE,
             blank=True,
             null=True,
@@ -564,11 +569,21 @@ class Post(models.Model):
             ]),
         ]
 
+    @property
+    def parent_name(self):
+        return self.parent.name
+
+    def save(self, *args, **kwargs):
+        if self.parent and not self.slug.startswith(self.parent.name):
+            parent_slug = self.parent.name.lower().replace(' ', '-')
+            self.slug = f"{parent_slug}-{self.slug}"
+        super().save(*args, **kwargs)
+
     def metadata_data(self):
         data = {
                 'title': self.title,
                 'description': self.excerpt,
-                'image': 'hello'
+                'image': 'image'
                 }
         return data
 
@@ -576,68 +591,218 @@ class Post(models.Model):
         return '%s' % (self.title)
 
 
-class ArticleManager(models.Manager):
+class PostABC(models.Model):
 
-    def get_queryset(self):
-        return super(ArticleManager, self).get_queryset().filter(
-                post_type="ARTICLE")
-
-
-class Article(Post):
-    objects = ArticleManager()
+    parent = models.ForeignKey(
+            'self',
+            related_name='children',
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True,
+            help_text="Self-referencing field to nest menus.")
+    STATUS_CHOICES = [
+        ('PUBLI', 'Published'),
+        ('DRAFT', 'Draft'),
+        ('TRASH', 'Trash'),
+    ]
+    slug = models.SlugField(
+            unique=True,
+            help_text="Is required, must be unique.")
+    title = models.CharField(
+            'Title',
+            max_length=200,
+            blank=True,)
+    excerpt = RichTextUploadingField(
+            max_length=200,
+            null=True,
+            blank=True,
+            help_text='Max 200 characters.',
+            config_name='blog',)
+    body = RichTextUploadingField(
+            null=True,
+            blank=True,
+            config_name='blog',)
+    status = models.CharField(
+            'Status',
+            choices=STATUS_CHOICES,
+            max_length=5,
+            blank=True,)
+    is_featured = models.BooleanField(
+            'Featured Post',
+            default=False,
+            help_text='Moves post to front page.')
+    menu_order = models.IntegerField(
+            'Menu Order',
+            default=0,
+            help_text="Use to order menu")
+    is_primary = models.BooleanField(
+            default=False,
+            help_text="Use if in primary menu.")
+    is_secondary = models.BooleanField(
+            default=False,
+            help_text="Use if in secondary menu.")
+    is_tertiary = models.BooleanField(
+            default=False,
+            help_text="Use if in footer menu.")
+    date_published = models.DateField(
+            'Date Published',
+            default=datetime.date.today,)
+    date_modified = models.DateField(
+            'Date Modified',
+            default=datetime.date.today,
+            blank=True,
+            null=True,)
+    kwd_list = models.CharField(
+            'Keyword List',
+            max_length=200,
+            blank=True,
+            help_text='Comma-separated list')
+    footer = RichTextUploadingField(
+            null=True,
+            blank=True,
+            help_text=(
+                "Use for footnotes, redactions and notes of "
+                "changes or updates."),
+            config_name='blog',)
 
     class Meta:
-        proxy = True
+        abstract = True
+        ordering = ('-is_featured', '-date_published')
+        indexes = [
+            models.Index(fields=[
+                'status',
+                'date_published',
+                'is_featured'
+            ]),
+        ]
 
-    def save(self, **kwargs):
-        self.post_type = "ARTICLE"
-        return super().save(**kwargs)
+    def mdata(self):
+        kwd_list = [x.lower().strip(' .') for x in self.kwd_list.split(',')]
+        random.shuffle(kwd_list)
+        keywords = ", ".join(kwd_list)
 
-    def get_absolute_url(self):
-        return reverse(
-            'blogapp-detail',
-            # should this include Y/M/d ?
-            args=[
-                str.lower(self.post_type),
-                str(self.slug)
-            ],
-        )
+        mdata = {
+                'title': self.title,
+                'description': self.excerpt,
+                'keywords': f'{keywords}, SODAvault.com',
+                'brcm_title': self.title,
+                'h1': self.title,
+                'og_title': self.title,
+                'og_description': f'{self.excerpt} SODAvault.com',
+                'tw_title': self.title,
+                'tw_description': f'{self.excerpt} SODAvault.com',
+                }
+        return mdata
 
+    # def get_absolute_url(self):
+        # return reverse(
+            # 'blogapp-detail',
+            # # should this include Y/M/d ?
+            # args=[
+                # str(self.slug)
+            # ],
+    #     )
 
-class DocManager(models.Manager):
-
-    def get_queryset(self):
-        return super(DocManager, self).get_queryset().filter(
-                post_type="DOCUMENTION")
-
-
-class Doc(Post):
-    objects = DocManager()
-
-    class Meta:
-        proxy = True
-
-    def save(self, **kwargs):
-        self.post_type = "DOCUMENTION"
-        return super().save(**kwargs)
+    def __str__(self):
+        return '%s' % (self.title)
 
 
-class PageManager(models.Manager):
-
-    def get_queryset(self):
-        return super(PageManager, self).get_queryset().filter(
-                post_type="PAGE")
 
 
-class Page(Post):
-    objects = PageManager()
 
-    class Meta:
-        proxy = True
 
-    def save(self, **kwargs):
-        self.post_type = "PAGE"
-        return super().save(**kwargs)
+    @property
+    def parent_name(self):
+        return self.parent.name
+
+    def save(self, *args, **kwargs):
+        if not self.parent:
+            return super().save(*args, **kwargs)
+        parent_slug = self.parent.title.lower().replace(' ', '-')
+        if self.slug.startswith(parent_slug):
+            return super().save(*args, **kwargs)
+        self.slug = f"{parent_slug}-{self.slug}"
+        super().save(*args, **kwargs)
+
+
+
+
+
+class Article(PostABC):
+    websites = models.ManyToManyField(contactapp.models.Website, blank=True)
+    author = models.ForeignKey(
+            User,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True)
+
+    categories = models.ManyToManyField(
+            Category,
+            blank=True)
+    tags = models.ManyToManyField(
+            Tag,
+            blank=True)
+    local_business = models.OneToOneField(
+            LocalBusiness,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    book = models.OneToOneField(
+            Book,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    movie = models.OneToOneField(
+            Movie,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+    recipe = models.OneToOneField(
+            Recipe,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True,)
+
+    class Meta(PostABC.Meta):
+        verbose_name_plural = 'Articles'
+
+
+class Doc(PostABC):
+    websites = models.ManyToManyField(contactapp.models.Website, blank=True)
+    author = models.ForeignKey(
+            User,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True)
+
+    categories = models.ManyToManyField(
+            Category,
+            blank=True)
+    tags = models.ManyToManyField(
+            Tag,
+            blank=True)
+
+    class Meta(PostABC.Meta):
+        verbose_name_plural = 'Documents'
+
+
+class Page(PostABC):
+    websites = models.ManyToManyField(contactapp.models.Website, blank=True)
+    author = models.ForeignKey(
+            User,
+            on_delete=models.SET_NULL,
+            blank=True,
+            null=True)
+
+    categories = models.ManyToManyField(
+            Category,
+            blank=True)
+    tags = models.ManyToManyField(
+            Tag,
+            blank=True)
+
+    class Meta(PostABC.Meta):
+        verbose_name_plural = 'Pages'
 
 
 class Image(configapp.models.ImageABC):
@@ -660,8 +825,31 @@ class Image(configapp.models.ImageABC):
             on_delete=models.CASCADE,
             blank=True,
             null=True)
+
+    # ########################
+    # this one will be deleted -- below
+    # ########################
     post = models.ForeignKey(
             Post,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    # ########################
+    # this one will be deleted -- above
+    # ########################
+
+    article = models.ForeignKey(
+            Article,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    doc = models.ForeignKey(
+            Doc,
+            on_delete=models.CASCADE,
+            blank=True,
+            null=True)
+    page = models.ForeignKey(
+            Page,
             on_delete=models.CASCADE,
             blank=True,
             null=True)
