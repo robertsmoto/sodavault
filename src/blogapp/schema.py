@@ -23,6 +23,8 @@ class CategoryNode(DjangoObjectType):
                 'is_secondary',
                 'is_tertiary',
                 'article__websites__domain',
+                'doc__websites__domain',
+                'page__websites__domain',
                 ]
 
     @classmethod
@@ -41,6 +43,9 @@ class TagNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
+                'article__websites__domain',
+                'doc__websites__domain',
+                'page__websites__domain',
                 ]
 
     @classmethod
