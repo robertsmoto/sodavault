@@ -22,9 +22,9 @@ class CategoryNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                'articles'
-                'docs'
-                'pages'
+                'article'
+                'doc'
+                'page'
                 ]
 
     @classmethod
