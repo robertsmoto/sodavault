@@ -315,13 +315,13 @@ class PageNode(DjangoObjectType):
 
 
 class Query(graphene.ObjectType):
-    articles = relay.Node.Field(ArticleNode)
-    all_articles = DjangoFilterConnectionField(ArticleNode)
-#     docs = relay.Node.Field(DocNode)
+    # articles = relay.Node.Field(ArticleNode)
+    # all_articles = DjangoFilterConnectionField(ArticleNode)
+    # docs = relay.Node.Field(DocNode)
     # all_docs = DjangoFilterConnectionField(DocNode)
     # pages = relay.Node.Field(PageNode)
     # all_pages = DjangoFilterConnectionField(PageNode)
-    # categories = relay.Node.Field(CategoryNode)
-    # all_categories = DjangoFilterConnectionField(CategoryNode)
+    categories = relay.Node.Field(CategoryNode)
+    all_categories = DjangoFilterConnectionField(CategoryNode)
     # tags = relay.Node.Field(TagNode)
-#     all_tags = DjangoFilterConnectionField(TagNode)
+    # all_tags = DjangoFilterConnectionField(TagNode)
