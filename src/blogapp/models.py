@@ -699,7 +699,6 @@ class Article(PostABC):
             on_delete=models.SET_NULL,
             blank=True,
             null=True)
-
     categories = models.ManyToManyField(
             Category,
             blank=True)
@@ -803,7 +802,6 @@ class Page(PostABC):
             on_delete=models.SET_NULL,
             blank=True,
             null=True)
-
     categories = models.ManyToManyField(
             Category,
             blank=True)
