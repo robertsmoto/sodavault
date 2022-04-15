@@ -22,7 +22,6 @@ class CategoryNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                # 'article'
                 ]
 
     @classmethod
@@ -36,13 +35,11 @@ class TagNode(DjangoObjectType):
         interfaces = (relay.Node, )
         filter_fields = [
                 'id',
+                'slug',
                 'name',
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                # 'article_set',
-                # 'doc_set'
-                # 'page_set'
                 ]
 
     @classmethod
@@ -203,121 +200,119 @@ class ArticleNode(DjangoObjectType):
     reading_time = graphene.Field(String, resolver=resolve_reading_time)
 
 
-# class DocNode(DjangoObjectType):
-    # class Meta:
-        # model = blogapp.models.Doc
-        # interfaces = (relay.Node, )
-        # filter_fields = [
-                # 'websites__domain',
-                # 'categories__slug',
-                # 'categories__id',
-                # 'tags__slug',
-                # 'tags__id',
-                # 'is_primary',
-                # 'is_secondary',
-                # 'is_tertiary',
-                # 'is_featured',
-                # 'slug',
-                # 'status',
-                # 'post_type'
-                # ]
+class DocNode(DjangoObjectType):
+    class Meta:
+        model = blogapp.models.Doc
+        interfaces = (relay.Node, )
+        filter_fields = [
+                'websites__domain',
+                'categories__slug',
+                'categories__id',
+                'tags__slug',
+                'tags__id',
+                'is_primary',
+                'is_secondary',
+                'is_tertiary',
+                'is_featured',
+                'slug',
+                'status',
+                ]
 
-    # def resolve_pub_year(self, info):
-        # return self.date_published.strftime("%Y")
+    def resolve_pub_year(self, info):
+        return self.date_published.strftime("%Y")
 
-    # def resolve_pub_month(self, info):
-        # return self.date_published.strftime("%m")
+    def resolve_pub_month(self, info):
+        return self.date_published.strftime("%m")
 
-    # def resolve_pub_day(self, info):
-        # return self.date_published.strftime("%d")
+    def resolve_pub_day(self, info):
+        return self.date_published.strftime("%d")
 
-    # def resolve_pub_us(self, info):
-        # return self.date_published.strftime("%b %d, %Y")
+    def resolve_pub_us(self, info):
+        return self.date_published.strftime("%b %d, %Y")
 
-    # def resolve_mod_us(self, info):
-        # return self.date_modified.strftime("%b %d, %Y")
+    def resolve_mod_us(self, info):
+        return self.date_modified.strftime("%b %d, %Y")
 
-    # def resolve_reading_time(self, info):
-        # text = ""
-        # if len(self.body) > 0 or len(self.excerpt) > 0:
-            # text = self.body + self.excerpt
-        # time = round((len(text.split()) / 250))
-        # timestr = ""
-        # if time > 1:
-            # timestr = f"{time} minutes"
-        # else:
-            # timestr = "1 minute"
-        # return timestr
+    def resolve_reading_time(self, info):
+        text = ""
+        if len(self.body) > 0 or len(self.excerpt) > 0:
+            text = self.body + self.excerpt
+        time = round((len(text.split()) / 250))
+        timestr = ""
+        if time > 1:
+            timestr = f"{time} minutes"
+        else:
+            timestr = "1 minute"
+        return timestr
 
-    # pub_year = graphene.Field(String, resolver=resolve_pub_year)
-    # pub_month = graphene.Field(String, resolver=resolve_pub_month)
-    # pub_day = graphene.Field(String, resolver=resolve_pub_day)
-    # pub_us = graphene.Field(String, resolver=resolve_pub_us)
-    # mod_us = graphene.Field(String, resolver=resolve_mod_us)
-    # reading_time = graphene.Field(String, resolver=resolve_reading_time)
+    pub_year = graphene.Field(String, resolver=resolve_pub_year)
+    pub_month = graphene.Field(String, resolver=resolve_pub_month)
+    pub_day = graphene.Field(String, resolver=resolve_pub_day)
+    pub_us = graphene.Field(String, resolver=resolve_pub_us)
+    mod_us = graphene.Field(String, resolver=resolve_mod_us)
+    reading_time = graphene.Field(String, resolver=resolve_reading_time)
 
 
-# class PageNode(DjangoObjectType):
-    # class Meta:
-        # model = blogapp.models.Page
-        # interfaces = (relay.Node, )
-        # filter_fields = [
-                # 'websites__domain',
-                # 'categories__slug',
-                # 'categories__id',
-                # 'tags__slug',
-                # 'tags__id',
-                # 'is_primary',
-                # 'is_secondary',
-                # 'is_tertiary',
-                # 'is_featured',
-                # 'slug',
-                # 'status',
-                # 'post_type'
-                # ]
+class PageNode(DjangoObjectType):
+    class Meta:
+        model = blogapp.models.Page
+        interfaces = (relay.Node, )
+        filter_fields = [
+                'websites__domain',
+                'categories__slug',
+                'categories__id',
+                'tags__slug',
+                'tags__id',
+                'is_primary',
+                'is_secondary',
+                'is_tertiary',
+                'is_featured',
+                'slug',
+                'status',
+                ]
 
-    # def resolve_pub_year(self, info):
-        # return self.date_published.strftime("%Y")
+    def resolve_pub_year(self, info):
+        return self.date_published.strftime("%Y")
 
-    # def resolve_pub_month(self, info):
-        # return self.date_published.strftime("%m")
+    def resolve_pub_month(self, info):
+        return self.date_published.strftime("%m")
 
-    # def resolve_pub_day(self, info):
-        # return self.date_published.strftime("%d")
+    def resolve_pub_day(self, info):
+        return self.date_published.strftime("%d")
 
-    # def resolve_pub_us(self, info):
-        # return self.date_published.strftime("%b %d, %Y")
+    def resolve_pub_us(self, info):
+        return self.date_published.strftime("%b %d, %Y")
 
-    # def resolve_mod_us(self, info):
-        # return self.date_modified.strftime("%b %d, %Y")
+    def resolve_mod_us(self, info):
+        return self.date_modified.strftime("%b %d, %Y")
 
-    # def resolve_reading_time(self, info):
-        # text = ""
-        # if len(self.body) > 0 or len(self.excerpt) > 0:
-            # text = self.body + self.excerpt
-        # time = round((len(text.split()) / 250))
-        # timestr = ""
-        # if time > 1:
-            # timestr = f"{time} minutes"
-        # else:
-            # timestr = "1 minute"
-        # return timestr
+    def resolve_reading_time(self, info):
+        text = ""
+        if len(self.body) > 0 or len(self.excerpt) > 0:
+            text = self.body + self.excerpt
+        time = round((len(text.split()) / 250))
+        timestr = ""
+        if time > 1:
+            timestr = f"{time} minutes"
+        else:
+            timestr = "1 minute"
+        return timestr
 
-    # pub_year = graphene.Field(String, resolver=resolve_pub_year)
-    # pub_month = graphene.Field(String, resolver=resolve_pub_month)
-    # pub_day = graphene.Field(String, resolver=resolve_pub_day)
-    # pub_us = graphene.Field(String, resolver=resolve_pub_us)
-    # mod_us = graphene.Field(String, resolver=resolve_mod_us)
-    # reading_time = graphene.Field(String, resolver=resolve_reading_time)
+    pub_year = graphene.Field(String, resolver=resolve_pub_year)
+    pub_month = graphene.Field(String, resolver=resolve_pub_month)
+    pub_day = graphene.Field(String, resolver=resolve_pub_day)
+    pub_us = graphene.Field(String, resolver=resolve_pub_us)
+    mod_us = graphene.Field(String, resolver=resolve_mod_us)
+    reading_time = graphene.Field(String, resolver=resolve_reading_time)
 
 
 class Query(graphene.ObjectType):
     article = relay.Node.Field(ArticleNode)
     all_articles = DjangoFilterConnectionField(ArticleNode)
-    # doc = relay.Node.Field(DocNode)
-    # all_docs = DjangoFilterConnectionField(DocNode)
-    # page = relay.Node.Field(PageNode)
-    # all_pages = DjangoFilterConnectionField(PageNode)
+    doc = relay.Node.Field(DocNode)
+    all_docs = DjangoFilterConnectionField(DocNode)
+    page = relay.Node.Field(PageNode)
+    all_pages = DjangoFilterConnectionField(PageNode)
     category = relay.Node.Field(CategoryNode)
     all_categories = DjangoFilterConnectionField(CategoryNode)
     tag = relay.Node.Field(TagNode)
