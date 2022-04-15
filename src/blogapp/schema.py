@@ -22,7 +22,7 @@ class CategoryNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                'article_set',
+                'article__set',
                 # 'doc_set',
                 # 'page_set'
                 ]
