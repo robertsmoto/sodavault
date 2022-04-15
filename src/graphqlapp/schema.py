@@ -6,7 +6,7 @@ import graphene
 
 class Query(
         advertisingapp.schema.Query,
-        # blogapp.schema.Query,
+        blogapp.schema.Query,
         configapp.schema.Query,
         ):
     pass
