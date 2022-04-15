@@ -157,19 +157,20 @@ class ArticleNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Article
         interfaces = (relay.Node, )
-        filter_fields = [
-                'websites__domain',
-                'categories__slug',
-                'categories__id',
-                'tags__slug',
-                'tags__id',
-                'is_primary',
-                'is_secondary',
-                'is_tertiary',
-                'is_featured',
-                'slug',
-                'status',
-                ]
+        filter_fields = {
+                'websites__domain': ['exact'],
+                'categories__slug': ['exact'],
+                'categories__id': ['exact'],
+                'tags__slug': ['exact'],
+                'tags__id': ['exact'],
+                'is_primary': ['exact'],
+                'is_secondary': ['exact'],
+                'is_tertiary': ['exact'],
+                'is_featured': ['exact'],
+                'slug': ['exact'],
+                'status': ['exact'],
+                'body': ['icontains'],
+                }
 
     def resolve_pub_year(self, info):
         return self.date_published.strftime("%Y")
