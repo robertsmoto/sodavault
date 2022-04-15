@@ -110,9 +110,6 @@ class MetaData(ContextMixin):
             # print("mdata", self.mdata)
             data_obj = self.mdata
 
-        print("###self", self.__dict__)
-        print("###data_obj", data_obj)
-
         # add/update the meta_contructor class with data_obj values
         for k, v in data_obj.items():
             vars(meta_constructor)[k] = v
@@ -121,19 +118,10 @@ class MetaData(ContextMixin):
         for k, v in vars(meta_constructor).items():
             vars(meta_constructor)[k] = clean_tags(v)
 
-        # customizes 'title >> sitename' for all urls except
-        # exclusion_list = [
-                # 'homeapp-home',
-                # 'home',
-                # ]
-
-        # if meta_constructor.url_name not in exclusion_list:
-
         sitename = config('ENV_MD_SITENAME')
         site = f"» {sitename}"
         meta_constructor.title = f"{meta_constructor.title} {site}"
 
         context['metadata'] = vars(meta_constructor)
 
-        print("###metadata")
         return context

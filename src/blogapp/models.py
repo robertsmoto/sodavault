@@ -2,7 +2,6 @@ from ckeditor_uploader.fields import RichTextUploadingField
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.urls import reverse
 import configapp.models
 import contactapp.models
 import datetime
@@ -706,11 +705,6 @@ class PostABC(models.Model):
     def __str__(self):
         return '%s' % (self.title)
 
-
-
-
-
-
     @property
     def parent_name(self):
         return self.parent.name
@@ -723,9 +717,6 @@ class PostABC(models.Model):
             return super().save(*args, **kwargs)
         self.slug = f"{parent_slug}-{self.slug}"
         super().save(*args, **kwargs)
-
-
-
 
 
 class Article(PostABC):
