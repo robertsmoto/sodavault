@@ -22,9 +22,9 @@ class CategoryNode(DjangoObjectType):
                 'is_primary',
                 'is_secondary',
                 'is_tertiary',
-                # 'article_set',
-                # 'doc_set'
-                # 'page_set'
+                'article__set',
+                'doc__set'
+                'page__set'
                 ]
 
     @classmethod
@@ -321,7 +321,7 @@ class Query(graphene.ObjectType):
     # all_docs = DjangoFilterConnectionField(DocNode)
     # pages = relay.Node.Field(PageNode)
     # all_pages = DjangoFilterConnectionField(PageNode)
-    categories = relay.Node.Field(CategoryNode)
+    category = relay.Node.Field(CategoryNode)
     all_categories = DjangoFilterConnectionField(CategoryNode)
     # tags = relay.Node.Field(TagNode)
     # all_tags = DjangoFilterConnectionField(TagNode)
