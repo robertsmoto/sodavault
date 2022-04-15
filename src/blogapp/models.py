@@ -675,33 +675,6 @@ class PostABC(models.Model):
             ]),
         ]
 
-    def mdata(self):
-        kwd_list = [x.lower().strip(' .') for x in self.kwd_list.split(',')]
-        random.shuffle(kwd_list)
-        keywords = ", ".join(kwd_list)
-
-        mdata = {
-                'title': self.title,
-                'description': self.excerpt,
-                'keywords': f'{keywords}, SODAvault.com',
-                'brcm_title': self.title,
-                'h1': self.title,
-                'og_title': self.title,
-                'og_description': f'{self.excerpt} SODAvault.com',
-                'tw_title': self.title,
-                'tw_description': f'{self.excerpt} SODAvault.com',
-                }
-        return mdata
-
-    # def get_absolute_url(self):
-        # return reverse(
-            # 'blogapp-detail',
-            # # should this include Y/M/d ?
-            # args=[
-                # str(self.slug)
-            # ],
-    #     )
-
     def __str__(self):
         return '%s' % (self.title)
 
@@ -757,6 +730,34 @@ class Article(PostABC):
     class Meta(PostABC.Meta):
         verbose_name_plural = 'Articles'
 
+    def mdata(self):
+        kwd_list = [x.lower().strip(' .') for x in self.kwd_list.split(',')]
+        random.shuffle(kwd_list)
+        keywords = ", ".join(kwd_list)
+
+        mdata = {
+                'title': self.title,
+                'description': self.excerpt,
+                'keywords': f'{keywords}, SODAvault.com',
+                'brcm_title': self.title,
+                'h1': self.title,
+                'og_title': self.title,
+                'og_description': f'{self.excerpt} SODAvault.com',
+                'tw_title': self.title,
+                'tw_description': f'{self.excerpt} SODAvault.com',
+                }
+        return mdata
+
+    # def get_absolute_url(self):
+        # return reverse(
+            # 'blogapp-detail',
+            # # should this include Y/M/d ?
+            # args=[
+                # str(self.slug)
+            # ],
+    #     )
+
+
 
 class Doc(PostABC):
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
@@ -776,6 +777,24 @@ class Doc(PostABC):
     class Meta(PostABC.Meta):
         verbose_name_plural = 'Documents'
 
+    def mdata(self):
+        kwd_list = [x.lower().strip(' .') for x in self.kwd_list.split(',')]
+        random.shuffle(kwd_list)
+        keywords = ", ".join(kwd_list)
+
+        mdata = {
+                'title': self.title,
+                'description': self.excerpt,
+                'keywords': f'{keywords}, SODAvault.com',
+                'brcm_title': self.title,
+                'h1': self.title,
+                'og_title': self.title,
+                'og_description': f'{self.excerpt} SODAvault.com',
+                'tw_title': self.title,
+                'tw_description': f'{self.excerpt} SODAvault.com',
+                }
+        return mdata
+
 
 class Page(PostABC):
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
@@ -794,6 +813,24 @@ class Page(PostABC):
 
     class Meta(PostABC.Meta):
         verbose_name_plural = 'Pages'
+
+    def mdata(self):
+        kwd_list = [x.lower().strip(' .') for x in self.kwd_list.split(',')]
+        random.shuffle(kwd_list)
+        keywords = ", ".join(kwd_list)
+
+        mdata = {
+                'title': self.title,
+                'description': self.excerpt,
+                'keywords': f'{keywords}, SODAvault.com',
+                'brcm_title': self.title,
+                'h1': self.title,
+                'og_title': self.title,
+                'og_description': f'{self.excerpt} SODAvault.com',
+                'tw_title': self.title,
+                'tw_description': f'{self.excerpt} SODAvault.com',
+                }
+        return mdata
 
 
 class Image(configapp.models.ImageABC):
