@@ -172,6 +172,7 @@ class ArticleNode(DjangoObjectType):
                 'slug': ['exact'],
                 'status': ['exact'],
                 'body': ['icontains'],
+                'parent': ['isnull'],
                 }
 
     def resolve_pub_year(self, info):
@@ -278,7 +279,7 @@ class PageNode(DjangoObjectType):
                 'is_featured': ['exact'],
                 'slug': ['exact'],
                 'status': ['exact'],
-                'parent': ['isnull'],
+                'parent': ['isnull']
                 }
 
     def resolve_pub_year(self, info):
