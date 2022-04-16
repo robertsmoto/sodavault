@@ -14,18 +14,19 @@ class CategoryNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Category
         interfaces = (relay.Node, )
-        filter_fields = [
-                'id',
-                'slug',
-                'name',
-                'order',
-                'is_primary',
-                'is_secondary',
-                'is_tertiary',
-                'article__websites__domain',
-                'doc__websites__domain',
-                'page__websites__domain',
-                ]
+        filter_fields = {
+                'id': ['exact'],
+                'slug': ['exact'],
+                'name': ['exact'],
+                'order': ['exact'],
+                'is_primary': ['exact'],
+                'is_secondary': ['exact'],
+                'is_tertiary': ['exact'],
+                'article__websites__domain': ['exact'],
+                'doc__websites__domain': ['exact'],
+                'page__websites__domain': ['exact'],
+                'parent': ['isnull'],
+                }
 
     @classmethod
     def get_queryset(cls, queryset, info):
@@ -36,17 +37,18 @@ class TagNode(DjangoObjectType):
     class Meta:
         model = blogapp.models.Tag
         interfaces = (relay.Node, )
-        filter_fields = [
-                'id',
-                'slug',
-                'name',
-                'is_primary',
-                'is_secondary',
-                'is_tertiary',
-                'article__websites__domain',
-                'doc__websites__domain',
-                'page__websites__domain',
-                ]
+        filter_fields = {
+                'id': ['exact'],
+                'slug': ['exact'],
+                'name': ['exact'],
+                'is_primary': ['exact'],
+                'is_secondary': ['exact'],
+                'is_tertiary': ['exact'],
+                'article__websites__domain': ['exact'],
+                'doc__websites__domain': ['exact'],
+                'page__websites__domain': ['exact'],
+                'parent': ['isnull'],
+                }
 
     @classmethod
     def get_queryset(cls, queryset, info):

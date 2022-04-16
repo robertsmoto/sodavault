@@ -13,6 +13,7 @@ class Navigation(ContextMixin):
                     status="PUBLI",
                     is_primary=True
                     ) \
+            .exclude(parent__isnull=True) \
             .only('title', 'slug')
         navigation["pages"] = pages_q
 
