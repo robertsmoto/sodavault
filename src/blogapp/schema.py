@@ -28,9 +28,9 @@ class CategoryNode(DjangoObjectType):
                 'parent': ['isnull'],
                 }
 
-    @classmethod
-    def get_queryset(cls, queryset, info):
-        return queryset.order_by('order', 'id').distinct('order', 'id')
+    # @classmethod
+    # def get_queryset(cls, queryset, info):
+        # return queryset.order_by('order', 'id').distinct('order', 'id')
 
 
 class TagNode(DjangoObjectType):
@@ -50,9 +50,9 @@ class TagNode(DjangoObjectType):
                 'parent': ['isnull'],
                 }
 
-    @classmethod
-    def get_queryset(cls, queryset, info):
-        return queryset.order_by('order', 'id').distinct('order', 'id')
+    # @classmethod
+    # def get_queryset(cls, queryset, info):
+        # return queryset.order_by('order', 'id').distinct('order', 'id')
 
 
 class OpeningHoursNode(DjangoObjectType):
