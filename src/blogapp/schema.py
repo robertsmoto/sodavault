@@ -29,7 +29,7 @@ class CategoryNode(DjangoObjectType):
                 }
 
     @classmethod
-    def get_queryset(cls, queryset, info):
+    def get_queryset(cls, queryset):
         return queryset.order_by('order', 'id').distinct('order', 'id')
 
 
@@ -51,7 +51,7 @@ class TagNode(DjangoObjectType):
                 }
 
     @classmethod
-    def get_queryset(cls, queryset, info):
+    def get_queryset(cls, queryset):
         return queryset.order_by('order', 'id').distinct('order', 'id')
 
 
@@ -106,7 +106,7 @@ class ImageNode(DjangoObjectType):
                 'order',
                 ]
 
-    def resolve_lg_11(self, info):
+    def resolve_lg_11(self):
         if not self.lg_11:
             return ""
         return self.lg_11.url
