@@ -113,6 +113,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sodavault.wsgi.application'
 
+AUTH_USER_MODEL = 'configapp.CustomUser'
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 

@@ -1,12 +1,12 @@
-from sodavault.custom_storage import MediaStorage
 from configapp.utils import images
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser
+# from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from sodavault.custom_storage import MediaStorage
 import uuid
-
 
 class Timestamps(models.Model):
     timestamp_created = models.DateTimeField(auto_now_add=True)
@@ -304,9 +304,13 @@ class CurrencyConfig(Timestamps, models.Model):
         return f"{self.currency}"
 
 
+class CustomUser(AbstractUser):
+    id = models.CharField(
+            primary_key=True,default=uuid.uuid4, editable=False, max_length=36)
+
 class Profile(models.Model):
     user = models.OneToOneField(
-            User,
+            settings.AUTH_USER_MODEL,
             on_delete=models.CASCADE)
     pen_name = models.CharField(max_length=100, blank=True)
     avatar = models.ImageField(
@@ -340,19 +344,55 @@ class Profile(models.Model):
     def __str__(self):
         return self.user.username
 
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL,
+)
+    def create_user_profile(sender, instance, created, **kwargs):
+        if created:
+            Profile.objects.create(user=instance)
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        Profile.objects.create(user=instance)
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def save_user_profile(sender, instance, **kwargs):
+        instance.profile.save()
 
+class APICredentials(models.Model):
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE)
+    auth = models.UUIDField(
+        primary_key = False,
+        blank = False,
+        null = False,
+        default = uuid.uuid4,
+        editable = True)
+    prefix = models.UUIDField(
+        primary_key = False,
+        blank = False,
+        null = False,
+        default = uuid.uuid4,
+        editable = True)
+    is_current = models.BooleanField(
+        default = False)
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.profile.save()
+    # class Meta:
+        # permissions = [
+            # ("create_users", "Can create new users."),
+            # ("view_token", "Can view token."),
+            # ("change_token", "Can change token."),
+        # ]
 
+    # def save(self, *args, **kwargs):
+        # if not self.cdn_dir:
+            # self.cdn_dir = str(uuid.uuid4())[:13]
+        # super().save(*args, **kwargs)
 
-# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
-# def create_auth_token(sender, instance=None, created=False, **kwargs):
-    # if created:
-#         Token.objects.create(user=instance)
+    def __str__(self):
+        return self.user.username
+
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def create_user_apicredentials(sender, instance, created, **kwargs):
+        if created:
+            APICredentials.objects.create(user=instance)
+
+    @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+    def save_user_apicredentials(sender, instance, **kwargs):
+        instance.apicredentials.save()

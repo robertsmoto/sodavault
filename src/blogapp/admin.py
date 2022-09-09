@@ -137,7 +137,7 @@ POST_FIELDS = [
     ("websites", "parent"),
     ("title", "slug"),
     ("menu_order", "is_primary", "is_secondary", "is_tertiary"),
-    ("author", "status", "is_featured"),
+    ("status", "is_featured"),
     ("date_published", "date_modified"),
     "excerpt",
     "body",
@@ -147,9 +147,9 @@ POST_FIELDS = [
 POST_SEARCH_FIELDS = ['title']
 POST_AUTOCOMPLETE = ["websites", "categories", "tags", "parent"]
 POST_INLINES = [ImageInline, ]
-POST_LIST_DISPLAY = ["title", "author", "status", "date_published"]
-POST_LIST_EDITABLE = ["author", "status"]
-POST_LIST_FILTER = ["author", "status", "websites__domain"]
+POST_LIST_DISPLAY = ["title", "status", "date_published"]
+POST_LIST_EDITABLE = ["status"]
+POST_LIST_FILTER = ["status", "websites__domain"]
 POST_PREPOPULATED_FIELDS = {"slug": ("title",)}
 
 

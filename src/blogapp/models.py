@@ -1,6 +1,6 @@
 from ckeditor_uploader.fields import RichTextUploadingField
-from django.conf import settings
-from django.contrib.auth.models import User
+# from django.conf import settings
+# from django.contrib.auth.models import User
 from django.db import models
 import configapp.models
 import contactapp.models
@@ -445,11 +445,11 @@ class Ingredient(models.Model):
 class Post(models.Model):
 
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
-    author = models.ForeignKey(
-            User,
-            on_delete=models.SET_NULL,
-            blank=True,
-            null=True)
+    # author = models.ForeignKey(
+            # settings.AUTH_USER_MODEL,
+            # on_delete=models.SET_NULL,
+            # blank=True,
+            # null=True)
     parent = models.ForeignKey(
             'self',
             related_name='children',
@@ -694,11 +694,11 @@ class PostABC(models.Model):
 
 class Article(PostABC):
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
-    author = models.ForeignKey(
-            User,
-            on_delete=models.SET_NULL,
-            blank=True,
-            null=True)
+    # author = models.ForeignKey(
+            # settings.AUTH_USER_MODEL,
+            # on_delete=models.SET_NULL,
+            # blank=True,
+            # null=True)
     categories = models.ManyToManyField(
             Category,
             blank=True)
@@ -760,12 +760,11 @@ class Article(PostABC):
 
 class Doc(PostABC):
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
-    author = models.ForeignKey(
-            User,
-            on_delete=models.SET_NULL,
-            blank=True,
-            null=True)
-
+    # author = models.ForeignKey(
+            # settings.AUTH_USER_MODEL,
+            # on_delete=models.SET_NULL,
+            # blank=True,
+            # null=True)
     categories = models.ManyToManyField(
             Category,
             blank=True)
@@ -797,11 +796,11 @@ class Doc(PostABC):
 
 class Page(PostABC):
     websites = models.ManyToManyField(contactapp.models.Website, blank=True)
-    author = models.ForeignKey(
-            User,
-            on_delete=models.SET_NULL,
-            blank=True,
-            null=True)
+    # author = models.ForeignKey(
+            # settings.AUTH_USER_MODEL,
+            # on_delete=models.SET_NULL,
+            # blank=True,
+            # null=True)
     categories = models.ManyToManyField(
             Category,
             blank=True)
@@ -833,12 +832,12 @@ class Page(PostABC):
 
 class Image(configapp.models.ImageABC):
 
-    user = models.ForeignKey(
-            settings.AUTH_USER_MODEL,
-            related_name='blog_user_images',
-            on_delete=models.CASCADE,
-            blank=True,
-            null=True)
+    # user = models.ForeignKey(
+            # settings.AUTH_USER_MODEL,
+            # related_name='blog_user_images',
+            # on_delete=models.CASCADE,
+            # blank=True,
+            # null=True)
     category = models.OneToOneField(
             Category,
             related_name='blog_category_images',
