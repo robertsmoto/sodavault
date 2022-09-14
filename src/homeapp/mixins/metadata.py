@@ -1,16 +1,16 @@
-from decouple import config, Csv
 from django.urls import resolve
 from django.utils import timezone
 from django.views.generic.base import ContextMixin
 import datetime
 import re
+import os
 
 NOW = timezone.now()
 
-topics = config('ENV_MD_TOPIC', cast=Csv())
+topics = os.getenv('MD_TOPIC', '').split(',')
 META_TOPIC = ", ".join(x for x in topics)
 
-kwds = config('ENV_MD_KEYWORDS', cast=Csv())
+kwds = os.getenv('MD_KEYWORDS', '').split(',')
 META_KEYWORDS = ", ".join(x for x in kwds)
 
 
@@ -19,38 +19,36 @@ class MetaConstructor:
 
     def __init__(self, request, context):
 
-        self.author = config('ENV_MD_AUTHOR', "")
-        self.description = config(
-                'ENV_MD_DESCRIPTION', "")
-        self.image = config('SOCIAL_IMAGE_SQ')
-        self.image016 = config('ENV_MD_IMAGE016')
-        self.image032 = config('ENV_MD_IMAGE032')
-        self.image048 = config('ENV_MD_IMAGE048')
-        self.image192 = config('ENV_MD_IMAGE192')
-        self.image512 = config('ENV_MD_IMAGE512')
+        self.author = os.getenv('MD_AUTHOR', '')
+        self.description = os.getenv('MD_DESCRIPTION', '')
+        self.image = os.getenv('SOCIAL_IMAGE_SQ', '')
+        self.image016 = os.getenv('MD_IMAGE016', '')
+        self.image032 = os.getenv('MD_IMAGE032', '')
+        self.image048 = os.getenv('MD_IMAGE048', '')
+        self.image192 = os.getenv('MD_IMAGE192', '')
+        self.image512 = os.getenv('MD_IMAGE512', '')
         self.keywords = META_KEYWORDS
-        self.og_title = config('ENV_MD_TITLE', "")
-        self.og_description = config(
-                'ENV_MD_DESCRIPTION', "")
-        self.og_image = config('SOCIAL_IMAGE_SQ')
-        self.og_locale = config('SOCIAL_LOCALE')
-        self.og_sitename = config('ENV_MD_SITENAME')
-        self.og_type = config('SOCIAL_TYPE')
-        self.og_url = config('SOCIAL_URL')
+        self.og_title = os.getenv('MD_TITLE', '')
+        self.og_description = os.getenv('MD_DESCRIPTION', '')
+        self.og_image = os.getenv('SOCIAL_IMAGE_SQ', '')
+        self.og_locale = os.getenv('SOCIAL_LOCALE', '')
+        self.og_sitename = os.getenv('MD_SITENAME', '')
+        self.og_type = os.getenv('SOCIAL_TYPE', '')
+        self.og_url = os.getenv('SOCIAL_URL', '')
         self.published = (
             NOW - datetime.timedelta(days=3)).strftime("%Y-%m-%d")
         self.revised = (
             NOW - datetime.timedelta(days=1)).strftime("%Y-%m-%d")
-        self.sitename = config('ENV_MD_SITENAME')
-        self.subject = config('ENV_MD_SUBJECT', "")
-        self.title = config('ENV_MD_TITLE', "")
+        self.sitename = os.getenv('MD_SITENAME', '')
+        self.subject = os.getenv('MD_SUBJECT', '')
+        self.title = os.getenv('MD_TITLE', '')
         self.topic = META_TOPIC
-        self.tw_title = config('ENV_MD_TITLE', "")
-        self.tw_description = config('ENV_MD_DESCRIPTION', "")
-        self.tw_image = config('SOCIAL_IMAGE_SQ')
-        self.tw_card = config('SOCIAL_TWITTER_CARD')
-        self.tw_creator = config('SOCIAL_CREATOR')
-        self.tw_site = config('ENV_MD_SITENAME')
+        self.tw_title = os.getenv('MD_TITLE', '')
+        self.tw_description = os.getenv('MD_DESCRIPTION', '')
+        self.tw_image = os.getenv('SOCIAL_IMAGE_SQ', '')
+        self.tw_card = os.getenv('SOCIAL_TWITTER_CARD', '')
+        self.tw_creator = os.getenv('SOCIAL_CREATOR', '')
+        self.tw_site = os.getenv('MD_SITENAME', '')
         self.type = "article"
 
         # Add author data to meta_obj
@@ -118,7 +116,7 @@ class MetaData(ContextMixin):
         for k, v in vars(meta_constructor).items():
             vars(meta_constructor)[k] = clean_tags(v)
 
-        sitename = config('ENV_MD_SITENAME')
+        sitename = os.getenv('MD_SITENAME', '')
         site = f"» {sitename}"
         meta_constructor.title = f"{meta_constructor.title} {site}"
 

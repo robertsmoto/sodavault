@@ -1,4 +1,3 @@
-from decouple import config
 from django.utils import timezone
 from imagekit import ImageSpec
 from imagekit.processors import ResizeToFill
@@ -16,7 +15,7 @@ def check_and_remove_s3(file_path: str) -> None:
     """
     ENV_MEDIA_URL=https://cdn-stage.sodavault.com/media/
     """
-    media_url = config('ENV_MEDIA_URL')
+    media_url = os.getenv('ENV_MEDIA_URL', '')
     if file_path.startswith(media_url):
         print("###starts_with: True")
         file_path = file_path.replace(media_url, '')
@@ -26,15 +25,15 @@ def check_and_remove_s3(file_path: str) -> None:
 
     s3resource = boto3.resource(
             's3',
-            region_name=config('ENV_AWS_S3_REGION_NAME'),
-            endpoint_url=config('ENV_AWS_S3_ENDPOINT_URL'),
-            aws_access_key_id=config('ENV_AWS_ACCESS_KEY_ID'),
-            aws_secret_access_key=config(
-                'ENV_AWS_SECRET_ACCESS_KEY'))
+            region_name=os.getenv('ENV_AWS_S3_REGION_NAME', ''),
+            endpoint_url=os.getenv('ENV_AWS_S3_ENDPOINT_URL', ''),
+            aws_access_key_id=os.getenv('ENV_AWS_ACCESS_KEY_ID', ''),
+            aws_secret_access_key=os.getenv(
+                'ENV_AWS_SECRET_ACCESS_KEY', ''))
 
     try:
-        s3resource.Object(config(
-            'ENV_AWS_STORAGE_BUCKET_NAME'), file_path).load()
+        s3resource.Object(os.getenv(
+            'ENV_AWS_STORAGE_BUCKET_NAME', ''), file_path).load()
     except botocore.exceptions.ClientError as e:
         if e.response['Error']['Code'] == "404":
             # The object does not exist.
@@ -46,13 +45,13 @@ def check_and_remove_s3(file_path: str) -> None:
         # The object does exist.
         print("s3 object exists, deleted it before uploading.")
         s3resource.Object(
-                config('ENV_AWS_STORAGE_BUCKET_NAME'),
+                os.getenv('ENV_AWS_STORAGE_BUCKET_NAME', ''),
                 file_path).delete()
 
     return
 
 
-def check_and_remove_dir(dir_path=None):
+def check_and_remove_dir(dir_path: str):
     try:
         shutil.rmtree(dir_path)
     except OSError as e:
@@ -71,7 +70,7 @@ def check_and_remove_file(file_path: str) -> None:
     return
 
 
-def write_image_to_path(image_read: object, file_path: dict) -> None:
+def write_image_to_path(image_read: bytearray, file_path: str) -> None:
     """Writes file to given file_path."""
     # write only creates the file, not the dir
     dest = open(file_path, 'wb')

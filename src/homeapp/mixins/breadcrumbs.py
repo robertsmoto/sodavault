@@ -1,6 +1,6 @@
-from decouple import config
 from django.urls import reverse, resolve
 from django.views.generic.base import ContextMixin
+import os
 
 
 def breadcrumb_processor(self, *args, **kwargs) -> str:
@@ -106,6 +106,5 @@ class BrCrumb(ContextMixin):
         breadcrumbs = breadcrumb_processor(self=self)
         context = super().get_context_data()
         context['breadcrumbs'] = breadcrumbs
-        context['breadcrumb_bg_color'] = config(
-                'ENV_BREADCRUMB_BG_COLOR')
+        context['breadcrumb_bg_color'] = os.getenv('BREADCRUMB_BG_COLOR', '')
         return context

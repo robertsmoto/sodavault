@@ -1,12 +1,22 @@
-from decouple import config, Csv
 from pathlib import Path
 import os
+import json
+
+# LOAD THE ENVIRONMENT VARIABLES
+def load_env(fpath: str) -> None:
+    env_data = json.loads(open(fpath, "r").read())
+    for key, value in env_data.items():
+        os.environ[key] = value
+CONFPATH = os.getenv('CONFPATH')
+if not CONFPATH:
+    CONFPATH="/etc/sv/conf-sv-development.json"
+load_env(CONFPATH)
 
 # ENVIRONMENT
-DEBUG = config('ENV_DEBUG', default=False, cast=bool)
-SECRET_KEY = config('ENV_SECRET_KEY')
-INTERNAL_IPS = config('ENV_INTERNAL_IPS', default='', cast=Csv())
-ALLOWED_HOSTS = config('ENV_ALLOWED_HOSTS', cast=Csv())
+DEBUG = (os.getenv('DEBUG', 'False') == 'True')
+SECRET_KEY = os.getenv('SECRET_KEY', '')
+INTERNAL_IPS = os.getenv('INTERNAL_IPS', '').split(',')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
 
 # COMMON SETTINGS
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -21,9 +31,9 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
         'file': {
-            'level': config('LOG_LEVEL'),
+            'level': os.getenv('LOG_LEVEL', 'ERROR'),
             'class': 'logging.FileHandler',
-            'filename': config('LOG_FILE'),
+            'filename': os.getenv('LOG_FILE', ''),
         },
     },
     'root': {
@@ -54,20 +64,16 @@ INSTALLED_APPS = [
     'django_filters',
     'django_hosts',
     'django_registration',
-    'graphene_django',
     'imagekit',
     'nested_admin',
     'rest_framework',
     'rest_framework.authtoken',
     'storages',
 
-    # my apps
     'advertisingapp',
     'blogapp',
     'configapp',
     'contactapp',
-    # 'docsapp',
-    'graphqlapp',
     'homeapp',
     'itemsapp',
     'ledgerapp',
@@ -151,37 +157,37 @@ AUTHENTICATION_BACKENDS = [
 # DATABASE
 DATABASES = {
     'default': {
-        'ENGINE': config('ENV_DB_ENGINE'),
-        'NAME': config('ENV_DB_NAME'),
-        'USER': config('ENV_DB_USER'),
-        'PASSWORD': config('ENV_DB_PASSWORD'),
-        'HOST': config('ENV_DB_HOST'),
-        'PORT': config('ENV_DB_PORT'),
+        'ENGINE': os.getenv('PGDB_ENGINE'),
+        'NAME': os.getenv('PGDB_NAME'),
+        'USER': os.getenv('PGDB_USER'),
+        'PASSWORD': os.getenv('PGDB_PASSWORD'),
+        'HOST': os.getenv('PGDB_HOST'),
+        'PORT': os.getenv('PGDB_PORT'),
     }
 }
 
 # TIMEZONE, LANGUAGE, ENCODING
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
-LANGUAGE_CODE = config('ENV_LANGUAGE_CODE')
-USE_TZ = config('ENV_USE_TZ')
-TIME_ZONE = config('ENV_TIME_ZONE')
-USE_I18N = config('ENV_USE_I18N')
-USE_L10N = config('ENV_USE_L10N')
+LANGUAGE_CODE = os.getenv('LANGUAGE_CODE')
+USE_TZ = os.getenv('USE_TZ')
+TIME_ZONE = os.getenv('TIME_ZONE')
+USE_I18N = os.getenv('USE_I18N')
+USE_L10N = os.getenv('USE_L10N')
 
 GRAPHENE = {'SCHEMA': 'graphqlapp.schema.schema', }
 
 # STORAGE
-STATICFILES_DIRS = config('ENV_STATICFILES_DIRS', cast=Csv())
-STATIC_URL = config('ENV_STATIC_URL')
-MEDIA_URL = config('ENV_MEDIA_URL')
+STATICFILES_DIRS = os.getenv('STATICFILES_DIRS', '').split(',')
+STATIC_URL = os.getenv('STATIC_URL')
+MEDIA_URL = os.getenv('MEDIA_URL')
 
-if config('ENV_USE_SPACES', cast=bool):
-    AWS_ACCESS_KEY_ID = config('ENV_AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = config('ENV_AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = config('ENV_AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_CUSTOM_DOMAIN = config('ENV_AWS_S3_CUSTOM_DOMAIN')
-    AWS_S3_REGION_NAME = config('ENV_AWS_S3_REGION_NAME')
-    AWS_S3_ENDPOINT_URL = config('ENV_AWS_S3_ENDPOINT_URL')
+if (os.getenv('AWS_USE_SPACES', 'False') == 'True'):
+    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
+    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
+    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+    AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
+    AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
         'ACL': 'public-read',
@@ -190,17 +196,17 @@ if config('ENV_USE_SPACES', cast=bool):
     STATICFILES_STORAGE = 'sodavault.custom_storage.StaticStorage'
     DEFAULT_FILE_STORAGE = 'sodavault.custom_storage.MediaStorage'
 else:
-    STATIC_ROOT = config('ENV_STATIC_ROOT')
-    MEDIA_ROOT = config('ENV_MEDIA_ROOT')
+    STATIC_ROOT = os.getenv('STATIC_ROOT')
+    MEDIA_ROOT = os.getenv('MEDIA_ROOT')
 
 # EMAIL
-SERVER_EMAIL = config('ENV_SERVER_EMAIL')
-EMAIL_BACKEND = config('ENV_EMAIL_BACKEND')
-EMAIL_HOST = config('ENV_EMAIL_HOST')
-EMAIL_USE_TLS = config('ENV_EMAIL_USE_TLS', cast=bool)
-EMAIL_PORT = config('ENV_EMAIL_PORT', cast=int)
-EMAIL_HOST_USER = config('ENV_EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = config('ENV_EMAIL_HOST_PASSWORD')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL')
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_USE_TLS = (os.getenv('EMAIL_USE_TLS', 'False') == 'True')
+EMAIL_PORT = (os.getenv('EMAIL_PORT', 'False') == 'True')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -232,7 +238,7 @@ CKEDITOR_UPLOAD_PATH = "ckeditor_uploads/"
 CKEDITOR_RESTRICT_BY_USER = True
 CKEDITOR_BROWSE_SHOW_DIRS = True
 AWS_QUERYSTRING_AUTH = False
-# the wordcount pluging config is in the ckeditor/config.js file
+# the wordcount pluging os.getenv is in the ckeditor/os.getenv.js file
 CKEDITOR_CONFIGS = {
     'default': {
         # 'toolbar': 'Basic',
@@ -241,9 +247,9 @@ CKEDITOR_CONFIGS = {
             ['Source', '-', 'Bold', 'Italic']
         ],
 #         'toolbar_CustomConfig': [
-            # # custom toolbar config here
+            # # custom toolbar os.getenv here
         # ],
-        # 'toolbar': 'CustomConfig', # <-- use custom config
+        # 'toolbar': 'CustomConfig', # <-- use custom os.getenv
         'height': 100,
         'tabSpaces': 4,
         'removePlugins': 'stylesheetparser',
@@ -314,7 +320,7 @@ CKEDITOR_CONFIGS = {
             },
 
         ],
-        'toolbar': 'Basic',  # <-- use custom config
+        'toolbar': 'Basic',  # <-- use custom os.getenv
         'codeSnippet_theme': 'groovebox',
         'height': 300,
         'tabSpaces': 4,
