@@ -68,7 +68,7 @@ class MetaConstructor:
 
         # Values from request
         self.url = request.build_absolute_uri
-        canonical = context.get('canonical')
+        canonical = context.get('canonical', '')
         if canonical:
             meta_canonical = request.build_absolute_uri
             if isinstance(meta_canonical, str):

@@ -66,13 +66,14 @@ urlpatterns = [
         name='django-registration-logout'),
     path(
         'accounts/register/',
-        CustomRegistrationView.as_view(success_url='/core/'),
+        CustomRegistrationView.as_view(success_url='/dashboard/'),
         name='django-registration-register'),
-    path('advertising/', include('advertisingapp.urls')),
-    path('content/', include('blogapp.urls')),
     # path('core/', include('coreapp.urls')),
-    path('config/', include('configapp.urls')),
-    path('items/', include('itemsapp.urls')),
+    # path('creator/', include('creatorapp.urls')),
+    # path('config/', include('configapp.urls')),
+    # path('advertising/', include('advertisingapp.urls')),
+    # path('content/', include('blogapp.urls')),
+    # path('items/', include('itemsapp.urls')),
 ]
 
 

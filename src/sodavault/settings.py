@@ -1,26 +1,53 @@
+from os.path import exists
 from pathlib import Path
-import os
+from pathlib import Path
 import json
+import os
+import yaml
 
-# LOAD THE ENVIRONMENT VARIABLES
-def load_env(fpath: str) -> None:
-    env_data = json.loads(open(fpath, "r").read())
-    for key, value in env_data.items():
-        os.environ[key] = value
-CONFPATH = os.getenv('CONFPATH')
-if not CONFPATH:
-    CONFPATH="/etc/sv/conf-sv-development.json"
-load_env(CONFPATH)
+"""Switch beween servers using:
+    $ SERVER=development python manage.py runserver """
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+SERVER = os.getenv('SERVER', 'development').lower()
+CONFIG_DIR = os.path.join('/etc/sv/', SERVER)
+
+# read the ini.yaml file into CONF{} then dict is available at: settings.CONF
+
+file_exists = exists(os.path.join(CONFIG_DIR, 'ini.yaml'))
+if not file_exists:
+    raise Exception("Can't find ini.yaml file.")
+
+file_exists = exists(os.path.join(CONFIG_DIR, 'settings.yaml'))
+if not file_exists:
+    raise Exception("Can't find settings.yaml file.")
+
+ini_dict = {}
+set_dict = {}
+
+with open(os.path.join(CONFIG_DIR, 'ini.yaml'), "r") as stream:
+    try:
+        ini_dict = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+with open(os.path.join(CONFIG_DIR, 'settings.yaml'), "r") as stream:
+    try:
+        set_dict = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
+
+CONF = {**ini_dict, **set_dict}
+# ################################################
+pretty = json.dumps(CONF, indent=2)
+print("CONF", pretty)
+# ################################################
 
 # ENVIRONMENT
-DEBUG = (os.getenv('DEBUG', 'False') == 'True')
-SECRET_KEY = os.getenv('SECRET_KEY', '')
-INTERNAL_IPS = os.getenv('INTERNAL_IPS', '').split(',')
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',')
-
-# COMMON SETTINGS
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+DEBUG = CONF.get('django', {}).get('debug', False)
+SECRET_KEY = CONF.get('django', {}).get('secret_key', '')
+INTERNAL_IPS = CONF.get('django', {}).get('internal_ips', '').split(',')
+ALLOWED_HOSTS = CONF.get('django', {}).get('allowed_hosts', '').split(',')
 
 # LOGGING
 LOGGING = {
@@ -31,9 +58,9 @@ LOGGING = {
             'class': 'logging.StreamHandler',
         },
         'file': {
-            'level': os.getenv('LOG_LEVEL', 'ERROR'),
+            'level': CONF.get('log', {}).get('level', 'ERROR'),
             'class': 'logging.FileHandler',
-            'filename': os.getenv('LOG_FILE', ''),
+            'filename': CONF.get('log', {}).get('file', ''),
         },
     },
     'root': {
@@ -66,19 +93,12 @@ INSTALLED_APPS = [
     'django_registration',
     'imagekit',
     'nested_admin',
-    'rest_framework',
-    'rest_framework.authtoken',
+    # 'rest_framework',
+    # 'rest_framework.authtoken',
     'storages',
 
-    'advertisingapp',
-    'blogapp',
-    'configapp',
-    'contactapp',
+    'creatorapp',
     'homeapp',
-    'itemsapp',
-    'ledgerapp',
-    'peopleapp',
-    'transactionsapp',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +139,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'sodavault.wsgi.application'
 
-AUTH_USER_MODEL = 'configapp.CustomUser'
+# AUTH_USER_MODEL = 'homeapp.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -143,51 +163,40 @@ AUTHENTICATION_BACKENDS = [
     'django.contrib.auth.backends.ModelBackend',
 ]
 
-# REST_FRAMEWORK = {
-    # # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # # 'PAGE_SIZE': 10,
-    # 'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.TokenAuthentication',
-    # ),
-    # 'DEFAULT_PERMISSION_CLASSES': (
-        # 'rest_framework.permissions.IsAuthenticated',
-    # )
-# }
-
 # DATABASE
 DATABASES = {
     'default': {
-        'ENGINE': os.getenv('PGDB_ENGINE'),
-        'NAME': os.getenv('PGDB_NAME'),
-        'USER': os.getenv('PGDB_USER'),
-        'PASSWORD': os.getenv('PGDB_PASSWORD'),
-        'HOST': os.getenv('PGDB_HOST'),
-        'PORT': os.getenv('PGDB_PORT'),
+        'ENGINE': CONF.get('postgres', {}).get('engine', ''),
+        'NAME': CONF.get('postgres', {}).get('name', ''),
+        'USER': CONF.get('postgres', {}).get('user', ''),
+        'PASSWORD': CONF.get('postgres', {}).get('pass', ''),
+        'HOST': CONF.get('postgres', {}).get('host', ''),
+        'PORT': CONF.get('postgres', {}).get('port', ''),
     }
 }
 
 # TIMEZONE, LANGUAGE, ENCODING
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
-LANGUAGE_CODE = os.getenv('LANGUAGE_CODE')
-USE_TZ = os.getenv('USE_TZ')
-TIME_ZONE = os.getenv('TIME_ZONE')
-USE_I18N = os.getenv('USE_I18N')
-USE_L10N = os.getenv('USE_L10N')
+LANGUAGE_CODE = CONF.get('django', {}).get('language_code', '')
+USE_TZ = CONF.get('django', {}).get('use_tz', '')
+TIME_ZONE = CONF.get('django', {}).get('time_zone')
+USE_I18N = CONF.get('django', {}).get('use_I18N', '')
+USE_L10N = CONF.get('django', {}).get('use_L10N', '')
 
 GRAPHENE = {'SCHEMA': 'graphqlapp.schema.schema', }
 
 # STORAGE
-STATICFILES_DIRS = os.getenv('STATICFILES_DIRS', '').split(',')
-STATIC_URL = os.getenv('STATIC_URL')
-MEDIA_URL = os.getenv('MEDIA_URL')
+STATICFILES_DIRS = CONF.get('dirs', {}).get('staticfiles_dirs', '').split(',')
+STATIC_URL = CONF.get('dirs', {}).get('static_url', '')
+MEDIA_URL = CONF.get('dirs', {}).get('media_url', '')
 
-if (os.getenv('AWS_USE_SPACES', 'False') == 'True'):
-    AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
-    AWS_S3_REGION_NAME = os.getenv('AWS_S3_REGION_NAME')
-    AWS_S3_ENDPOINT_URL = os.getenv('AWS_S3_ENDPOINT_URL')
+if CONF.get('aws', {}).get('use_spaces', False):
+    AWS_ACCESS_KEY_ID = CONF.get('aws', {}).get('access_key_id', '')
+    AWS_SECRET_ACCESS_KEY = CONF.get('aws', {}).get('secret_access_key', '')
+    AWS_STORAGE_BUCKET_NAME = CONF.get('aws', {}).get('storage_bucket_name', '')
+    AWS_S3_CUSTOM_DOMAIN = CONF.get('aws', {}).get('custom_domain', '')
+    AWS_S3_REGION_NAME = CONF.get('aws', {}).get('s3_region_name', '')
+    AWS_S3_ENDPOINT_URL = CONF.get('aws', {}).get('s3_endpoint_url', '')
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
         'ACL': 'public-read',
@@ -196,17 +205,17 @@ if (os.getenv('AWS_USE_SPACES', 'False') == 'True'):
     STATICFILES_STORAGE = 'sodavault.custom_storage.StaticStorage'
     DEFAULT_FILE_STORAGE = 'sodavault.custom_storage.MediaStorage'
 else:
-    STATIC_ROOT = os.getenv('STATIC_ROOT')
-    MEDIA_ROOT = os.getenv('MEDIA_ROOT')
+    STATIC_ROOT = CONF.get('dirs', {}).get('static_root', '')
+    MEDIA_ROOT = CONF.get('dirs', {}).get('media_root', '')
 
 # EMAIL
-SERVER_EMAIL = os.getenv('SERVER_EMAIL')
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_USE_TLS = (os.getenv('EMAIL_USE_TLS', 'False') == 'True')
-EMAIL_PORT = (os.getenv('EMAIL_PORT', 'False') == 'True')
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+SERVER_EMAIL = CONF.get('email', {}).get('server_email', '')
+EMAIL_BACKEND = CONF.get('email', {}).get('email_backend', '')
+EMAIL_HOST = CONF.get('email', {}).get('email_host', '')
+EMAIL_USE_TLS = CONF.get('email', {}).get('email_use_tls', False)
+EMAIL_PORT = CONF.get('email', {}).get('email_port', 587)
+EMAIL_HOST_USER = CONF.get('email', {}).get('email_host_user', '')
+EMAIL_HOST_PASSWORD = CONF.get('email', {}).get('email_host_password', '')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -241,108 +250,58 @@ AWS_QUERYSTRING_AUTH = False
 # the wordcount pluging os.getenv is in the ckeditor/os.getenv.js file
 CKEDITOR_CONFIGS = {
     'default': {
-        # 'toolbar': 'Basic',
+        'width': '100%',
         'skin': 'moonocolor',
-        'toolbar_Basic': [
-            ['Source', '-', 'Bold', 'Italic']
+        'toolbar': 'Basic',
+    },
+    'sv': {
+        'width': '100%',
+        'autogrow_minHeight': 800,
+        'autogrow_bottomSpace': 100,
+        'skin': 'moonocolor',
+        'disableNativeSpellChecker': 'false',
+        'toolbar': 'Custom',
+        'toolbar_Custom': [
+            ['Source'],
+            ['Format'],
+            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript',
+                'Superscript', '-', 'RemoveFormat'
+                ],
+            # ['Styles'],
+            ['Styles', 'Format', 'Font', 'FontSize'],
+            ['CodeSnippet'],
+            ['Link', 'Unlink', 'Anchor'],
+            ['Image', 'Table', 'HorizontalRule', 'SpecialChar',
+                'PageBreak', 'Iframe', 'UploadImage'
+                ],
+            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent',
+                '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft',
+                'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
+                'BidiLtr', 'BidiRtl', 'Language'
+                ],
+            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-',
+                'Undo', 'Redo'
+                ]
         ],
-#         'toolbar_CustomConfig': [
-            # # custom toolbar os.getenv here
-        # ],
-        # 'toolbar': 'CustomConfig', # <-- use custom os.getenv
-        'height': 100,
+        'codeSnippet_theme': 'github',
         'tabSpaces': 4,
         'removePlugins': 'stylesheetparser',
         'extraPlugins': ','.join([
             'uploadimage', # the upload image feature
-            # your extra plugins here
             'div',
             'autolink',
             'autoembed',
-            'embedsemantic',
             'autogrow',
-            # 'devtools',
-            'widget',
-            'lineutils',
-            'clipboard',
-            'dialog',
-            'dialogui',
-            'elementspath'
-        ]),
-    },
-    'blog': {
-        'skin': 'moonocolor',
-        'toolbar_Basic': [
-            ['Source', ],
-            {
-                'name': 'styles',
-                'items': [
-                    'Format', ]  # 'Styles', 'Font', 'FontSize']
-            },
-
-            # ['-', 'Bold', 'Italic',],
-            {
-                'name': 'basicstyles',
-                'items': [
-                    'Bold', 'Italic', 'Underline', 'Strike', 'Subscript',
-                    'Superscript', '-', 'RemoveFormat']
-            },
-            {'name': 'styles', 'items': ['Styles', ]},
-            ['CodeSnippet', 'Code'],
-            {
-                'name': 'links',
-                'items': ['Link', 'Unlink', 'Anchor']
-            },
-            {
-                'name': 'insert',
-                'items': [
-                     'Image', 'Table', 'HorizontalRule', 'SpecialChar',
-                     'PageBreak', 'Iframe', 'UploadImage', ]
-            },
-            {
-                'name': 'codesnippet',
-                'items': ['code', 'codeblock', ]
-            },
-            '/',
-            {
-                'name': 'paragraph',
-                'items': [
-                    'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent',
-                    '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft',
-                    'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
-                    'BidiLtr', 'BidiRtl', 'Language']
-            },
-            {
-                'name': 'clipboard',
-                'items': [
-                    'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-',
-                    'Undo', 'Redo']
-            },
-
-        ],
-        'toolbar': 'Basic',  # <-- use custom os.getenv
-        'codeSnippet_theme': 'groovebox',
-        'height': 300,
-        'tabSpaces': 4,
-        # "removePlugins": "stylesheetparser",
-        'extraPlugins': ','.join([
-            'uploadimage',  # the upload image feature
-            # your extra plugins here
             'codesnippet',
-            'wordcount',
-            # 'spreadsheet',
-            'div',
-            'autolink',
-            'autoembed',
             'embedsemantic',
-            'autogrow',
-            # 'devtools',
             'widget',
             'lineutils',
             'clipboard',
             'dialog',
             'dialogui',
-            'elementspath'
+            'elementspath',
+            'wordcount'
         ]),
     },
 }
+

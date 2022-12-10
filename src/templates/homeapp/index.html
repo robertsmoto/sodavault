@@ -1,31 +1,10 @@
 {% extends 'homeapp/base.html' %}
 {% block title %}{{object.title}}{% endblock %}
-{% block content %}
 {% load static %}
-
-{% if not object %}<p>Oops, something went wrong ...</p>{% endif %} 
-
-<div class='row'>
-  <article class='col-12 col-xl-8'>
-      {% comment %}
-    {% if images.featured %}
-      <figure>
-        <img 
-          src="{{ images.featured.lg_21.url }}" 
-          title="{{images.featured.title}}" 
-          class="bfp-photofeatured" 
-          style="width: 100%;">
-      {% endif %}
-      {% if images.featured.caption %}
-        <figcaption class="border bg-light py-1 px-3 mt-2 text-center">
-          <i>{{images.featured.caption}}</i>
-        </figcaption>
-      </figure>
-    {% endif %}
-      {% endcomment %}
-
-
-    <h1>{{ object.title }}</h1>
+{% block content %}
+<article>
+  {% if not object %}<p>Oops, something went wrong ...</p>{% endif %} 
+  <h1>{{ object.title }}</h1>
 
     <p class="w-100 mt-3">
       {{ object.body|safe }}
@@ -56,11 +35,6 @@
       </footer>
     {% endif %}
 
-  </article>
+</article>
 
-  <div class="col-none col-xl-4 d-none d-xl-block" >
-    {% include "homeapp/sidebar.html" %}
-  </div>
-
-</div>
 {% endblock %}

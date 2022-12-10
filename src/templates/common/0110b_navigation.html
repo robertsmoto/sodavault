@@ -1,0 +1,106 @@
+{% load static %}
+
+<nav class="sticky-top navbar-light bg-light">
+  <div class="container">
+    <div  class="py-3 col-12 d-inline-flex">
+
+
+    {% if user.is_authenticated %}
+
+    <a class="navbar-brand" href="{% url 'home'%}">
+      <img class="d-block d-md-none" src="{% static 'homeapp/sv_letters.png' %}" height="30px" alt="SODAvault logo" >
+      <img class="d-none d-md-block" src="{% static 'homeapp/sv_logo_w_30h.png' %}" height="30px" alt="SODAvalut logo" >
+    </a>
+
+    <ul class="navbar-nav mb-0">
+
+      <li class="button nav-item dropdown">
+        <a 
+          class="nav-link dropdown-toggle" 
+          href="#" id="navbarDropdown" 
+          role="button" data-toggle="dropdown" aria-expanded="false">
+          Core
+        </a>
+
+        <div class="dropdown-menu">
+
+        {% for page in navigation.pages %}
+            <a 
+            class="dropdown-item" 
+            href="{% url 'home-detail-view' page.type page.id %}"
+            >{{page.title}}
+            </a>
+        {% empty %}
+            <a 
+            class="dropdown-item" 
+            href="#"
+            >## add a page ##
+            </a>
+        {% endfor %}
+
+
+        <hr class="dropdown-divider">
+
+        {% for doc in navigation.docs %}
+            <a 
+            class="dropdown-item" 
+            href="{% url 'blogapp-doc-detail' slug=doc.slug %}"
+            >{{doc.title}}
+            </a>
+        {% empty %}
+            <a 
+            class="dropdown-item" 
+            href="#"
+            >## add a doc ##
+            </a>
+        {% endfor %}
+
+        </div>
+      </li>
+    </ul>
+
+    <div class="float-right nav-item" style="margin-left: auto;">
+      {% comment %}<a class="btn btn-success" href="{% url 'blogapp-doc-list' %}">Docs</a>{% endcomment %}
+      <a class="btn btn-outline-danger" href="{% url 'django-registration-logout' %}">Logout</a>
+    </div>
+
+    {% else %}
+
+    <a class="navbar-brand" href="{% url 'home'%}">
+      <img class="d-block d-md-none" src="{% static 'homeapp/sv_letters.png' %}" height="30px" alt="SODAvault logo" >
+      <img class="d-none d-md-block" src="{% static 'homeapp/sv_logo_w_30h.png' %}" height="30px" alt="SODAvalut logo" >
+    </a>
+
+
+    <ul class="navbar-nav mb-0" style="z-index: 100;">
+      <li class="button nav-item dropdown">
+        <a 
+          class="nav-link dropdown-toggle" 
+          href="#" id="navbarDropdown" 
+          role="button" data-toggle="dropdown" aria-expanded="false">
+          Information
+        </a>
+
+        <div class="dropdown-menu">
+          {% for page in navigation.pages %}
+            <a 
+              class="dropdown-item" 
+              href="{% url 'blogapp-page-detail' slug=page.slug %}"
+            >{{page.title}}
+            </a>
+          {% endfor %}
+        </div>
+
+      </li>
+    </ul>
+
+    <div class="float-right nav-item" style="margin-left: auto;">
+      <a class="btn btn-outline-success " href="{% url 'django-registration-login' %}">Login</a>
+      <a class="btn btn-success " href="{% url 'django-registration-register' %}">Register</a>
+    </div>
+    {% endif %}
+
+    </div>
+  </div>
+</nav>
+
