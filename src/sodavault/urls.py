@@ -26,7 +26,7 @@ import debug_toolbar
 class CustomRegistrationView(Navigation, RegistrationView):
     def get_context_data(self, **kwargs):
         context = super(
-                CustomRegistrationView, self).get_context_data(**kwargs)
+            CustomRegistrationView, self).get_context_data(**kwargs)
         context["context"] = context
         return context
 
@@ -51,8 +51,9 @@ admin.site.site_title = 'SODAVault Admin'
 urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', include('homeapp.urls')),
+    path('cms/', include('cmsapp.urls')),
     path('admin/', admin.site.urls),
-    path('_nested_admin/', include('nested_admin.urls')),
+    # path('_nested_admin/', include('nested_admin.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('django_registration.backends.one_step.urls')),
@@ -68,17 +69,11 @@ urlpatterns = [
         'accounts/register/',
         CustomRegistrationView.as_view(success_url='/dashboard/'),
         name='django-registration-register'),
-    # path('core/', include('coreapp.urls')),
-    # path('creator/', include('creatorapp.urls')),
-    # path('config/', include('configapp.urls')),
-    # path('advertising/', include('advertisingapp.urls')),
-    # path('content/', include('blogapp.urls')),
-    # path('items/', include('itemsapp.urls')),
 ]
 
 
 if settings.DEBUG:
     urlpatterns += static(
-            settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+        settings.STATIC_URL, document_root=settings.STATIC_ROOT)
     urlpatterns += static(
-            settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

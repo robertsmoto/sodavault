@@ -26,13 +26,8 @@ class Profile(models.Model):
             ("change_token", "Can change token."),
         ]
 
-    def save(self, *args, **kwargs):
-        if not self.cdn_dir:
-            self.cdn_dir = str(uuid.uuid4())[:13]
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return self.user.username
+        return self.pen_name
 
     @receiver(post_save, sender=settings.AUTH_USER_MODEL,
 )
@@ -68,8 +63,8 @@ class APICredentials(models.Model):
     is_current = models.BooleanField(
         default = False)
 
-    def __str__(self):
-        return self.user.username
+    # def __str__(self):
+        # return self.user.username
 
     @receiver(post_save, sender=settings.AUTH_USER_MODEL)
     def create_user_apicredentials(sender, instance, created, **kwargs):

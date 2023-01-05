@@ -1,0 +1,60 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<p>Re-index</p>
+<table class="table table-hover">
+  <thead>
+    <tr class="d-flex">
+      <th class="col-1">
+        <a 
+          href="#" 
+          data-bs-toggle="modal" 
+          data-bs-target="#setAddMemberModal">
+          <i class="fa-regular fa-square-plus" style="color:green;"></i>
+        </a>
+      </th>
+      <th scope="col">Set Member</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+    <tr class="d-flex">
+        <td class="col-1">
+          <a 
+            href="#" id="dlink" 
+            data-obj="{{obj}}" 
+            data-url="{% url 'set_delete_member' setName obj %}" 
+            data-bs-toggle="modal" 
+            data-bs-target="#setDeleteMemberModal">
+            <i 
+              class="fa-solid fa-trash-can" 
+              style="color:red"></i>
+          </a>
+        </td>
+        <td scope="col">{{obj}}</td>
+      </tr>
+    {% empty %}
+    <p>## Please add a {{setName}} (set member).</p>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'cmsapp/pagination.html' %}
+{% include 'cmsapp/modals/set_member.html' %}
+{% include 'cmsapp/modals/set_member_del.html' %}
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$('#setDeleteMemberModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var url = button.data('url') // Extract info from data-* attributes
+    var obj = button.data('obj')
+    // Update the modal's content.     
+    var modal = $(this) 
+    var title = 'Delete ' + obj
+    modal.find('.modal-title').html(title)
+    var warning = 'Warning! You are about to delete "' + obj + '".'
+    modal.find('.alert').html(warning)
+    // form action
+    $('#setDelete').attr('action', url);
+})
+</script>
+{% endblock %}

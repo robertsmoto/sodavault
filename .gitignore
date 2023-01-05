@@ -1,6 +1,7 @@
 .*
 !/.gitignore
 __pycache__/
+*/pyrightconfig.json
 env/
 mgmt/
 srvs/

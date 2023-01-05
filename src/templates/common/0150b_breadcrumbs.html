@@ -1,33 +1,11 @@
-<div class='col mt-2 alert' style="background-color: {{breadcrumb_bg_color}};">
-
-{% for brdcrm in breadcrumbs %}
-    {% if forloop.last %}
-
-        {% if brdcrm.hrn == "metadata" %}
-            {{metadata.brcm_title}}
-        {% else %}
-            {{brdcrm.hrn}}
-        {% endif %}
-
-    {% else %}
-
-        {% if brdcrm.hrn == "metadata" %}
-        {{metadata.topic}}
-            <a href="{{brdcrm.url}}">{{metadata.brcm_title}}</a>&nbsp;&gt;
-        {% else %}
-            <a href="{{brdcrm.url}}">{{brdcrm.hrn}}</a>&nbsp;&gt;
-        {% endif %}
-
-    {% endif %}
-
-{% empty %}
-    <p>### add breadcrum ###</p>
-{% endfor %}
-
-{% if person_breadcrumb %}
-{% include 'headlines/se_breadcrumbs/person.html' %}
+<div class='col mt-2 alert' style="background-color: {{colors.breadcrum_bg_color}};">
+{% for b in breadcrumbs %}
+{% if forloop.last %}
+  {{b.name}}
+{% else %}
+<a href="{% if b.args %}{%url b.namespace b.args %}{% else %}{%url b.namespace %}{% endif %}">{{b.name}}</a>  >
 {% endif %}
-
+{% empty %}
+<span># add breadcrumb</span>
+{% endfor %}
 </div>
-
-

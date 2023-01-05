@@ -1,0 +1,38 @@
+<div 
+  class="modal" 
+  id="{% block modal_id %}{% endblock %}" 
+  tabindex="-1" 
+  role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title fs-5"></h3>
+        <button 
+          type="button" 
+          class="close" 
+          data-bs-dismiss="modal" 
+          aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        {% block warning %}{% endblock %}
+        <form 
+          action="{% block form_action %}{% endblock %}" 
+          method="{% block form_method %}{% endblock %}" 
+          id="{% block form_id %}{% endblock %}">
+          {% csrf_token %}
+          {% block form_fields %}{% endblock %}
+          <input 
+            class="btn btn-{% block btn_color %}primary{% endblock %} mt-3" 
+            type="submit" 
+            value="{% block btn_value %}Submit{% endblock %}" />
+          <button 
+            type="button" 
+            class="btn btn-light mt-3" 
+            data-bs-dismiss="modal">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

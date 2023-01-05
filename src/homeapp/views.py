@@ -1,39 +1,21 @@
 from django.views.generic import DetailView
-from homeapp.mixins.breadcrumbs import BrCrumb
+# from homeapp.mixins.breadcrumbs import BrCrumb
 from homeapp.mixins.metadata import MetaData
 from homeapp.mixins.navigation import Navigation
 from svapi_py.api import SvApi
 from django.conf import settings
 
 
-"""
-
-    def setup(self, request, *args, **kwargs):
-        setup = super().setup(request, *args, **kwargs)
-        # apiCred = request.user.apicredentials
-        self.headers = {
-                'Aid': request.user.id,
-                'Auth': apiCred.auth,
-                'Prefix': apiCred.prefix,
-                'Content-Type': 'application/json'
-                }
-        return setup
-
-    def get_queryset(self):
-        svApiUrl = CONF.get('svapi', {}).get('host', '')
-        results =  SvApi(svApiUrl, self.headers) \
-                .getMany('set', params={
-                    'ID': COLLECTION.get('article', ''),
-                    'start': 0,
-                    'end': -1
-                    })
-        return results
-"""
 CONF = settings.CONF
 
-class HomeView(MetaData, BrCrumb, Navigation, DetailView):
+class HomeView(MetaData, Navigation, DetailView):
     template_name = "homeapp/index.html"
-
+    extra_context = {
+            'title': 'Welcome',
+            'breadcrumbs': [
+                {'name': 'dashboard', 'namespce': ''}
+                ],
+            }
     def setup(self, request, *args, **kwargs):
         # this is information related to SV account
         # self.node_id = kwargs.get('id', '') 
@@ -49,13 +31,15 @@ class HomeView(MetaData, BrCrumb, Navigation, DetailView):
 
     def get_object(self):
         ## this needs to be connected to a document
-        result = SvApi(self.url, self.headers).getOne('document', {})
+        # result = SvApi(self.url, self.headers).getOne('document', {})
         result = {
-                'title': 'Welcome',
-                'body': '''
-                Connect this to a SV document ... <br>
-                <a href={% url 'common'%}>link name</a>
-                '''}
+                'body': "Connect this to a SV document ...",
+                'pages': [
+                    {'urlNamesapce': 'dashboard', 'urlName': 'dashbord'},
+                    {'urlNamesapce': 'dashboard', 'urlName': 'dashbord'},
+                    {'urlNamesapce': 'dashboard', 'urlName': 'dashbord'},
+                    ],
+                }
         return result
 
     def get_context_data(self, **kwargs):
@@ -63,7 +47,7 @@ class HomeView(MetaData, BrCrumb, Navigation, DetailView):
         return context
 
 
-class PageView(MetaData, BrCrumb, Navigation, DetailView):
+class PageView(MetaData, Navigation, DetailView):
     template_name = "homeapp/page_detail.html"
 
     def setup(self, request, *args, **kwargs):

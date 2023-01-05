@@ -1,0 +1,74 @@
+{% extends 'common/base.html' %}
+{% load static %}
+{% block content %}
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th scope="col">
+        <a 
+          href="#" 
+          data-action="new" 
+          data-title="New {{docTypeTitle}}"
+          data-doc-type="{{docType}}"
+          data-url="{% url 'collection_post' docType %}" 
+          data-bs-toggle="modal" 
+          data-bs-target="#collectionPostModal">
+          <i class="fa-regular fa-square-plus" style="color:green;"></i>
+        </a>
+      </th>
+      <th scope="col">Name</th>
+      <th scope="col">Description</th>
+      <th scope="col">Lexi</th>
+      <th scope="col">ID</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+      <tr>
+        <td scope="col">
+          <a 
+            href="#" 
+            data-action="edit" 
+            data-id="{{ obj.ID }}" 
+            data-url="{% url 'collection_post' docType %}" 
+            data-name="{{ obj.name }}" 
+            data-bs-toggle="modal" 
+            data-bs-target="#collectionPostModal">
+            <i class="fa-solid fa-pen-to-square" style="color:green"></i>
+          </a>
+        </td>
+        <td scope="col">{{obj.indent|safe}}{{obj.name}}</td>
+        <td scope="col">{{obj.description}}</td>
+        <td scope="col">{{obj.lexi}}</td>
+        <td scope="col">{{obj.ID}}</td>
+        <td scope="col">
+          <a 
+            href="#"
+            data-action="delete" 
+            data-id="{{obj.ID}}" 
+            data-name="{{obj.name}}" 
+            data-url="{% url 'collection_delete' docType obj.ID %}" 
+            data-bs-toggle="modal" 
+            data-bs-target="#collectionDeleteModal">
+            <i 
+              class="fa-solid fa-trash-can" 
+              style="color:red"></i>
+          </a>
+        </td>
+      </tr>
+    {% empty %}
+    <p class="alert alert-info">Please add data. Click the plus sign below.</p>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'cmsapp/pagination.html' %}
+{% include 'cmsapp/modals/collection_new.html' %}
+{% include 'cmsapp/modals/collection_edit.html' %}
+{% include 'cmsapp/modals/collection_del.html' %}
+{% endblock %}
+{% block script %}
+<script 
+  type="text/javascript" 
+  src="{% static 'js/collection.list.js' %}"></script>
+{% endblock %}

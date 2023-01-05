@@ -1,0 +1,44 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<table class="table table-hover">
+  <thead>
+    <tr scope="row">
+      <th scope="col">
+        <a href="{% url 'document_new' docType %}">
+          <i class="fa-regular fa-square-plus" style="color:green;"></i>
+        </a>
+      </th>
+      <th scope="col">Title</th>
+      <th scope="col">Excerpt</th>
+      <th scope="col">Author</th>
+      <th scope="col">CreatedAt</th>
+      <th scope="col">ID</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+      <tr scope="row">
+        <td scope="col">
+          <a href="{% url 'document_edit' obj.docType obj.ID %}">
+            <i class="fa-solid fa-pen-to-square" style="color:green"></i>
+          </a>
+        </td>
+        <td scope="col">{{obj.title|striptags}}</td>
+        <td scope="col">{{obj.excerpt|striptags}}</td>
+        <td scope="col">{{obj.author}}</td>
+        <td scope="col">{{obj.createdAt}}</td>
+        <td scope="col">{{obj.ID}}</td>
+        <td>
+          <a href="{% url 'document_delete' docType obj.ID %}">
+            <i class="fa-solid fa-trash-can" style="color:red"></i>
+          </a>
+        </td>
+      </tr>
+    {% empty %}
+    <p>## Please add an article.</p>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'cmsapp/pagination.html' %}
+{% endblock %}

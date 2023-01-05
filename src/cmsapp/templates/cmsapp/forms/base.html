@@ -1,0 +1,28 @@
+{% extends 'common/base.html' %}
+{% block header %}{% endblock %}
+{% block content %}
+{% block warning %}{% endblock %}
+{% block base_content %}{% endblock %}
+
+<form 
+  action="{% block form_action %}#{% endblock %}" 
+  method="{% block form_method %}POST{% endblock %}" 
+  id="{% block form_id %}{% endblock %}">
+  {% csrf_token %}
+
+<!-- begin form fields -->
+{% block form_fields %}
+{% endblock %}
+<!-- end form fields -->
+
+  <button 
+    type="submit" 
+    class="btn btn-{% block btn_color %}primary{% endblock %} mt-3">
+    {% block btn_value %}Submit{% endblock %}</button>
+  <a 
+    type="button" 
+    class="btn btn-light mt-3" 
+    href="{% block cancel_url %}#{% endblock %}">Cancel</a>
+</form>
+{% endblock %}
+

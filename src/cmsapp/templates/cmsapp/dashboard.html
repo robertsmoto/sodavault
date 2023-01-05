@@ -1,0 +1,10 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<p>Welcome to the dashboard.</p>
+<a href="{% url 'set_list' 'doc_type' %}">docTypes</a><br>
+<br>
+<a href="{% url 'document_list' 'article' %}">articles</a><br>
+<a href="{% url 'collection_list' 'article_category' %}">article categories</a><br>
+<a href="{% url 'collection_list' 'article_tag' %}">article tags</a><br>
+<a href="{% url 'collection_list' 'article_keyword' %}">article keywords</a><br>
+{% endblock %}

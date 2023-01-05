@@ -1,0 +1,19 @@
+<!-- Modal -->
+<div class="modal fade" id="setDeleteMemberModal" tabindex="-1" aria-labelledby="setDeleteMemberModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5"></h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-warning" role="alert"></div>
+        <form action="" method="POST" id="setDelete">
+          {% csrf_token %}
+          <input class="btn btn-danger" type="submit" value="Delete" />
+          <a href="#" class="btn btn-light" data-bs-dismiss="modal">Cancel</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

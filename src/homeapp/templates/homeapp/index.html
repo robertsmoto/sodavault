@@ -1,0 +1,43 @@
+{% extends 'common/base.html' %}
+{% block title %}{{object.title}}{% endblock %}
+{% load static %}
+{% block content %}
+<article>
+  {% if not object %}<p>Oops, something went wrong ...</p>{% endif %} 
+  <h1>{{ object.title }}</h1>
+  <p>{{ object.body|safe }}</p>
+
+  {% for p in object.pages %}
+    <a href="{% url 'dashboard' %}"{{p.urlName}}</a></a>
+    {% empty %}
+    <p>## no page links</p>
+  {% endfor %}
+
+    {% if object.categories.exists or object.tags.exists %}
+      <hr>
+      {% for cat in object.categories.all %}
+        <a 
+          class="btn btn-secondary btn-sm"
+          href="{% url 'blogapp-category-list' category_name=cat.name category_id=cat.id %}">
+          {{cat}}
+        </a>&nbsp;
+      {% endfor %}
+      {% for tag in object.tags.all %}
+        <a 
+          class="btn btn-outline-secondary btn-sm"
+          href="{% url 'blogapp-tag-list' tag_name=tag.name tag_id=tag.id %}">
+          {{tag}}
+        </a>&nbsp;
+      {% endfor %}
+      <hr>
+    {% endif %}
+
+    {% if object.footer.exists %}
+      <footer class="w-100 border py-3 p-3 bg-light">
+        {{ object.footer|safe }}
+      </footer>
+    {% endif %}
+
+</article>
+
+{% endblock %}

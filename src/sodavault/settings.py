@@ -1,6 +1,5 @@
 from os.path import exists
 from pathlib import Path
-from pathlib import Path
 import json
 import os
 import yaml
@@ -87,31 +86,29 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'crispy_forms',
+    'crispy_bootstrap5',
     'debug_toolbar',
-    'django_filters',
-    'django_hosts',
+    # 'django_hosts',
     'django_registration',
-    'imagekit',
-    'nested_admin',
-    # 'rest_framework',
-    # 'rest_framework.authtoken',
+    # 'imagekit',
     'storages',
 
-    'creatorapp',
+    'cmsapp',
     'homeapp',
 ]
 
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
 MIDDLEWARE = [
-    'django_hosts.middleware.HostsRequestMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_hosts.middleware.HostsResponseMiddleware'
 ]
 
 ROOT_URLCONF = 'sodavault.urls'
@@ -132,14 +129,14 @@ TEMPLATES = [
                 'django.template.context_processors.media',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                # custom processors
+                'homeapp.mixins.context_processors.colors',
             ],
         },
     },
 ]
 
 WSGI_APPLICATION = 'sodavault.wsgi.application'
-
-# AUTH_USER_MODEL = 'homeapp.CustomUser'
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -175,6 +172,21 @@ DATABASES = {
     }
 }
 
+SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
+
+# CACHE (FOR SESSION CACHING)
+RPASS = CONF.get('redis', {}).get('pass', '')
+RHOST = CONF.get('redis', {}).get('host', '')
+RPORT = CONF.get('redis', {}).get('port', '')
+RURI = f'redis://:{RPASS}@{RHOST}:{RPORT}/3'
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': RURI,
+        'TIMEOUT': 60 * 60 * 6,  # <-- 6 hours
+    },
+}
+
 # TIMEZONE, LANGUAGE, ENCODING
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 LANGUAGE_CODE = CONF.get('django', {}).get('language_code', '')
@@ -193,7 +205,9 @@ MEDIA_URL = CONF.get('dirs', {}).get('media_url', '')
 if CONF.get('aws', {}).get('use_spaces', False):
     AWS_ACCESS_KEY_ID = CONF.get('aws', {}).get('access_key_id', '')
     AWS_SECRET_ACCESS_KEY = CONF.get('aws', {}).get('secret_access_key', '')
-    AWS_STORAGE_BUCKET_NAME = CONF.get('aws', {}).get('storage_bucket_name', '')
+    AWS_STORAGE_BUCKET_NAME = CONF.get(
+        'aws', {}).get(
+        'storage_bucket_name', '')
     AWS_S3_CUSTOM_DOMAIN = CONF.get('aws', {}).get('custom_domain', '')
     AWS_S3_REGION_NAME = CONF.get('aws', {}).get('s3_region_name', '')
     AWS_S3_ENDPOINT_URL = CONF.get('aws', {}).get('s3_endpoint_url', '')
@@ -207,6 +221,13 @@ if CONF.get('aws', {}).get('use_spaces', False):
 else:
     STATIC_ROOT = CONF.get('dirs', {}).get('static_root', '')
     MEDIA_ROOT = CONF.get('dirs', {}).get('media_root', '')
+
+if DEBUG:
+    STATIC_URL = CONF.get('dirs', {}).get('static_url_debug', '')
+    STATIC_ROOT = CONF.get('dirs', {}).get('static_root_debug', '')
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    MEDIA_URL = CONF.get('dirs', {}).get('media_url_debug', '')
+    MEDIA_ROOT = CONF.get('dirs', {}).get('media_root_debug', '')
 
 # EMAIL
 SERVER_EMAIL = CONF.get('email', {}).get('server_email', '')
@@ -224,10 +245,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # registration settings
 ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
-LOGIN_REDIRECT_URL = '/core/'
-
-# crispy forms
-CRISPY_TEMPLATE_PACK = 'bootstrap4'
+LOGIN_REDIRECT_URL = '/cms/dashboard/'
 
 # ck editor
 """
@@ -255,39 +273,36 @@ CKEDITOR_CONFIGS = {
         'toolbar': 'Basic',
     },
     'sv': {
-        'width': '100%',
-        'autogrow_minHeight': 800,
-        'autogrow_bottomSpace': 100,
+        'width': 'auto',
+        'height': 'auto',
+        'autogrow_bottomSpace': 250,
+        'uiColor': '#d9d9d9',
         'skin': 'moonocolor',
         'disableNativeSpellChecker': 'false',
         'toolbar': 'Custom',
         'toolbar_Custom': [
             ['Source'],
-            ['Format'],
-            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript',
-                'Superscript', '-', 'RemoveFormat'
-                ],
+            # ['Format'],
+            ['Format', 'Font', 'FontSize', 'Styles'],
             # ['Styles'],
-            ['Styles', 'Format', 'Font', 'FontSize'],
-            ['CodeSnippet'],
+            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript',
+                'Superscript', '-', 'RemoveFormat'],
             ['Link', 'Unlink', 'Anchor'],
+            ['CodeSnippet'],
             ['Image', 'Table', 'HorizontalRule', 'SpecialChar',
-                'PageBreak', 'Iframe', 'UploadImage'
-                ],
+                'PageBreak', 'Iframe', 'UploadImage'],
             ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent',
                 '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft',
                 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
-                'BidiLtr', 'BidiRtl', 'Language'
-                ],
+                'BidiLtr', 'BidiRtl', 'Language'],
             ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-',
-                'Undo', 'Redo'
-                ]
+                'Undo', 'Redo']
         ],
         'codeSnippet_theme': 'github',
         'tabSpaces': 4,
-        'removePlugins': 'stylesheetparser',
+        'removePlugins': ','.join(['stylesheetparser, exportpdf']),
         'extraPlugins': ','.join([
-            'uploadimage', # the upload image feature
+            'uploadimage',  # the upload image feature
             'div',
             'autolink',
             'autoembed',
@@ -302,6 +317,8 @@ CKEDITOR_CONFIGS = {
             'elementspath',
             'wordcount'
         ]),
+        'contentsCss': os.path.join(
+            STATIC_URL,
+            'ckeditor/ckeditor/contents_custom.css'),
     },
 }
-

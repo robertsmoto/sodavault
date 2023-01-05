@@ -1,0 +1,12 @@
+{% extends 'cmsapp/modals/base.html' %}
+
+{% block modal_id %}collectionNewModal{% endblock %}
+
+{% block form_action %}#{% endblock %} 
+{% block form_method %}POST{% endblock %} 
+{% block form_id %}collectionNewForm{% endblock %}
+{% block form_fields %}
+{% include 'cmsapp/forms/collection_fields.html' %}
+<div class="alert alert-info my-3">Base document fields are below.</div>
+{% include 'cmsapp/forms/document_fields.html' %}
+{% endblock %}
