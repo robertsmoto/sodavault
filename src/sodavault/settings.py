@@ -12,7 +12,6 @@ SERVER = os.getenv('SERVER', 'development').lower()
 CONFIG_DIR = os.path.join('/etc/sv/', SERVER)
 
 # read the ini.yaml file into CONF{} then dict is available at: settings.CONF
-
 file_exists = exists(os.path.join(CONFIG_DIR, 'ini.yaml'))
 if not file_exists:
     raise Exception("Can't find ini.yaml file.")

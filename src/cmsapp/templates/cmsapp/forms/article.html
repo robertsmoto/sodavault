@@ -1,0 +1,581 @@
+{% extends 'cmsapp/forms/base.html' %}
+{% load static %}
+{% block css_links %}
+<link href="{% static 'css/select2.min.css' %}" rel="stylesheet" />
+{% endblock %}
+{% block header %}
+{% endblock %}
+{% block warning %}{% endblock %}
+{% block base_content %}
+
+<div class="mt-3">
+  <a 
+    class="btn" 
+    style="color:white; background-color:#5500aa;"
+    data-bs-toggle="collapse" 
+    href="#editFields" 
+    roe="button">Editor</a>
+  <a 
+    class="btn" 
+    style="background-color:#55aa00;"
+    data-bs-toggle="collapse" 
+    href="#attributeFields" 
+    role="button">Attributes</a>
+  <a 
+    class="btn" 
+    style="background-color:#00aaaa;"
+    data-bs-toggle="collapse" 
+    href="#recipe" 
+    role="button">Recipe</a>
+  <a 
+    class="btn" 
+    style="color:white; background-color:#aa0000;"
+    data-bs-toggle="collapse" 
+    href="#docFields" 
+    role="button">Document</a>
+</div>
+{% endblock %}
+
+{% block form_action %}{% url 'document_post' doc_type %}{% endblock %} 
+{% block form_method %}POST{% endblock %} 
+{% block form_id %}articleEdit{% endblock %}
+
+<!-- begin form fields -->
+{% block form_fields %}
+<!-- begin doc fields -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" 
+  id="docFields">
+  <div class="col-12 rounded p-2" 
+    style="color:white; background-color:#aa0000;">Document
+  </div>
+  {% include 'cmsapp/forms/document_fields.html' %}
+</div>
+<!-- end doc fields -->
+
+<!-- begin recipe -->
+<div class="row collapse multi-collapse b-3 m-3" 
+  id="recipe">
+  <div class="col-12 rounded p-2" 
+    style="color:white; background-color:#00aaaa;">Recipe
+  </div>
+
+  <div class="row">
+    <label class="mt-2" for="recipe.name">Name</label>
+    <input 
+      type="text" 
+      name="recipe.name" 
+      id="recipe.name" 
+      placeholder="name ..."
+      class="form-control">
+    </input>
+  </div>
+
+  <div class="row">
+    <!-- yields -->
+    <div class="col-lg-4 bg-light mt-3 p-2 border rounded">
+      <h5 class="mb-0 rounded">Yeilds</h5>
+      <div class="col">
+        <label 
+          class="mt-2" 
+          for="recipe.yeild.quantity">Quantity</label>
+        <input 
+          type="number" 
+          name="recipe.yeild.quanity" 
+          id="recipe.yeild.quantity" 
+          placeholder="quantity ..."
+          class="form-control">
+      </div>
+      <div class="col">
+          <label 
+            class="mt-2" 
+            for="recipe.yeild.description">Description</label>
+          <input 
+            type="text" 
+            name="recipe.yeild.description" 
+            id="recipe.yeild.description" 
+            placeholder="description ..."
+            class="form-control">
+      </div>
+      <div class="col">
+          <label class="mt-2" for="recipe.yeild.notes">Notes</label>
+          <input 
+            type="text" 
+            name="recipe.yeild.notes" 
+            id="recipe.yeild.notes" 
+            placeholder="notes ..."
+            class="form-control">
+      </div>
+    </div>
+
+    <!-- prep time -->
+    <div class="col-lg-4 bg-light mt-3 p-2 border rounded">
+      <h5 class="rounded">Prep Time</h5>
+      <div class="col">
+        <label for="recipe.prepTime.hours">Hours</label>
+        <select 
+          name="recipe.prepTime.hours" 
+          id="recipe.prepTime.hours" 
+          class="form-select"
+          tabindex="5">
+          <option value=0>choose one ...</option>
+          <option value=1>1 hour</option>
+          <option value=2>2 hours</option>
+          <option value=3>3 hours</option>
+          <option value=4>4 hours</option>
+          <option value=5>5 hours</option>
+          <option value=6>6 hours</option>
+          <option value=7>7 hours</option>
+          <option value=8>8 hours</option>
+          <option value=9>9 hours</option>
+          <option value=10>10 hours</option>
+          <option value=11>11 hours</option>
+          <option value=12>12 hours</option>
+          <option value=13>13 hours</option>
+          <option value=14>14 hours</option>
+          <option value=15>15 hours</option>
+          <option value=16>16 hours</option>
+          <option value=17>17 hours</option>
+          <option value=18>18 hours</option>
+          <option value=19>19 hours</option>
+        </select>
+      </div>
+
+      <div class="col">
+        <label for="recipe.prepTime.minutes">Minutes</label>
+        <select 
+          name="recipe.prepTime.minutes" 
+          id="recipe.prepTime.minutes" 
+          class="form-select"
+          tabindex="5">
+          <option value=0>choose one ...</option>
+          <option value=5>5 minutes</option>
+          <option value=10>10 minutes</option>
+          <option value=15>15 minutes</option>
+          <option value=20>20 minutes</option>
+          <option value=25>25 minutes</option>
+          <option value=30>30 minutes</option>
+          <option value=35>35 minutes</option>
+          <option value=40>40 minutes</option>
+          <option value=45>45 minutes</option>
+          <option value=50>50 minutes</option>
+          <option value=55>55 minutes</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- cook time -->
+    <div class="col-lg-4 bg-light mt-3 p-2 border rounded">
+      <h5 class="rounded">Cooking Time</h5>
+      <div class="col">
+        <label for="recipe.cookingTime.hours">Hours</label>
+        <select 
+          name="recipe.cookTime.hours" 
+          id="recipe.cookTime.hours" 
+          class="form-select"
+          tabindex="5">
+          <option value=0>choose one ...</option>
+          <option value=1>1 hour</option>
+          <option value=2>2 hours</option>
+          <option value=3>3 hours</option>
+          <option value=4>4 hours</option>
+          <option value=5>5 hours</option>
+          <option value=6>6 hours</option>
+          <option value=7>7 hours</option>
+          <option value=8>8 hours</option>
+          <option value=9>9 hours</option>
+          <option value=10>10 hours</option>
+          <option value=11>11 hours</option>
+          <option value=12>12 hours</option>
+          <option value=13>13 hours</option>
+          <option value=14>14 hours</option>
+          <option value=15>15 hours</option>
+          <option value=16>16 hours</option>
+          <option value=17>17 hours</option>
+          <option value=18>18 hours</option>
+          <option value=19>19 hours</option>
+        </select>
+      </div>
+
+      <div class="col">
+        <label for="recipe.cookingTime.minutes">Minutes</label>
+        <select 
+          name="recipe.cookTime.minutes" 
+          id="recipe.cookTime.minutes" 
+          class="form-select"
+          tabindex="5">
+          <option value=0>choose one ...</option>
+          <option value=5>5 minutes</option>
+          <option value=10>10 minutes</option>
+          <option value=15>15 minutes</option>
+          <option value=20>20 minutes</option>
+          <option value=25>25 minutes</option>
+          <option value=30>30 minutes</option>
+          <option value=35>35 minutes</option>
+          <option value=40>40 minutes</option>
+          <option value=45>45 minutes</option>
+          <option value=50>50 minutes</option>
+          <option value=55>55 minutes</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-lg-3">
+      <label class="mt-2" for="recipe.cookingMethod">Cooking Method</label>
+      <input 
+        type="text" 
+        name="recipe.cookingMethod" 
+        id="recipe.cookingMethod" 
+        placeholder="cooking method ..."
+        class="form-control">
+    </div>
+    <div class="col-lg-3">
+      <label class="mt-2" for="recipe.cuisine">Cuisine</label>
+      <input 
+        type="text" 
+        name="recipe.cuisine" 
+        id="recipe.cuisine" 
+        placeholder="cuisine ..."
+        class="form-control">
+    </div>
+    <div class="col-lg-3">
+      <label class="mt-2" for="recipe.category">Category</label>
+      <input 
+        type="text" 
+        name="recipe.category" 
+        id="recipe.category" 
+        placeholder="category ..."
+        class="form-control">
+    </div>
+    <div class="col-lg-3">
+      <label class="mt-2" for="recipe.suitable">Suitable</label>
+      <input 
+        type="text" 
+        name="recipe.suitable" 
+        id="recipe.suitable" 
+        placeholder="suitable ..."
+        class="form-control">
+    </div>
+  </div>
+
+  <div class="row">
+    <label class="mt-2" for="recipe.instructions">Instructions</label>
+    <input 
+      type="text" 
+      name="recipe.instructions" 
+      id="recipe.instructions" 
+      placeholder="instructions ..."
+      class="form-control">
+  </div>
+
+  <div class="row bg-light mt-2">
+
+    <div class="col-lg-3">
+      nutrition serving
+    </div>
+    <div class="col-lg-3">
+      calories
+    </div>
+    <div class="col-lg-3">
+      carbohydrates
+    </div>
+    <div class="col-lg-3">
+      cholesterol
+    </div>
+
+    <div class="col-lg-3">
+      fat 
+    </div>
+    <div class="col-lg-3">
+      saturated_fat
+    </div>
+    <div class="col-lg-3">
+      unsaturated fat 
+    </div>
+    <div class="col-lg-3">
+      trans fat 
+    </div>
+
+    <div class="col-lg-3">
+      fiber
+    </div>
+    <div class="col-lg-3">
+      protein 
+    </div>
+    <div class="col-lg-3">
+      sodium
+    </div>
+    <div class="col-lg-3">
+      sugar
+    </div>
+
+  </div>
+
+  ingredient
+
+  <div class="template" style="display:none;">
+    <div>
+      <label class="mt-2" for="ingredient[__INDEX__][name]">Ingredient Name</label>
+      <input 
+        type="text" 
+        name="ingredient[__INDEX__][name]" placeholder="ingredient name">
+      <label class="mt-2" for="ingredient[__INDEX__][quantity]">Quantity</label>
+      <input 
+        type="text" 
+        name="ingredient[__INDEX__][quantity]" placeholder="quantity">
+      <label class="mt-2" for="ingredient[__INDEX__][unit]">Unit</label>
+      <input 
+        type="text" 
+        name="ingredient[__INDEX__][unit]" placeholder="unit">
+      <label class="mt-2" for="ingredient[__INDEX__][note]">Note</label>
+      <input 
+        type="text" 
+        name="ingredient[__INDEX__][note]" placeholder="note">
+    </div>
+  </div>
+
+</div>
+<!-- end recipe -->
+
+<!-- begin attributes -->
+<div class="row collapse multi-collapse b-3 m-3" 
+  id="attributeFields">
+  <div class="col-12 rounded p-2" 
+    style="color:white; background-color:#55aa00;">Attributes
+  </div>
+  <!-- begin attribute form fields -->
+  <div class="row">
+    <div class="col">
+      <label class="mt-2" for="title">Title</label>
+      <input type="text" name="title" id="title" class="form-control"></input>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <label class="mt-2" for="highlight">Highlight</label>
+      <select id="highlight" name="highlight" class="form-select" tabindex="3">
+        <option value="">Choose one ...</option>
+        <option value="isFeatured">Featured</option>
+        <option value="isSticky">Sticky</option>
+        <option value="isPromoted">Promoted</option>
+      </select>
+    </div>
+    <div class="col">
+      <label class="mt-2" for="status">Status</label>
+      <select id="status" name="status" class="form-select" tabindex="3">
+        <option value="">Choose one ...</option>
+        <option value="draft">Draft</option>
+        <option value="review">Review</option>
+        <option value="published">Published</option>
+      </select>
+    </div>
+    <div class="col">
+      <label class="mt-2" for="author">Authors</label>
+      <select id="author" name="author" class="chosen-select" multiple>
+      </select>
+    </div>
+    <div class="col">
+      <label class="mt-2" for="website">Websites</label>
+      <select id="website" name="website" multiple class="chosen-select">
+      </select>
+    </div>
+  </div>
+  <!-- end attribute form fields -->
+
+</div>
+<!-- end attributes -->
+
+<!-- begin editor -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" 
+  id="editFields">
+  <div class="col-12 rounded p-2" 
+    style="color:white; background-color:#5500aa;">Editor
+  </div>
+  <!-- editor tabs -->
+  <nav>
+    <div class="nav nav-tabs mt-3" id="nav-tab" role="tablist">
+      <button 
+        class="nav-link active" 
+        id="nav-body-tab" 
+        data-bs-toggle="tab" 
+        data-bs-target="#nav-editBody" 
+        type="button" 
+        role="tab" 
+        aria-controls="nav-editBody" 
+        aria-selected="true">Body</button>
+      <button 
+        class="nav-link" 
+        id="nav-excerpt-tab" 
+        data-bs-toggle="tab" 
+        data-bs-target="#nav-editExcerpt" 
+        type="button" 
+        role="tab" 
+        aria-controls="nav-editExcerpt" 
+        aria-selected="false">Excerpt</button>
+      <button 
+        class="nav-link" 
+        id="nav-footer-tab" 
+        data-bs-toggle="tab" 
+        data-bs-target="#nav-editFooter" 
+        type="button" 
+        role="tab" 
+        aria-controls="nav-editFooter" 
+        aria-selected="false">Footer</button>
+    </div>
+  </nav>
+  <!-- ckeditor -->
+  <div class="tab-content" id="nav-tabContent">
+    <div 
+      class="tab-pane fade show active" 
+      id="nav-editBody" 
+      role="tabpanel" 
+      aria-labelledby="nav-editBody-tab">
+      <textarea name="body" id="body"></textarea></div>
+    <div 
+      class="tab-pane fade" 
+      id="nav-editExcerpt" 
+      role="tabpanel" 
+      aria-labelledby="nav-editExcerpt-tab">
+      <textarea name="excerpt" id="excerpt"></textarea></div>
+    <div 
+      class="tab-pane fade" 
+      id="nav-editFooter" 
+      role="tabpanel" 
+      aria-labelledby="nav-editFooter-tab">
+      <textarea name="footer" id="footer"></textarea></div>
+  </div>
+</div>
+<!-- end editor -->
+
+{% endblock %}
+<!-- end form fields -->
+{% block btn_color %}primary{% endblock %}
+{% block btn_value %}Submit{% endblock %}
+{% block cancel_url %}#{% endblock %}
+
+{% block script %}
+<script type="text/javascript" src="{% static 'js/select.choices.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/nanoid.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/index.input.js' %}"></script>
+{{ obj|json_script:"obj-data" }}
+<script type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
+
+<script>
+// base data
+var page_title = "{{page_title}}";
+$(document).attr("title", "New Title");
+$("#title").val("this is the post title")
+// doc functions
+indexInput("title");
+// hydrate form
+const obj = JSON.parse(document.getElementById('obj-data').textContent);
+
+function unpackData(data) {
+  for (var key in data) {
+    if((key == "author") || (key == "website")) {
+      console.log(key)
+      console.log(data[key])
+      // $('#' + key).val(data[key]).trigger("change");
+      //$('#' + key).val(data[key]).trigger('change.select2');
+      $('#' + key).val(["detOWM04im876jjG","O1FhAzP7b7Au0BRw"]).trigger('change');
+      // manually trigger the `select2:select` event
+    } else {
+      $('#' + key).val(data[key]);
+    };
+  };
+};
+
+
+selectChoices(docType="article", sortBy="lexi:ASC", choiceID="ID", 
+    choiceHuman="title", elementID="parentID", removeID='{{obj.ID|safe}}');
+
+// Set #parentID selection
+if ("{{obj.parentID}}".length > 0) {
+    $("#parentID").val('{{obj.parentID|safe}}');
+} else {
+  $("#parentID").val("");
+};
+
+
+
+{% comment %}selectChoices(docType="author", sortBy="lexi:ASC", choiceID="ID", {% endcomment %}
+  {% comment %}choiceHuman="penName", elementID="author", removeID="");{% endcomment %}
+
+{% comment %}selectChoices(docType="website", sortBy="lexi:ASC", choiceID="ID", {% endcomment %}
+  {% comment %}choiceHuman="domain", elementID="website", removeID="");{% endcomment %}
+
+
+{% comment %}$(".chosen-select").select2({{% endcomment %}
+  {% comment %}placeholder: 'Select an option',{% endcomment %}
+  {% comment %}width: '100%',{% endcomment %}
+{% comment %}});{% endcomment %}
+
+
+$(document).ready(function() {
+
+  $("#author").select2({
+    ajax: {
+      url: "/cms/get/select/choices",
+      dataType: "json",
+      delay: 250,
+      data: function (params) {
+        var query = {
+          docType: "author",
+          sortBy: "lexi:ASC",
+          choiceID: "ID",
+          choiceHuman: "penName"
+        }
+        return query;
+      },
+      processResults: function (data) {
+        return {
+          results: data.items
+        };
+      },
+    },
+    placeholder: "Select an option",
+    width: "100%",
+  });
+
+  $("#website").select2({
+    ajax: {
+      url: "/cms/get/select/choices",
+      dataType: "json",
+      delay: 250,
+      data: function (params) {
+        var query = {
+          docType: "website",
+          sortBy: "lexi:ASC",
+          choiceID: "ID",
+          choiceHuman: "domain"
+        }
+        return query;
+      },
+      processResults: function (data) {
+        return {
+          results: data.items
+        };
+      },
+    },
+    placeholder: "Select an option",
+    width: "100%",
+  });
+
+  // unpack the data
+  var data = obj;
+  unpackData(data);
+
+  $("#ID").prop("readonly", true)
+  $("#docType").prop("readonly", true)
+  $("#createdAt").prop("readonly", true)
+});
+
+</script>
+
+<script type="text/javascript" src="{% static 'js/ckeditor.js' %}"></script>
+<script type="text/javascript" src="{% static 'js/ckedit.article.js' %}"></script>
+
+{% endblock %}

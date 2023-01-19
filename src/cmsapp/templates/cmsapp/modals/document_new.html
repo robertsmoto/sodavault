@@ -1,0 +1,10 @@
+{% extends 'cmsapp/modals/base.html' %}
+
+{% block modal_id %}documentNewModal{% endblock %}
+
+{% block form_action %}#{% endblock %} 
+{% block form_method %}POST{% endblock %} 
+{% block form_id %}documentNewForm{% endblock %}
+{% block form_fields %}
+{% include 'cmsapp/forms/document_fields.html' %}
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'cmsapp/base_list.html' %}
+{% load static %}
+
+{% block table_head_cols %}
+<th scope="col">Name</th>
+<th scope="col">Description</th>
+<th scope="col">Lexi</th>
+<th scope="col">ID</th>
+{% endblock %}
+
+{% block table_cols %}
+<td 
+  class="align-middle" 
+  scope="col">{{obj.indent|safe}}{{obj.name}}</td>
+<td 
+  class="align-middle" 
+  scope="col">{{obj.description}}</td>
+<td 
+  class="align-middle" 
+  scope="col">{{obj.lexi}}</td>
+<td 
+  class="align-middle" 
+  scope="col">{{obj.ID}}</td>
+{% endblock %}
+
+{% block includes %}
+{% include 'cmsapp/modals/attribute.html' %}
+{% include 'cmsapp/modals/document_del.html' %}
+{% endblock %}
+
+{% block script %}
+<script 
+  type="text/javascript" 
+  src="{% static 'js/select.choices.js' %}"></script>
+<script 
+  type="text/javascript" 
+  src="{% static 'js/nanoid.js' %}"></script>
+<script 
+  type="text/javascript" 
+  src="{% static 'js/index.input.js' %}"></script>
+<script 
+  type="text/javascript" 
+  src="{% static 'js/attribute.list.js' %}"></script>
+{% endblock %}

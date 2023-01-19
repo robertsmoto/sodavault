@@ -1,44 +1,69 @@
-{% extends 'common/base.html' %}
-{% block content %}
-<table class="table table-hover">
-  <thead>
-    <tr scope="row">
-      <th scope="col">
-        <a href="{% url 'document_new' docType %}">
-          <i class="fa-regular fa-square-plus" style="color:green;"></i>
-        </a>
-      </th>
-      <th scope="col">Title</th>
-      <th scope="col">Excerpt</th>
-      <th scope="col">Author</th>
-      <th scope="col">CreatedAt</th>
-      <th scope="col">ID</th>
-      <th scope="col"></th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for obj in object_list %}
-      <tr scope="row">
-        <td scope="col">
-          <a href="{% url 'document_edit' obj.docType obj.ID %}">
-            <i class="fa-solid fa-pen-to-square" style="color:green"></i>
-          </a>
-        </td>
-        <td scope="col">{{obj.title|striptags}}</td>
-        <td scope="col">{{obj.excerpt|striptags}}</td>
-        <td scope="col">{{obj.author}}</td>
-        <td scope="col">{{obj.createdAt}}</td>
-        <td scope="col">{{obj.ID}}</td>
-        <td>
-          <a href="{% url 'document_delete' docType obj.ID %}">
-            <i class="fa-solid fa-trash-can" style="color:red"></i>
-          </a>
-        </td>
-      </tr>
-    {% empty %}
-    <p>## Please add an article.</p>
-    {% endfor %}
-  </tbody>
-</table>
-{% include 'cmsapp/pagination.html' %}
+{% extends 'cmsapp/base.html' %}
+{% load static %}
+
+{% block new_link %}
+<a 
+  href="#" 
+  data-action="new" 
+  data-title="New {{docTypeTitle}}"
+  data-doc-type="{{docType}}"
+  data-url="{% url 'document_post' docType %}" 
+  data-bs-toggle="modal" 
+  data-bs-target="#documentPostModal">
+  <i class="fa-regular fa-square-plus" style="color:green;"></i>
+</a>
+{% endblock %}
+
+{% block table_head_cols %}
+<th scope="col">ID</th>
+<th scope="col">Doc Type</th>
+<th scope="col">Created At</th>
+<th scope="col">Updated At</th>
+{% endblock %}
+
+{% block edit_link %}
+<a 
+  href="#" 
+  data-action="edit" 
+  data-id="{{ obj.ID }}" 
+  data-url="{% url 'document_post' docType %}" 
+  data-name="{{ obj.name }}" 
+  data-bs-toggle="modal" 
+  data-bs-target="#documentPostModal">
+  <i class="fa-solid fa-pen-to-square" style="color:green"></i>
+</a>
+{% endblock %}
+
+{% block table_cols %}
+<td scope="col">{{obj.ID}}</td>
+<td scope="col">{{obj.docType}}</td>
+<td scope="col">{{obj.createdAt}}</td>
+<td scope="col">{{obj.updatedAt}}</td>
+{% endblock %}
+
+{% block delete_link %}
+<a 
+  href="#"
+  data-action="delete" 
+  data-id="{{obj.ID}}" 
+  data-name="{{obj.name}}" 
+  data-url="{% url 'document_delete' docType obj.ID %}" 
+  data-bs-toggle="modal" 
+  data-bs-target="#documentDeleteModal">
+  <i 
+    class="fa-solid fa-trash-can" 
+    style="color:red"></i>
+</a>
+{% endblock %}
+
+{% block includes %}
+{% include 'cmsapp/modals/document_new.html' %}
+{% include 'cmsapp/modals/document_edit.html' %}
+{% include 'cmsapp/modals/document_del.html' %}
+{% endblock %}
+
+{% block script %}
+<script 
+  type="text/javascript" 
+  src="{% static 'js/document.list.js' %}"></script>
 {% endblock %}

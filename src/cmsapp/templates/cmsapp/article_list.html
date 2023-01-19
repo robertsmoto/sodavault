@@ -1,0 +1,61 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<table class="table table-hover">
+  <thead>
+    <tr scope="row">
+      <th scope="col">
+        <a href="{% url 'article_new' doc_type %}"
+          style="font-size:1.2rem;">
+          <i class="bi bi-plus-square-fill" style="color:green;"></i>
+        </a>
+      </th>
+      <th scope="col">Title</th>
+      <th scope="col">Excerpt</th>
+      <th scope="col">Status</th>
+      <th scope="col">Highlight</th>
+      <th scope="col">CreatedAt</th>
+      <th scope="col">ID</th>
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+      <tr scope="row">
+        <td scope="col">
+          <a href="{% url 'article_edit' doc_type obj.ID %}"
+            style="font-size:1.2rem;">
+            <i class="bi bi-pencil-square" style="color:green"></i>
+          </a>
+        </td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.title|striptags}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.excerpt|striptags}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.status}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.highlight}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.createdAt}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.ID}}</td>
+        <td>
+          <a href="{% url 'document_delete' doc_type obj.ID %}"
+            style="font-size:1.2rem;">
+            <i class="bi bi-trash3-fill" style="color:red"></i>
+          </a>
+        </td>
+      </tr>
+    {% empty %}
+    <p>## Please add an article.</p>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'cmsapp/pagination.html' %}
+{% endblock %}
