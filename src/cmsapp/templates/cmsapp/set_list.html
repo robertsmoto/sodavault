@@ -1,7 +1,48 @@
 {% extends 'common/base.html' %}
 {% block content %}
-<p>Re-index</p>
-<table class="table table-hover">
+
+<div class='row mt-3 justify-content-evenly row-cols-1 row-cols-md-4'>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button'
+      style="width:200px"
+      href="{% url 'set_delete_all_members' %}">Delete</a>
+      <p class='ml-3'>Delete all doc types and index.</p>
+  </div>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button' 
+      style="width:200px"
+      href="{% url 'set_add_default_doc_types' %}">Add docTypes</a>
+      <p class='ml-3'>Adds the SODAvault default docTypes</p>
+  </div>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button'
+      style="width:200px"
+      href="{% url 'modify_index' 'reindex' %}">Re-Index</a>
+      <p class='ml-3'>Drops current index. Creates index with base schema.</p>
+  </div>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button'
+      style="width:200px"
+      href="{% url 'modify_index' 'append' %}">Append Index</a>
+      <p class='ml-3'>Appends docTypes to the index schema.</p>
+  </div>
+</div>
+
+<div class='row'>
+  <div class='col'>
+    <p>Think about how to handle DocTypes and Indexes. Should they be automatically created and indexed for each account when the account is created?</p>
+  </div>
+</div>
+
+<table class="table table-hover mt-3">
   <thead>
     <tr class="d-flex">
       <th class="col-1">
@@ -13,7 +54,7 @@
           <i class="bi bi-plus-square-fill" style="color:green;"></i>
         </a>
       </th>
-      <th scope="col">Set Member</th>
+      <th scope="col">Index Doc Types</th>
     </tr>
   </thead>
   <tbody>

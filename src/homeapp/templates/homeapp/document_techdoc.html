@@ -1,0 +1,23 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<p>website: {{object.website}}</p>
+<p>createdAt: {{object.createdAt}}</p>
+<p>updatedAt: {{object.updatedAt}}</p>
+<p>status: {{object.status}}</p>
+<p>highlight: {{object.highlight}}</p>
+<p>Author: {{object.author}}</p>
+<p>Headline: {{object.headline}}</p>
+<p>subHeadline: {{object.subHedline}}</p>
+<p>Excerpt: {{object.excerpt}}</p>
+<p>Body: {{object.body}}</p>
+<p>Footer: {{object.footer}}</p>
+<hr>
+<p>ID: {{object.ID}}</p>
+<p>parentID: {{object.parentID}}</p>
+<p>title: {{object.title}}</p>
+<p>desciption: {{object.description}}</p>
+<p>docType: {{object.docType}}</p>
+<p class="alert alert-warning">indx: {{object.indx}} !! get rid of this one</p>
+<p>lexi: {{object.lexi}}</p>
+<p>schemaVersion: {{object.schemaVersion}}</p>
+{% endblock %}

@@ -19,11 +19,11 @@ from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
 from django_registration.backends.one_step.views import RegistrationView
-from homeapp.mixins.navigation import Navigation
+# from homeapp.mixins.navigation import Navigation
 import debug_toolbar
 
 
-class CustomRegistrationView(Navigation, RegistrationView):
+class CustomRegistrationView(RegistrationView):
     def get_context_data(self, **kwargs):
         context = super(
             CustomRegistrationView, self).get_context_data(**kwargs)
@@ -31,14 +31,14 @@ class CustomRegistrationView(Navigation, RegistrationView):
         return context
 
 
-class CustomLoginView(Navigation, LoginView):
+class CustomLoginView(LoginView):
     def get_context_data(self, **kwargs):
         context = super(CustomLoginView, self).get_context_data(**kwargs)
         context["context"] = context
         return context
 
 
-class CustomLogoutView(Navigation, LogoutView):
+class CustomLogoutView(LogoutView):
     def get_context_data(self, **kwargs):
         context = super(CustomLogoutView, self).get_context_data(**kwargs)
         context["context"] = context

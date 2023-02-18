@@ -1,44 +1,13 @@
 {% extends 'cmsapp/base_list.html' %}
-{% load static %}
-
-{% block table_head_cols %}
+{% block tablehead %}
 <th scope="col">Domain</th>
 <th scope="col">URL</th>
-<th scope="col">Description</th>
-<th scope="col">ID</th>
 {% endblock %}
-
-{% block table_cols %}
+{% block tablecells %}
 <td 
   class="align-middle" 
   scope="col">{{obj.domain}}</td>
 <td 
   class="align-middle" 
   scope="col">{{obj.url}}</td>
-<td 
-  class="align-middle" 
-  scope="col">{{obj.description}}</td>
-<td 
-  class="align-middle" 
-  scope="col">{{obj.ID}}</td>
-{% endblock %}
-
-{% block includes %}
-{% include 'cmsapp/modals/website.html' %}
-{% include 'cmsapp/modals/document_del.html' %}
-{% endblock %}
-
-{% block script %}
-<script 
-  type="text/javascript" 
-  src="{% static 'js/nanoid.js' %}"></script>
-<script 
-  type="text/javascript" 
-  src="{% static 'js/index.input.js' %}"></script>
-<script 
-  type="text/javascript" 
-  src="{% static 'js/select.choices.js' %}"></script>
-<script 
-  type="text/javascript" 
-  src="{% static 'js/website.list.js' %}"></script>
 {% endblock %}

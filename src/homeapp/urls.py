@@ -15,7 +15,6 @@ Including another URLconf
 """
 from django.urls import path
 from homeapp import views
-from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     # using the blogapp to serve the homepage
@@ -23,16 +22,10 @@ urlpatterns = [
         '',
         views.HomeView.as_view(),
         name='home'
-       ),
+    ),
     path(
-        '',
-        login_required(views.HomeView.as_view()),
-        name='dashboard',
-       ),
-
-    path(
-        '<str:typeArg>/<str:svid>',
-        views.PageView.as_view(),
-        name='home-detail-view'
-       ),
+        'detail/<str:doc_type>/<str:doc_id>',
+        views.SVDocView.as_view(),
+        name='sv_documents'
+    ),
 ]

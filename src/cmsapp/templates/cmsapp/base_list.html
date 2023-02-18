@@ -1,72 +1,51 @@
 {% extends 'common/base.html' %}
-{% load static %}
 {% block content %}
 <table class="table table-hover">
   <thead>
-    <tr>
+    <tr scope="row">
       <th scope="col">
-      <a 
-        href="#" 
-        data-action="new" 
-        data-title="New {{doc_type_title}}"
-        data-doc-type="{{doc_type}}"
-        data-url="{% url 'document_post' doc_type %}" 
-        data-bs-toggle="modal" 
-        data-bs-target="#postModal"
-        style="font-size:1.2rem;">
-        <i class="bi bi-plus-square-fill" style="color:green;"></i>
-      </a>
+        <a href="{% url 'cms_form' 'new' doc_type  '1' %}"
+          style="font-size:1.2rem;">
+          <i class="bi bi-plus-square-fill" style="color:green;"></i>
+        </a>
       </th>
-      {% block table_head_cols %}
-      <th scope="col">Table Col Heads Here</th>
-      {% endblock %}
+      <th scope="col">Title</th>
+      <th scope="col">CreatedAt</th>
+      <th scope="col">ID</th>
+      {% block tablehead %}{% endblock %}
       <th scope="col"></th>
     </tr>
   </thead>
   <tbody>
     {% for obj in object_list %}
-      <tr>
+      <tr scope="row">
         <td scope="col">
-        <a 
-          href="#" 
-          data-action="edit" 
-          {% if obj.domain %}data-title="Edit {{ obj.domain }}"{% endif %}
-          {% if obj.penName %}data-title="Edit {{ obj.penName }}"{% endif %}
-          {% if obj.name %}data-title="Edit {{ obj.name }}"{% endif %}
-          data-doc-type="{{ doc_type }}" 
-          data-id="{{ obj.ID }}" 
-          data-url="{% url 'document_post' doc_type %}" 
-          data-bs-toggle="modal" 
-          data-bs-target="#postModal"
-          style="font-size:1.2rem;">
-          <i class="bi bi-pencil-square" style="color:green"></i>
-        </a>
+          <a href="{% url 'cms_form' 'edit' doc_type obj.ID %}"
+            style="font-size:1.2rem;">
+            <i class="bi bi-pencil-square" style="color:green"></i>
+          </a>
         </td>
-        {% block table_cols %}
-        <td scope="col">Data Here</td>
-        {% endblock %}
-        <td scope="col">
-        <a 
-          href="#"
-          data-action="delete" 
-          data-id="{{obj.ID}}" 
-          {% if obj.domain %}data-name="{{ obj.domain }}"{% endif %}
-          {% if obj.penName %}data-name="{{ obj.penName }}"{% endif %}
-          {% if obj.name %}data-name="{{ obj.name }}"{% endif %}
-          data-url="{% url 'document_delete' doc_type obj.ID %}" 
-          data-bs-toggle="modal" 
-          data-bs-target="#deleteModal"
-          style="font-size:1.2rem;">
-          <i class="bi bi-trash3-fill" style="color:red"></i>
-        </a>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.indent|safe}}{{obj.title|striptags}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.createdAt|striptags}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.ID}}</td>
+        {% block tablecells %}{% endblock %}
+        <td>
+          <a href="{% url 'document_delete' doc_type obj.ID %}"
+            style="font-size:1.2rem;">
+            <i class="bi bi-trash3-fill" style="color:red"></i>
+          </a>
         </td>
       </tr>
     {% empty %}
-    <p class="alert alert-info">Please add data. Click the plus sign below.</p>
+    <p>## Please add a document.</p>
     {% endfor %}
   </tbody>
 </table>
 {% include 'cmsapp/pagination.html' %}
-{% block includes %}{% endblock %}
 {% endblock %}
-{% block script %}{% endblock %}

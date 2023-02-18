@@ -1,15 +1,97 @@
 {% extends 'common/base.html' %}
 {% block content %}
 <p>Welcome to the dashboard.</p>
-<a href="{% url 'set_list' 'doc_type' %}">docTypes</a></br>
+<div class='container'>
 
-</br>
-<a href="{% url 'document_list' 'author' %}">author</a></br>
-<a href="{% url 'document_list' 'website' %}">website</a></br>
+<div class='row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 g-lg-3'>
+  <div class='col'>
+    <div class='h-100 bg-light rounded p-3'>
+      <a href="{% url 'set_list' 'doc_type' %}">docTypes</a></br>
+      </br>
 
-</br>
-<a href="{% url 'document_list' 'article' %}">articles</a></br>
-<a href="{% url 'document_list' 'article_category' %}">article categories</a></br>
-<a href="{% url 'document_list' 'article_tag' %}">article tags</a></br>
-<a href="{% url 'document_list' 'article_keyword' %}">article keywords</a></br>
+      <a href="{% url 'document_list' 'author' %}">author</a></br>
+      <a href="{% url 'document_list' 'website' %}">website</a></br>
+  </div>
+  </div>
+
+  <div class='col'>
+    <div class='h-100 bg-light rounded p-3'>
+      <a 
+        href="{% url 'document_list' 'article' %}">
+        articles</a></br>
+      <a 
+        href="{% url 'document_list' 'article_category' %}">
+        article categories</a></br>
+      <a 
+        href="{% url 'document_list' 'article_tag' %}">
+        article tags</a></br>
+      <a 
+        href="{% url 'document_list' 'article_keyword' %}">
+        article keywords</a></br>
+
+      </br>
+      <a 
+        href="{% url 'document_list' 'recipe_cook' %}">
+        recipe cookingMethod</a></br>
+      <a 
+        href="{% url 'document_list' 'recipe_cuisine' %}">
+        recipe cuisine</a></br>
+      <a 
+        href="{% url 'document_list' 'recipe_category' %}">
+        recipe category</a></br>
+      <a 
+        href="{% url 'document_list' 'recipe_suitable' %}">
+        recipe suitableForDiet</a></br>
+    </div>
+  </div>
+
+  <div class='col'>
+    <div class='h-100 bg-light rounded p-3'>
+      <a 
+        href="{% url 'document_list' 'tech_doc' %}">
+        technical documents</a></br>
+      <a 
+        href="{% url 'document_list' 'tech_doc_category' %}">
+        tech doc categories</a></br>
+      <a 
+        href="{% url 'document_list' 'tech_doc_tag' %}">
+        tech doc tags</a></br>
+      <a 
+        href="{% url 'document_list' 'tech_doc_keyword' %}">
+        tech doc keywords</a></br>
+    </div>
+  </div>
+
+  <div class='col'>
+    <div class='h-100 bg-light rounded p-3'>
+    </div>
+  </div>
+
+  {% if request.user.is_superuser %}
+
+  <div class='col'>
+    <div class='h-100 bg-warning rounded p-3'>
+      <p>sodavault menus</p>
+    </div>
+  </div>
+
+  <div class='col'>
+    <div class='h-100 bg-warning rounded p-3'>
+    </div>
+  </div>
+
+  <div class='col'>
+    <div class='h-100 bg-warning rounded p-3'>
+    </div>
+  </div>
+
+  <div class='col'>
+    <div class='h-100 bg-warning rounded p-3'>
+    </div>
+  </div>
+  {% endif %}
+
+</div>
+</div>
+
 {% endblock %}

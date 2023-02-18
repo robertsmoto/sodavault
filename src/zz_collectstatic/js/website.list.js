@@ -40,14 +40,23 @@ $(document).on(
         $("#url").val(doc.url);
         $("#description").val(doc.description);
         $("#ID").val(doc.ID);
-        selectChoices(docType=doc_type, sortBy="lexi:ASC", choiceID="ID", 
-          choiceHuman="domain", elementID="parentID", removeID=doc.ID);
-        // Set #parentID selection
-        if (doc.parentID.length > 0) {
-            $("#parentID").val(doc.parentID);
-          } else {
-            $("#parentID").val("");
-          };
+        select2_choices(function (data) {
+          // handle response data here
+          $("#parentID").select2({
+            data: data.results,
+            placeholder: "Select Parent ...",
+            width: "100%"
+          });
+          },{ 
+              url: "/cms/get/select/choices", 
+              docType: doc_type, 
+              sortBy: "lexi:ASC", 
+              choiceID: "ID", 
+              choiceHuman: "domain", 
+              removeID: doc.ID, 
+              selectedIDs: doc.parentID,
+            }
+          );
         $("#docType").val(doc.docType);
         $("#lexi").val(doc.lexi);
         $("#indx").val(doc.indx);
@@ -61,8 +70,23 @@ $(document).on(
   } else {
     // clear all elements with class="clear"
     $('.clear').val('');
-    selectChoices(docType=doc_type, sortBy="lexi:ASC", choiceID="ID", 
-      choiceHuman="domain", elementID="parentID", removeID="");
+    select2_choices(function (data) {
+      // handle response data here
+      $("#parentID").select2({
+        data: data.results,
+        placeholder: "Select Parent ...",
+        width: "100%"
+      });
+      },{ 
+          url: "/cms/get/select/choices", 
+          docType: doc_type, 
+          sortBy: "lexi:ASC", 
+          choiceID: "ID", 
+          choiceHuman: "domain", 
+          removeID: doc.ID, 
+          selectedIDs: "",
+        }
+      );
     $("#ID").val(generateNanoid(16))
   };
 });

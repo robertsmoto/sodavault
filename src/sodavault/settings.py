@@ -129,6 +129,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 # custom processors
+                'homeapp.cntx.processors.navigation',
                 'homeapp.mixins.context_processors.colors',
             ],
         },

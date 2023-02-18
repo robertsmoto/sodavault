@@ -1,8 +1,7 @@
 // function generateNanoid(size)
 // function indexInput(modal, elementID)
-// function selectChoices(pid, docType, sortBy, choiceID, choiceHuman, elementID)
  
-// edit modal
+// create or edit modal
 $(document).on(
 "click", "a[data-action='edit'], a[data-action='new']", function (event) {
   $("#postModal").modal("show");
@@ -43,14 +42,23 @@ $(document).on(
         $("#penName").val(doc.penName);
         $("#role").val(doc.role);
         $("#ID").val(doc.ID);
-        selectChoices(docType=doc_type, sortBy="lexi:ASC", choiceID="ID", 
-          choiceHuman="penName", elementID="parentID", removeID=doc.ID);
-        // Set #parentID selection
-        if (doc.parentID.length > 0) {
-            $("#parentID").val(doc.parentID);
-          } else {
-            $("#parentID").val("");
-          };
+        select2_choices(function (data) {
+          // handle response data here
+          $("#parentID").select2({
+            data: data.results,
+            placeholder: "Select Parent ...",
+            width: "100%"
+          });
+          },{ 
+              url: "/cms/get/select/choices", 
+              docType: doc_type, 
+              sortBy: "lexi:ASC", 
+              choiceID: "ID", 
+              choiceHuman: "penName", 
+              removeID: doc.ID, 
+              selectedIDs: doc.parentID,
+            }
+          );
         $("#docType").val(doc.docType);
         $("#lexi").val(doc.lexi);
         $("#indx").val(doc.indx);
@@ -64,8 +72,23 @@ $(document).on(
   } else {
     // clear all elements with class="clear"
     $('.clear').val('');
-    selectChoices(docType=doc_type, sortBy="lexi:ASC", choiceID="ID", 
-      choiceHuman="penName", elementID="parentID", removeID="");
+    select2_choices(function (data) {
+      // handle response data here
+      $("#parentID").select2({
+        data: data.results,
+        placeholder: "Select Parent ...",
+        width: "100%"
+      });
+      },{ 
+          url: "/cms/get/select/choices", 
+          docType: doc_type, 
+          sortBy: "lexi:ASC", 
+          choiceID: "ID", 
+          choiceHuman: "penName", 
+          removeID: doc.ID, 
+          selectedIDs: "",
+        }
+      );
     $("#ID").val(generateNanoid(16))
   };
 });

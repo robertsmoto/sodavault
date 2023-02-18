@@ -22,44 +22,6 @@ function indexInput(modal) {
   });
 };
 
-function getParentChoices(modal, pid) {
-  $.ajax({
-    url: "/cms/get/select/choices",
-    data: {
-      docType: "article_category",
-      sortby: "lexi:ASC",
-      choiceID: "ID",
-      choiceHuman: "name"
-    },
-    dataType: "json",
-    success: function(response) {
-      // Remove all existing options
-      modal.find("#parentID").empty();
-        
-      modal.find("#parentID").append($("<option>", {
-        value: "",
-        text: "----",
-      }));
-      // Add new options
-      $.each(response, function(index, value) {
-        modal.find('#parentID').append($('<option>', {
-          value: value[0],
-          text: value[1],
-        }));
-      });
-      // Set selection
-      if (pid.length > 0) {
-          modal.find("#parentID").val(pid).prop("seleted", true);
-        } else {
-          modal.find("#parentID").val("").prop("selected", true);
-        };
-    },
-    error: function(xhr, status, error) {
-        alert('Request was not successful');
-    },
-  });
-};
-
 // new modal
 $(document).on("click", "a[data-action='new']", function (event) {
   $("#attributeNewModal").modal("show");
@@ -73,10 +35,6 @@ $(document).on("click", "a[data-action='new']", function (event) {
   nModal.find(".modal-title").html(title); // Update modal title
   nModal.find("#ID").val(generateNanoid(16));
   nModal.find("#docType").val(docType);
-  // ajax call for the parent choices
-  nModal.find('#parentID').one("click", function() {
-    getParentChoices(nModal, "")
-  });
   nModal.find("#ID").val(generateNanoid(16));
   nModal.find("#docType").attr("readonly", "readonly");
   var currentDateTime = new Date();
@@ -114,7 +72,7 @@ $(document).on("click", "a[data-action='edit']", function (event) {
       eModal.find("#description").val(doc.description);
       eModal.find("#ID").val(doc.ID);
 
-      getParentChoices(eModal, doc.parentID);
+      //getParentChoices(eModal, doc.parentID);
 
       eModal.find("#docType").val(doc.docType);
       eModal.find("#lexi").val(doc.lexi);
@@ -145,3 +103,4 @@ $(document).on("click", "a[data-action='delete']", function (event) {
   // form action
   dModal.find("#attributeDeleteForm").attr("action", url);
 });
+

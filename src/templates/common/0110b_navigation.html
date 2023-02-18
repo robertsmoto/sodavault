@@ -1,18 +1,165 @@
 {% load static %}
 
-<nav class="sticky-top navbar-light bg-light">
+
+<nav class="navbar navbar-expand-md navbar-light bg-light">
   <div class="container">
-    <div  class="py-3 col-12 d-inline-flex">
-
-
-    {% if user.is_authenticated %}
-
+    <!-- Brand -->
     <a class="navbar-brand" href="{% url 'dashboard'%}">
-      <img class="d-block d-md-none" src="{% static 'homeapp/sv_letters.png' %}" height="30px" alt="SODAvault logo" >
-      <img class="d-none d-md-block" src="{% static 'homeapp/sv_logo_w_30h.png' %}" height="30px" alt="SODAvalut logo" >
+      <img 
+        class="d-block d-md-none" 
+        src="{% static 'homeapp/sv_letters.png' %}" 
+        height="30px" 
+        alt="SODAvault logo" >
+      <img 
+        class="d-none d-md-block" 
+        src="{% static 'homeapp/sv_logo_w_30h.png' %}" 
+        height="30px" 
+        alt="SODAvalut logo" >
     </a>
 
-    <ul class="navbar-nav mb-0">
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarNavDropdown" 
+      aria-controls="navbarNav" 
+      aria-expanded="false" 
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+      
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+    {% if user.is_authenticated %}
+      <ul class="navbar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Other</a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a 
+            class="nav-link dropdown-toggle" 
+            href="#" id="navbarDropdownMenuLink" 
+            role="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false">
+            Documentation
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            {% for doc in nav_docs %}
+              <li>
+                <a 
+                  class="dropdown-item" 
+                  href="{% url 'sv_documents' doc.docType doc.ID %}">
+                  {{doc.title}}
+                </a>
+              </li>
+              {% empty %}
+              <li><a class="dropdown-item" href="#">## add page</a></li>
+              {% endfor %}
+          </ul>
+        </li>
+
+      </ul>
+
+      <!-- logout -->
+      <div class="float-right nav-item" style="margin-left: auto;">
+        <a 
+          class="btn btn-outline-danger" 
+          href="{% url 'django-registration-logout' %}">Logout</a>
+      </div>
+
+    {% else %}
+      <ul class="navbar-nav">
+
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Other</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">Pricing</a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a 
+            class="nav-link dropdown-toggle" 
+            href="#" id="navbarDropdownMenuLink" 
+            role="button" 
+            data-bs-toggle="dropdown" 
+            aria-expanded="false">
+            Dropdown link
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <li><a class="dropdown-item" href="#">Action</a></li>
+            <li><a class="dropdown-item" href="#">Another action</a></li>
+            <li><a class="dropdown-item" href="#">Something else here</a></li>
+          </ul>
+        </li>
+      </ul>
+
+      <div class="float-right nav-item" style="margin-left: auto;">
+        <a 
+          class="btn btn-outline-success" 
+          href="{% url 'django-registration-login' %}">Login</a>
+        <a 
+          class="btn btn-success" 
+          href="{% url 'django-registration-register' %}">Register</a>
+      </div>
+
+    {% endif %}
+    </div>
+  </div>
+</nav>
+
+{% comment %}
+<nav class="navbar navbar-light bg-light">
+  <div class="container">
+
+
+    <!-- MenuItems -->
+    <div >
+      <ul class="navbar-nav mb-0">
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">Pricing</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" href="#">Features</a>
+        </li>
+
+        <li class="nav-item dropdown">
+          <a 
+            class="nav-link dropdown-toggle" 
+            href="#" id="navbarDropdownMenuLink" 
+            data-toggle="dropdown">
+            Dropdown link
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+            <a class="dropdown-item" href="#">Action</a>
+            <a class="dropdown-item" href="#">Another action</a>
+            <a class="dropdown-item" href="#">Something else here</a>
+          </div>
+        </li>
+      </ul>
+   </div>
+
+
+  </div>
+</nav>
+
+
+
+{% endcomment %}
+
+
+
+
+
+
+    {% comment %}
+
+
 
       <li class="button nav-item dropdown">
         <a 
@@ -44,7 +191,7 @@
         {% for doc in navigation.docs %}
             <a 
             class="dropdown-item" 
-            href="{% url 'blogapp-doc-detail' slug=doc.slug %}"
+            href="{% url 'home-detail-view' doc.type doc.id %}"
             >{{doc.title}}
             </a>
         {% empty %}
@@ -57,14 +204,18 @@
 
         </div>
       </li>
-    </ul>
 
-    <div class="float-right nav-item" style="margin-left: auto;">
-      {% comment %}<a class="btn btn-success" href="{% url 'blogapp-doc-list' %}">Docs</a>{% endcomment %}
-      <a class="btn btn-outline-danger" href="{% url 'django-registration-logout' %}">Logout</a>
-    </div>
 
-    {% else %}
+
+
+
+
+
+
+
+
+
+
 
     <a class="navbar-brand" href="{% url 'home'%}">
       <img class="d-block d-md-none" src="{% static 'homeapp/sv_letters.png' %}" height="30px" alt="SODAvault logo" >
@@ -98,9 +249,5 @@
       <a class="btn btn-outline-success " href="{% url 'django-registration-login' %}">Login</a>
       <a class="btn btn-success " href="{% url 'django-registration-register' %}">Register</a>
     </div>
-    {% endif %}
 
-    </div>
-  </div>
-</nav>
-
+    {% endcomment %}

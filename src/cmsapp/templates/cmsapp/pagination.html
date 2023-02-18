@@ -1,11 +1,12 @@
 <div class="pagination">
     <span class="step-links">
-        {% if page_obj.has_previous %}
-          <a href="?page=1"><i class="fa-solid fa-angles-left"></i></a>
-          <a href="?page={{ page_obj.previous_page_number }}"><i class="fa-solid fa-angle-left"></i></a>
-        {% else %}
-          <i class="fa-solid fa-angles-left" style="color:lightgrey;"></i>
-          <i class="fa-solid fa-angles-left" style="color:lightgrey;"></i>
+        {% if page_obj.has_previous == True %}
+          <a 
+            href="?page=1">
+            <i class="bi bi-chevron-double-left"></i></a>
+          <a 
+            href="?page={{ page_obj.previous_page_number }}">
+            <i class="bi bi-chevron-left"></i></a>
         {% endif %}
 
         <span class="current">
@@ -13,11 +14,12 @@
         </span>
 
         {% if page_obj.has_next %}
-          <a href="?page={{ page_obj.next_page_number }}"><i class="fa-solid fa-angle-right"></i></a>
-          <a href="?page={{ page_obj.paginator.num_pages }}"><i class="fa-solid fa-angles-right"></i></a>
-        {% else %}
-          <i class="fa-solid fa-angle-right" style="color:lightgrey;"></i>
-          <i class="fa-solid fa-angles-right" style="color:lightgrey;"></i>
+          <a 
+            href="?page={{ page_obj.next_page_number }}">
+            <i class="bi bi-chevron-right"></i></a>
+          <a 
+            href="?page={{ page_obj.paginator.num_pages }}">
+            <i class="bi bi-chevron-double-right"></i></a>
         {% endif %}
 
     </span>

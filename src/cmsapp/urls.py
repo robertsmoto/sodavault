@@ -4,19 +4,14 @@ from django.contrib.auth.decorators import login_required
 
 urlpatterns = [
     path(
-        'article/new/<doc_type>',
-        login_required(views.ArticleFormView.as_view()),
-        name='article_new'
-    ),
-    path(
-        'article/edit/<doc_type>/<doc_id>',
-        login_required(views.ArticleFormView.as_view()),
-        name='article_edit'
-    ),
-    path(
         'dashboard/',
         login_required(views.DashboardView.as_view()),
         name='dashboard'
+    ),
+    path(
+        'form/<action>/<doc_type>/<doc_id>',
+        login_required(views.FormView.as_view()),
+        name='cms_form'
     ),
     # based on Redis search
     path(
@@ -30,29 +25,23 @@ urlpatterns = [
         login_required(views.document_post),
         name='document_post'
     ),
+    # login not required as there will be public queries
+    path(
+        'document/detail/<doc_type>/<doc_id>',
+        views.DocumentDetail.as_view(),
+        name='document_detail'
+    ),
     path(
         'document/delete/<doc_type>/<doc_id>',
         login_required(views.document_delete),
         name='document_delete'
     ),
-    # # based on Redis search
-    # path(
-    # 'collection/list/<doc_type>/',
-    # login_required(views.CollectionList.as_view()),
-    # name='collection_list'
-    # ),
-    # path(
-    # 'collection/post/<doc_type>',
-    # login_required(views.collection_post),
-    # name='collection_post'
-    # ),
-    # path(
-    # 'collection/delete/<doc_type>/<doc_id>',
-    # login_required(views.collection_delete),
-    # name='collection_delete'
-    # ),
-
-    # based on Redis sorted sets
+    # indexing, action = 'reindex' or 'add'
+    path(
+        'index/<action>',
+        login_required(views.modify_index),
+        name='modify_index'
+    ),
     path(
         'set/list/<set_name>',
         login_required(views.SetList.as_view()),
@@ -67,6 +56,16 @@ urlpatterns = [
         'set-member/delete/<set_name>/<member_id>',
         login_required(views.set_delete_member),
         name='set_delete_member'
+    ),
+    path(
+        'set/add-default-doctypes',
+        login_required(views.add_default_doc_types),
+        name='set_add_default_doc_types'
+    ),
+    path(
+        'set/delete-all',
+        login_required(views.set_delete_all),
+        name='set_delete_all_members'
     ),
     # ajax request endpoints
     path(

@@ -1,36 +1,15 @@
 <div class="row">
-  <div class="col-xl-4">
-    <label class="mt-1" for="docType">DocType</label>
+  <div class="col-12 col-lg-8">
+    <label class="mt-1" for="title">Title*</label>
     <input 
       type="text" 
-      id="docType" 
-      name="docType" 
+      name="title" 
+      id="title" 
+      placeholder="Document Title"
       required="true"
-      class="form-control">
+      class="form-control"></input>
   </div>
-  <div class="col-xl-4">
-    <label class="mt-1" for="ID">ID</label>
-    <input 
-      type="text" 
-      id="ID" 
-      name="ID" 
-      placeholder="ID ..."
-      class="form-control clear">
-  </div>
-  <div class="col-xl-4">
-    <label class="mt-1" for="parentID">Parent</label>
-    <div class="form-group">
-      <select 
-        id="parentID" 
-        name="parentID" 
-        class="form-select clear">
-        <option value="">Choose one ..</option>
-      </select>
-    </div>
-  </div>
-</div>
-<div class="row">
-  <div class="col-xl-4">
+  <div class="col-12 col-lg-4">
     <label class="mt-1" for="lexi">Lexi*</label>
     <input 
       type="text" 
@@ -40,16 +19,70 @@
       class="form-control clear"
       required="true">
   </div>
-  <div class="col-xl-4">
-    <label class="mt-1" for="indx">Indx</label>
+</div>
+
+<div class="row row-cols-1">
+  <div class="col">
+    <label class="mt-1" for="description">Description</label>
     <input 
       type="text" 
-      id="indx" 
-      name="indx" 
-      placeholder="indx ..."
+      name="description" 
+      id="description" 
+      placeholder="Document Description"
+      class="form-control"></input>
+    <small 
+      id="indxHelp" 
+      class="form-text text-muted">
+        Input space-separated words. Used for full-text search.</small>
+  </div>
+</div>
+
+<div class="row row-cols-1 row-cols-lg-3">
+  <div class="col">
+    <label class="mt-1" for="docType">DocType*</label>
+    <input 
+      type="text" 
+      id="docType" 
+      name="docType" 
+      required="true"
+      class="form-control">
+  </div>
+  <div class="col">
+    <label class="mt-1" for="ID">ID*</label>
+    <input 
+      type="text" 
+      id="ID" 
+      name="ID" 
+      required="true"
       class="form-control clear">
   </div>
-  <div class="col-xl-4">
+  <div class="col">
+    <label class="mt-1" for="parentID">Parent</label>
+    <select id="parentID" name="parentID">
+      <option></option>
+    </select>
+  </div>
+  <div class="col">
+    <label class="mt-1" for="createdAt">CreatedAt*</label>
+    <input 
+      type="datetime-local" 
+      id="createdAt" 
+      name="createdAt" 
+      class="form-control"
+      required="true"
+      step="any">
+  </div>
+  <div class="col">
+    <label class="mt-1" for="updatedAt">UpdatedAt*</label>
+    <input 
+      type="datetime-local" 
+      id="updatedAt" 
+      name="updatedAt" 
+      class="form-control"
+      required="true"
+      step="any">
+  </div>
+  <div class="col">
     <label class="mt-1" for="schemaVersion">SchemaVersion</label>
     <input 
       type="number" 
@@ -58,25 +91,5 @@
       placeholder="schemaVersion ..."
       class="form-control"
       value=0 min=0 max=1000>
-  </div>
-</div>
-<div class="row">
-  <div class="col-xl-4">
-    <label class="mt-1" for="createdAt">CreatedAt</label>
-    <input 
-      type="datetime-local" 
-      id="createdAt" 
-      name="createdAt" 
-      class="form-control"
-      step="any">
-  </div>
-  <div class="col-xl-4">
-    <label class="mt-1" for="updatedAt">UpdatedAt</label>
-    <input 
-      type="datetime-local" 
-      id="updatedAt" 
-      name="updatedAt" 
-      class="form-control"
-      step="any">
   </div>
 </div>

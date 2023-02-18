@@ -7,3 +7,5 @@ mgmt/
 srvs/
 ignore/
 media/
+ckeditor5/
+zz_collectstatic/

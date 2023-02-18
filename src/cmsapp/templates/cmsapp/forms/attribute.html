@@ -1,0 +1,55 @@
+{% extends 'cmsapp/forms/base.html' %}
+{% load static %}
+{% block css_links %}
+<link href="{% static 'css/select2.min.css' %}" rel="stylesheet" />
+{% endblock %}
+{% block header %}{% endblock %}
+{% block warning %}{% endblock %}
+{% block base_content %}{% endblock %}
+
+{% block form_action %}{% url 'document_post' doc_type %}{% endblock %} 
+{% block form_method %}POST{% endblock %} 
+{% block form_id %}attributeEdit{% endblock %}
+
+{% block attribute_fields %}
+<div class="row row-cols-1 row-cols-lg-2">
+  <div class="col">images, other ...</div>
+</div>
+{% endblock %}
+
+{% block form_fields %}{% endblock %}
+{% block btn_color %}primary{% endblock %}
+{% block btn_value %}Submit{% endblock %}
+{% block cancel_url %}#{% endblock %}
+
+
+{% block script %}
+{{ obj|json_script:"objectData" }}
+
+<script>
+const obj = JSON.parse(document.getElementById("objectData").textContent);
+const action = "{{action}}";
+const docType = "{{doc_type}}";
+const currentDateTime = new Date();
+const formattedDateTime = currentDateTime.toISOString().slice(0, 19);
+const pageTitle = "{{page_title}}";
+
+$( document ).ready(function() {
+  $("#docFields").collapse("show");
+  $("#attributeFields").collapse("show");
+  });
+</script>
+
+<script 
+  type="text/javascript" src="{% static 'js/select2.min.js' %}"></script>
+<script 
+  type="text/javascript" src="{% static 'js/document.functions.js' %}"></script>
+<script 
+  type="text/javascript" src="{% static 'js/document.select2.js' %}"></script>
+<script 
+  type="text/javascript" src="{% static 'js/ui.base.js' %}"></script>
+<script 
+  type="text/javascript" src="{% static 'js/document.js' defer %}"></script>
+
+{% endblock %}
+
