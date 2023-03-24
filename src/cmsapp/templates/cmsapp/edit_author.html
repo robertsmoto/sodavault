@@ -1,0 +1,80 @@
+{% extends 'cmsapp/edit_base.html' %}
+{% load static %}
+{% block section_buttons %}
+<a 
+  class="btn btn-light" 
+  data-bs-toggle="collapse" 
+  href="#attributeFields" 
+  role="button">Attributes</a>
+<a 
+{% endblock %}
+
+{% block form_sections %}
+{% with form_author as form %}
+<!-- begin attribute section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" 
+  id="attributeFields">
+  <div 
+    id="attributeBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Attributes
+  </div>
+  <!-- begin attribute fields -->
+  <div class="row row-cols-1 row-cols-lg-4">
+
+    <div class="col mt-2">
+        {{ form.firstName.errors }}
+        {{ form.firstName.label_tag }}
+        {{ form.firstName }}
+        <p 
+          id="firstNameHelp" 
+          class="form-text">{{ form.firstName.help_text|safe }}</p>
+    </div>
+    <div class="col mt-2">
+        {{ form.lastName.errors }}
+        {{ form.lastName.label_tag }}
+        {{ form.lastName }}
+        <p 
+          id="lastNameHelp" 
+          class="form-text">{{ form.lastName.help_text|safe }}</p>
+    </div>
+    <div class="col mt-2">
+        {{ form.penName.errors}}
+        {{ form.penName.label_tag}}
+        {{ form.penName }}
+        <p 
+          id="penNameHelp" 
+          class="form-text">{{ form.penName.help_text|safe }}</p>
+    </div>
+
+    <div class="col mt-2">
+        {{ form.role.errors }}
+        {{ form.role.label_tag }}
+        {{ form.role }}
+        <div 
+          id="roleIDHelp"
+          
+        <div 
+          class="valid-feedback">Looks good!</div>
+    </div>
+
+  </div>
+</div>
+{% endwith %}
+{% endblock %}
+
+{% block btn_color %}primary{% endblock %}
+{% block btn_value %}Submit{% endblock %}
+
+{% block bottomscripts %}
+{{ block.super }}
+<script>
+console.log(DOC)
+$( document ).ready(function() {
+  $("#attributeFields").collapse("show");
+  $('a.btn-light[href="#attributeFields"]').hover(function(){
+      $('#attributeBanner').toggleClass('alert-dark').toggleClass('alert-light');
+    });
+  });
+</script>
+{% endblock %}

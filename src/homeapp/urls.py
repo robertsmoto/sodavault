@@ -24,7 +24,7 @@ urlpatterns = [
         name='home'
     ),
     path(
-        'detail/<str:doc_type>/<str:doc_id>',
+        'detail/<str:docType>/<str:docID>',
         views.SVDocView.as_view(),
         name='sv_documents'
     ),

@@ -1,42 +1,7 @@
-select2_choices(function (data) {
-  // handle response data here
-  $("#author").select2({
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "author", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: obj.author,
-    }
-  );
 
 select2_choices(function (data) {
   // handle response data here
-  $("#website").select2({
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "website", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: obj.website,
-    }
-  );
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#article_category").select2({
+  $("#id_articleCategory").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -70,16 +35,16 @@ select2_choices(function (data) {
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "article_category",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "articleCategory",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
         // to include the newly created tag
-        $("#article_category").append($('<option>', {
+        $("#id_articleCategory").append($('<option>', {
           value: data.id,
           text: data.text
         }));
@@ -92,18 +57,18 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "article_category", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "articleCategory", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
-      selectedIDs: obj.article_category,
+      selectedIDs: obj.articleCategory,
     }
   );
 
 select2_choices(function (data) {
   // handle response data here
-  $("#article_tag").select2({
+  $("#id_articleTag").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -132,21 +97,21 @@ select2_choices(function (data) {
     console.log("new tag has been created")
     // Send an AJAX request to add the new tag to the database
     $.ajax({
-      url: "/cms/document/article_tag",
+      url: "/cms/document/articleTag",
       method: "POST",
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "article_tag",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "articleTag",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
         // to include the newly created tag
-        $("#article_tag").append($('<option>', {
+        $("#id_articleTag").append($('<option>', {
           value: data.id,
           text: data.text
         }));
@@ -159,18 +124,18 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "article_tag", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "articleTag", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
-      selectedIDs: obj.article_tag,
+      selectedIDs: obj.articleTag,
     }
   );
 
 select2_choices(function (data) {
   // handle response data here
-  $("#article_keyword").select2({
+  $("#id_articleKeyword").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -199,21 +164,21 @@ select2_choices(function (data) {
     console.log("new tag has been created")
     // Send an AJAX request to add the new tag to the database
     $.ajax({
-      url: "/cms/document/article_keyword",
+      url: "/cms/document/articleKeyword",
       method: "POST",
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "article_keyword",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "articleKeyword",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
         // to include the newly created tag
-        $("#article_keyword").append($('<option>', {
+        $("#id_articleKeyword").append($('<option>', {
           value: data.id,
           text: data.text
         }));
@@ -226,18 +191,18 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "article_keyword", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "articleKeyword", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
-      selectedIDs: obj.article_keyword,
+      selectedIDs: obj.articleKeyword,
     }
   );
 
 select2_choices(function (data) {
   // handle response data here
-  $("#recipeCategory").select2({
+  $("#id_recipeCategory").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -266,21 +231,21 @@ select2_choices(function (data) {
     console.log("new tag has been created")
     // Send an AJAX request to add the new tag to the database
     $.ajax({
-      url: "/cms/document/recipe_category",
+      url: "/cms/document/recipeCategory",
       method: "POST",
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "recipe_category",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "recipeCategory",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
         // to include the newly created tag
-        $("#reipeCategory").append($('<option>', {
+        $("#id_reipeCategory").append($('<option>', {
           value: data.id,
           text: data.text
         }));
@@ -293,10 +258,10 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "recipe_category", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "recipeCategory", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
       selectedIDs: obj.recipeCategory,
     }
@@ -304,7 +269,7 @@ select2_choices(function (data) {
 
 select2_choices(function (data) {
   // handle response data here
-  $("#recipeCookingMethod").select2({
+  $("#id_recipeCookingMethod").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -333,16 +298,16 @@ select2_choices(function (data) {
     console.log("new tag has been created")
     // Send an AJAX request to add the new tag to the database
     $.ajax({
-      url: "/cms/document/recipe_cook",
+      url: "/cms/document/recipeCookingMethod",
       method: "POST",
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "recipe_cook",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "recipeCookingMethod",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
@@ -360,10 +325,10 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "recipe_cook", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "recipeCookingMethod", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
       selectedIDs: obj.recipeCookingMethod,
     }
@@ -371,7 +336,7 @@ select2_choices(function (data) {
 
 select2_choices(function (data) {
   // handle response data here
-  $("#recipeCuisine").select2({
+  $("#id_recipeCuisine").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -400,21 +365,21 @@ select2_choices(function (data) {
     console.log("new tag has been created")
     // Send an AJAX request to add the new tag to the database
     $.ajax({
-      url: "/cms/document/recipe_cuisine",
+      url: "/cms/document/recipeCuisine",
       method: "POST",
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "recipe_cuisine",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "recipeCuisine",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
         // to include the newly created tag
-        $("#reipeCuisine").append($('<option>', {
+        $("#id_reipeCuisine").append($('<option>', {
           value: data.id,
           text: data.text
         }));
@@ -427,10 +392,10 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "recipe_cuisine", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "recipeCuisine", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
       selectedIDs: obj.recipeCuisine,
     }
@@ -438,7 +403,7 @@ select2_choices(function (data) {
   
 select2_choices(function (data) {
   // handle response data here
-  $("#recipeSuitableForDiet").select2({
+  $("#id_recipeSuitableForDiet").select2({
     tags: true,
     tokenSeparators: [',', ' '],
     data: data.results,
@@ -467,21 +432,21 @@ select2_choices(function (data) {
     console.log("new tag has been created")
     // Send an AJAX request to add the new tag to the database
     $.ajax({
-      url: "/cms/document/recipe_suitable",
+      url: "/cms/document/recipeSuitableForDiet",
       method: "POST",
       //headers: {'X-CSRFToken': CSRFT},
       data: { 
         "csrfmiddlewaretoken": CSRFT,
-        "docType": "recipe_suitable",
-        "ID": tag.id, 
-        "title": tag.text,
-        "description": tag.text,
-        "lexi": lexi,
+        "docType": "recipeSuitableForDiet",
+        "docID": tag.id, 
+        "docTitle": tag.text,
+        "docDescription": tag.text,
+        "docLexi": lexi,
       },
       success: function (data) {
         // If the AJAX request was successful, refresh the list of options
         // to include the newly created tag
-        $("#reipeSuitableForDiet").append($('<option>', {
+        $("#id_reipeSuitableForDiet").append($('<option>', {
           value: data.id,
           text: data.text
         }));
@@ -494,11 +459,12 @@ select2_choices(function (data) {
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: "recipe_suitable", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
+      docType: "recipeSuitableForDiet", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "docID", 
+      choiceHuman: "docTitle", 
       removeID: "", 
       selectedIDs: obj.recipeSuitableForDiet,
     }
   );
+

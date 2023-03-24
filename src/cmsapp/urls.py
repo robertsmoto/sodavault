@@ -8,33 +8,34 @@ urlpatterns = [
         login_required(views.DashboardView.as_view()),
         name='dashboard'
     ),
-    path(
-        'form/<action>/<doc_type>/<doc_id>',
-        login_required(views.FormView.as_view()),
-        name='cms_form'
-    ),
     # based on Redis search
     path(
-        'document/list/<doc_type>',
+        'document/list/<docType>',
         login_required(views.DocumentList.as_view()),
         name='document_list'
     ),
-    # based on Redis json
+    # edit forms
     path(
-        'document/<doc_type>',
-        login_required(views.document_post),
-        name='document_post'
+        'manage/<docType>/<docID>',
+        login_required(views.ManageDocument.as_view()),
+        name='manage_document'
     ),
+
     # login not required as there will be public queries
     path(
-        'document/detail/<doc_type>/<doc_id>',
+        'document/detail/<docType>/<docID>',
         views.DocumentDetail.as_view(),
         name='document_detail'
     ),
     path(
-        'document/delete/<doc_type>/<doc_id>',
+        'document/delete/<docType>/<docID>',
         login_required(views.document_delete),
         name='document_delete'
+    ),
+    path(
+        'select2/tag/post',
+        login_required(views.select2_tag_post),
+        name='select2_tag_post'
     ),
     # indexing, action = 'reindex' or 'add'
     path(
@@ -58,9 +59,9 @@ urlpatterns = [
         name='set_delete_member'
     ),
     path(
-        'set/add-default-doctypes',
-        login_required(views.add_default_doc_types),
-        name='set_add_default_doc_types'
+        'set/add-collections',
+        login_required(views.add_collections),
+        name='add_collections'
     ),
     path(
         'set/delete-all',

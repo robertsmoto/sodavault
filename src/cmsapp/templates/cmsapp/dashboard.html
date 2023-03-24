@@ -6,11 +6,12 @@
 <div class='row row-cols-1 row-cols-md-2 row-cols-lg-4 g-2 g-lg-3'>
   <div class='col'>
     <div class='h-100 bg-light rounded p-3'>
-      <a href="{% url 'set_list' 'doc_type' %}">docTypes</a></br>
+      <a href="{% url 'set_list' 'collections' %}">collections</a></br>
       </br>
 
       <a href="{% url 'document_list' 'author' %}">author</a></br>
       <a href="{% url 'document_list' 'website' %}">website</a></br>
+
   </div>
   </div>
 
@@ -20,27 +21,27 @@
         href="{% url 'document_list' 'article' %}">
         articles</a></br>
       <a 
-        href="{% url 'document_list' 'article_category' %}">
+        href="{% url 'document_list' 'articleCategory' %}">
         article categories</a></br>
       <a 
-        href="{% url 'document_list' 'article_tag' %}">
+        href="{% url 'document_list' 'articleTag' %}">
         article tags</a></br>
       <a 
-        href="{% url 'document_list' 'article_keyword' %}">
+        href="{% url 'document_list' 'articleKeyword' %}">
         article keywords</a></br>
 
       </br>
       <a 
-        href="{% url 'document_list' 'recipe_cook' %}">
+        href="{% url 'document_list' 'recipeCookingMethod' %}">
         recipe cookingMethod</a></br>
       <a 
-        href="{% url 'document_list' 'recipe_cuisine' %}">
+        href="{% url 'document_list' 'recipeCuisine' %}">
         recipe cuisine</a></br>
       <a 
-        href="{% url 'document_list' 'recipe_category' %}">
+        href="{% url 'document_list' 'recipeCategory' %}">
         recipe category</a></br>
       <a 
-        href="{% url 'document_list' 'recipe_suitable' %}">
+        href="{% url 'document_list' 'recipeSuitableFor' %}">
         recipe suitableForDiet</a></br>
     </div>
   </div>
@@ -48,16 +49,16 @@
   <div class='col'>
     <div class='h-100 bg-light rounded p-3'>
       <a 
-        href="{% url 'document_list' 'tech_doc' %}">
+        href="{% url 'document_list' 'techdoc' %}">
         technical documents</a></br>
       <a 
-        href="{% url 'document_list' 'tech_doc_category' %}">
+        href="{% url 'document_list' 'techdocCategory' %}">
         tech doc categories</a></br>
       <a 
-        href="{% url 'document_list' 'tech_doc_tag' %}">
+        href="{% url 'document_list' 'techdocTag' %}">
         tech doc tags</a></br>
       <a 
-        href="{% url 'document_list' 'tech_doc_keyword' %}">
+        href="{% url 'document_list' 'techdocKeyword' %}">
         tech doc keywords</a></br>
     </div>
   </div>

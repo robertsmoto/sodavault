@@ -1,0 +1,63 @@
+{% extends 'cmsapp/edit_base.html' %}
+{% load static %}
+{% block section_buttons %}
+<a 
+  class="btn btn-light" 
+  data-bs-toggle="collapse" 
+  href="#attributeFields" 
+  role="button">Attributes</a>
+<a 
+{% endblock %}
+
+{% block form_sections %}
+{% with form_website as form %}
+<!-- begin attribute section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" 
+  id="attributeFields">
+  <div 
+    id="attributeBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Attributes
+  </div>
+
+  <!-- begin attribute fields -->
+  <div class="row row-cols-1 row-cols-lg-2">
+
+    <div class="col mt-2">
+        {{ form.websiteDomain.errors }}
+        {{ form.websiteDomain.label_tag }}
+        {{ form.websiteDomain }}
+        <p 
+          id="websiteDomainHelp" 
+          class="form-text">{{ form.websiteDomain.help_text|safe }}</p>
+    </div>
+    <div class="col mt-2">
+        {{ form.websiteUrl.errors }}
+        {{ form.websiteUrl.label_tag }}
+        {{ form.websiteUrl }}
+        <p 
+          id="websiteUrlHelp" 
+          class="form-text">{{ form.websiteUrl.help_text|safe }}</p>
+    </div>
+
+  </div>
+</div>
+{% endwith %}
+{% endblock %}
+
+{% block btn_color %}primary{% endblock %}
+{% block btn_value %}Submit{% endblock %}
+
+{% block bottomscripts %}
+{{ block.super }}
+
+<script>
+const pageTitle = "{{page_title}}";
+$( document ).ready(function() {
+  $("#attributeFields").collapse("show");
+  $('a.btn-light[href="#attributeFields"]').hover(function(){
+      $('#attributeBanner').toggleClass('alert-dark').toggleClass('alert-light');
+});
+  });
+</script>
+{% endblock %}

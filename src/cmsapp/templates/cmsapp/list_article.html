@@ -1,0 +1,13 @@
+{% extends 'cmsapp/list_base.html' %}
+{% block tablehead %}
+<th scope="col">Status</th>
+<th scope="col">Highlight</th>
+{% endblock %}
+{% block tablecells %}
+<td 
+  class="align-middle" 
+  scope="col">{{obj.articleStatus}}</td>
+<td 
+  class="align-middle" 
+  scope="col">{{obj.articleHighlight}}</td>
+{% endblock %}

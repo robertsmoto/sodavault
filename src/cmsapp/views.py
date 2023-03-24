@@ -1,15 +1,87 @@
+from django.views.generic.base import ContextMixin
+from django.views.generic.edit import ProcessFormView
+from django.shortcuts import render
+from django.forms import formset_factory
+from .forms import (
+    ArticleForm,
+    ArticleCollectionForm,
+    AuthorForm,
+    BookReview,
+    DocumentForm,
+    Endorsement,
+    IngredientForm,
+    LocalBusinessReview,
+    NutritionForm,
+    Rating,
+    RecipeForm,
+    WebsiteForm,
+)
+from datetime import datetime
 from django.conf import settings
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse
-from django.views.generic import TemplateView, ListView, DetailView
+from django.views.generic import TemplateView, ListView, DetailView, FormView
+from django_editorjs_fields.config import (
+    IMAGE_NAME,
+    IMAGE_NAME_ORIGINAL,
+    IMAGE_UPLOAD_PATH,
+    IMAGE_UPLOAD_PATH_DATE)
+from django_editorjs_fields.utils import storage
+from django_editorjs_fields.views import ImageUploadView
 from homeapp.mixins.metadata import MetaData
 from homeapp.models import APICredentials
 from svapi_py import processors
 from svapi_py.api import SvApi
 from typing import List, Tuple
 import json
+import os
+from nanoid import generate
 
 CONF = settings.CONF
+
+
+class S3ImageUploadView(ImageUploadView):
+    """Custom image upload view to use with editor_js."""
+
+    def post(self, request):
+        """Override the superclass post method."""
+        if 'image' in request.FILES:
+            the_file = request.FILES['image']
+            allowed_types = [
+                'image/jpeg',
+                'image/jpg',
+                'image/pjpeg',
+                'image/x-png',
+                'image/png',
+                'image/webp',
+                'image/gif',
+            ]
+            if the_file.content_type not in allowed_types:
+                return JsonResponse(
+                    {'success': 0, 'message': 'You can only upload images.'}
+                )
+
+            filename, extension = os.path.splitext(the_file.name)
+
+            if IMAGE_NAME_ORIGINAL is False:
+                filename = IMAGE_NAME(filename=filename, file=the_file)
+
+            filename += extension
+
+            # custom upload path
+            prefix = request.user.apicredentials.prefix[-12:]
+            upload_path = f"{prefix}/"
+
+            if IMAGE_UPLOAD_PATH_DATE:
+                upload_path += datetime.now().strftime(IMAGE_UPLOAD_PATH_DATE)
+
+            path = storage.save(
+                os.path.join(upload_path, filename), the_file
+            )
+            link = storage.url(path)
+
+            return JsonResponse({'success': 1, 'file': {"url": link}})
+        return JsonResponse({'success': 0})
 
 
 def set_add_member(request, set_name: str):
@@ -47,7 +119,7 @@ def set_delete_members(request, results):
     svapi = SvApi(request)
     for x in results:
         params = {
-            'setName': "doc_type",
+            'setName': "collections",
             'setMember': x,
         }
         response = svapi.delete('set', params=params)
@@ -56,10 +128,10 @@ def set_delete_members(request, results):
 
 
 def set_delete_all(request):
-    """Deletes all docTypes from account sorted set, and drops index."""
+    """Deletes all collections from account sorted set, and drops index."""
     # first get all the set members
     svapi = SvApi(request)
-    params = {'setName': "doc_type"}
+    params = {'setName': "collections"}
     results, err = svapi.getMany('set', params=params)
     if not err:
         # deletes all the set members
@@ -71,7 +143,7 @@ def set_delete_all(request):
 
     return HttpResponseRedirect(
         reverse(
-            'set_list', args=["doc_type"]))
+            'set_list', args=["collections"]))
 
 
 def modify_index(request, action: str):
@@ -93,50 +165,49 @@ def modify_index(request, action: str):
             print("ERROR rsponse status code", response.status_code)
 
     if action == 'append':
-        # add doc_type index
-        params = {'load': 'doc_type'}
+        # add collections to index
+        params = {'load': 'collections'}
         response = svapi.add('index', params=params)
         if response.status_code != 200:
             print("ERROR rsponse status code", response.status_code)
 
     return HttpResponseRedirect(
         reverse(
-            'set_list', args=['doc_type']))
+            'set_list', args=['collections']))
 
 
-default_doc_types = [
+COLLECTIONS = [
+    'articleCategory',
+    'articleTag',
+    'articleKeyword',
     'author',
-    'article_category',
-    'article_tag',
-    'article_keyword',
-    'page_category',
-    'page_tag',
-    'page_keyword',
-    'recipe_cook',
-    'recipe_category',
-    'recipe_cuisine',
-    'recipe_suitable',
-    'tech_doc_category',
-    'tech_doc_tag',
-    'tech_doc_keyword',
+    'pageCategory',
+    'pageTag',
+    'pageKeyword',
+    'recipeCookingMethod',
+    'recipeCategory',
+    'recipeCuisine',
+    'recipeSuitableForDiet',
+    'techdocCategory',
+    'techdocTag',
+    'techdocKeyword',
     'website',
 ]
 
 
-def add_default_doc_types(request):
-    # load default doc_type to set
+def add_collections(request):
+    """ Adds collections to a redis sorted set named <acctID:collections>"""
     svapi = SvApi(request)
-    for dt in default_doc_types:
+    for dt in COLLECTIONS:
         params = {
-            'setName': "doc_type",
+            'setName': "collections",
             'setMember': dt,
         }
-        response = svapi.add('set', params=params)
-        print("## response", response)
+        _ = svapi.add('set', params=params)
 
     return HttpResponseRedirect(
         reverse(
-            'set_list', args=['doc_type']))
+            'set_list', args=['collections']))
 
 
 class DashboardView(MetaData, TemplateView):
@@ -174,61 +245,11 @@ def breadcrum_processor(doc_type: str) -> (str, str, str):
     return rev_name, rev_namespace, rev_args
 
 
-class FormView(MetaData, TemplateView):
-    # if you want to use Django form view such as BaseFormView, then you
-    # will need to create a django form class with form fields etc.
-    # by using TemplateView, then will have the flexibility of html forms
-
-    def setup(self, request, *args, **kwargs):
-        self.action = kwargs.get('action', '')
-        self.doc_type = kwargs.get('doc_type', '')
-        self.doc_id = kwargs.get('doc_id', '')
-
-        self.obj = {}
-        if self.action == 'edit':
-            self.svapi = SvApi(request)
-            result, err = self.svapi.getOne('document', params={
-                'ID': self.doc_id,
-            })
-            self.obj = result
-        return super().setup(request, *args, **kwargs)
-
-    def get_template_names(self):
-        if self.doc_type == 'article':
-            return ['cmsapp/forms/article.html']
-        if self.doc_type == 'author':
-            return ['cmsapp/forms/author.html']
-        if self.doc_type == 'tech_doc':
-            return ['cmsapp/forms/tech_doc.html']
-        return ['cmsapp/forms/attribute.html']  # error to default
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['server'] = settings.SERVER
-        context['obj'] = self.obj
-        context['doc_type'] = self.doc_type
-        context['action'] = self.action
-        context['doc_id'] = self.doc_id
-        page_title = f'{self.action} {self.doc_type}'.title()
-        context['page_title'] = page_title
-        # context['aws'] = json.dumps(self.aws)  # <-- dump to json
-        # documentation
-        context['docs'] = {'link': '#'}
-        # breadcrumbs
-        rev_name, rev_namespace, rev_args = breadcrum_processor(self.doc_type)
-        context['breadcrumbs'] = [
-            {'name': 'dashboard', 'namespace': 'dashboard', 'args': ''},
-            {'name': rev_name, 'namespace': rev_namespace, 'args': rev_args},
-            {'name': page_title.lower(), 'namespace': '', 'args': ''}
-        ]
-        return context
-
-
 class DocumentDetail(MetaData, DetailView):
     """Detail of json document."""
 
     def setup(self, request, *args, **kwargs):
-        self.docType = kwargs.get('doc_type', '')
+        self.docType = kwargs.get('docType', '')
         self.docID = kwargs.get('doc_id', '')
         self.docTypeTitle = self.docType.replace('_', ' ').title()
         self.title = f'{self.docTypeTitle} List'
@@ -261,66 +282,53 @@ class DocumentList(MetaData, ListView):
     paginate_by = 10
 
     def setup(self, request, *args, **kwargs):
-        self.docType = kwargs.get('doc_type', '')
-        self.docTypeTitle = self.docType.replace('_', ' ').title()
-        self.title = f'{self.docTypeTitle} List'
+        self.docType = kwargs.get('docType', '')
+        # self.docTypeTitle = self.docType.replace('_', ' ').title()
+        self.title = f'{self.docType} List'
         self.svapi = SvApi(request)
         results, err = self.svapi.getMany('search', params={
             'docType': f"{self.docType}",
-            'sortby': 'lexi:ASC',
+            'sortby': 'docLexi:ASC',
         })
-        # error handling, decide how to do this
         if err != '':
+            print("ERROR", err)
             results = {}
-        forest = processors.parent_child_list(results.get('Data', []))
+        forest = processors.parent_child_list(results)
         new_list = []
         for node in forest:
             new_list = processors.flatten_list(
                 node, level=0, new_list=new_list)
         self.object_list = new_list
+
         return super().setup(request, *args, **kwargs)
 
     def get_template_names(self):
-        uses_document = ['document']
 
-        if self.docType in uses_document:
-            return ['cmsapp/document_list.html']
+        templates = ['cmsapp/list_base.html']
 
-        uses_attribute = [
-            'article_category',
-            'article_tag',
-            'article_keyword',
+        USE_UNIQUE_TEMPLATE = [
+            'article',
             'author',
-            'docs_category',
-            'docs_tag',
-            'docs_keyword',
-            'page_category',
-            'page_tag',
-            'page_keyword',
-            'website'
+            'website',
         ]
 
-        if self.docType in uses_attribute:
-            return ['cmsapp/attribute_list.html']
+        if self.docType in USE_UNIQUE_TEMPLATE:
+            templates = [f'cmsapp/list_{self.docType}.html']
 
-        if self.docType == 'article':
-            return ['cmsapp/article_list.html']
-
-        return ['cmsapp/base_list.html']
+        return templates
 
     def get_queryset(self):
         return self.object_list
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['doc_type'] = self.docType
-        context['doc_type_title'] = self.docTypeTitle
+        context['docType'] = self.docType
         context['title'] = self.title
         context['breadcrumbs'] = [
             {'name': 'dashboard',
              'namespace': 'dashboard',
              'args': ''},
-            {'name': self.title.lower(),
+            {'name': f'{self.docType} list',
              'namespace': '',
              'args': ''}
         ]
@@ -331,11 +339,14 @@ class DocumentList(MetaData, ListView):
 def _nest_dict_rec(k, v, out: dict) -> dict:
     if isinstance(v, list):
         v = json.dumps(v) if len(v) > 1 else v[0]
-    k, *rest = k.split('-', 1)
-    if rest:
-        _nest_dict_rec(rest[0], v, out.setdefault(k, {}))
-    else:
-        out[k] = v
+    out[k] = v
+    return out
+
+    # k, *rest = k.split('_', 1)
+    # if rest:
+    # _nest_dict_rec(rest[0], v, out.setdefault(k, {}))
+    # else:
+    # out[k] = v
 
 
 def flat_to_nested_dict(flat: dict) -> dict:
@@ -345,37 +356,213 @@ def flat_to_nested_dict(flat: dict) -> dict:
     return result
 
 
-def document_post(request, doc_type: str, *args, **kwargs):
+FORM_INDEX = {
+    'article': [
+        (DocumentForm, 'document'),
+        (ArticleForm, 'article'),
+        (RecipeForm, 'recipe'),
+        (ArticleCollectionForm, 'collections')
+    ],
+    'articleCategory': [(DocumentForm, 'document')],
+    'articleTag': [(DocumentForm, 'document')],
+    'articleKeyword': [(DocumentForm, 'document')],
+    'recipeCookingMethod': [(DocumentForm, 'document')],
+    'recipeCuisine': [(DocumentForm, 'document')],
+    'recipeCategory': [(DocumentForm, 'document')],
+    'recipeSuitableForDiet': [(DocumentForm, 'document')],
+    'author': [(DocumentForm, 'document'), (AuthorForm, 'author')],
+    'website': [(DocumentForm, 'document'), (WebsiteForm, 'website')]
+}
+
+
+class ManageDocument(ProcessFormView):
+
+    def setup(self, request, *args, **kwargs):
+        self.docType = kwargs.get('docType', '')
+        self.docID = kwargs.get('docID', '')
+        self.svapi = SvApi(request)
+        self.title = f'edit {self.docType}'
+        if self.docID == 'create':
+            self.title = f'create {self.docType}'
+
+        self.breadcrumbs = [
+            {'name': 'dashboard',
+             'namespace': 'dashboard', 'args': ''},
+            {'name': f'{self.docType} list',
+             'namespace': 'document_list', 'args': self.docType.lower()},
+            {'name': self.title.lower(),
+             'namespace': '', '': ''}
+        ]
+        self.doc_context = {
+            'docType': self.docType,
+            'docID': self.docID,
+            'title': self.title
+        }
+
+        self.data_forms = FORM_INDEX.get(self.docType, [])
+        print("## self.data_forms", self.data_forms)
+        self.form_context = {}
+        self.document_initial = {
+            'ID': generate(size=16),
+            'type': self.docType}
+        return super().setup(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+
+        # CREATE
+        if self.docID == 'create':
+            for form, prefix in self.data_forms:
+                self.form_context[f'form_{prefix}'] = form(
+                    initial=self.document_initial
+                )
+
+        # MODIFY
+        else:
+            params = {'docID': self.docID}
+            result, _ = self.svapi.getOne('document', params=params)
+            for form, prefix in self.data_forms:
+                self.form_context[f'form_{prefix}'] = form(
+                    initial=result.get(prefix, {})
+                )
+
+        template = 'cmsapp/edit_base.html'  # default template
+        UNIQUE_TEMPLATES = [
+            'article',
+            'author',
+            'website'
+        ]
+        if self.docType in UNIQUE_TEMPLATES:
+            template = f'cmsapp/edit_{self.docType}.html'
+
+        return render(request, template, {
+            **self.doc_context,
+            **self.form_context,
+            'breadcrumbs': self.breadcrumbs,
+        })
+
+    def post(self, request, *args, **kwargs):
+        data = {}
+
+        for form, prefix in self.data_forms:
+            form = form(request.POST)
+            if form.is_valid():
+                data[prefix] = form.cleaned_data
+
+        response = self.svapi.add('document', data=data)
+        if response.status_code != 200:
+            print("ERROR", response.status_code)
+
+        return HttpResponseRedirect(
+            reverse(
+                'document_list', args=[self.docType]))
+
+
+def manage_author(request, docID=None):
+
     svapi = SvApi(request)
-    # converts from a Django QueryDict to python Dict
-    data_dict = dict(request.POST)
-    # flat data to nested dict
-    data_dict = flat_to_nested_dict(data_dict)
-    # post the data
-    response = svapi.add('document', data=data_dict)
-    if response.status_code != 200:
-        print("ERROR response status code", response.status_code)
-    return HttpResponseRedirect(
-        reverse(
-            'document_list', args=[doc_type]))
+    context = {
+        'docType': 'author',
+        'docID': docID
+    }
+    document_initial = {
+        'ID': generate(size=16),
+        'type': 'author'}
+
+    if request.POST:
+        print("### ######## request.POST", request.POST)
+        document_form = DocumentForm(request.POST)
+        author_form = AuthorForm(request.POST)
+
+        print("## valid", document_form.is_valid(), author_form.is_valid())
+
+        if document_form.is_valid() and author_form.is_valid():
+            print("## is valid")
+            data = {}
+            data['document'] = document_form.cleaned_data
+            data['data'] = author_form.cleaned_data
+            print("## clean data", data)
+            response = svapi.add('document', data=data)
+
+            return HttpResponseRedirect(
+                reverse(
+                    'document_list', args=['author']))
+
+    elif docID == 'create':
+        document_form = DocumentForm(
+            initial={
+                **document_initial
+            }
+        )
+        author_form = AuthorForm()
+
+        return render(request, 'cmsapp/edit_author.html', {
+            'form_author': author_form,
+            'form_doc': document_form,
+            **context
+        })
+
+    else:
+        params = {'docID': docID}
+        result, err = svapi.getOne('document', params=params)
+        if err != '':
+            print("ERROR", err)
+
+        document_form = DocumentForm(initial=result.get('document', {}))
+        author_form = AuthorForm(initial=result.get('data', {}))
+
+        return render(request, 'cmsapp/edit_author.html', {
+            'form_author': author_form,
+            'form_doc': document_form,
+            **context
+        })
+
+    return HttpResponse("something went wrong")
 
 
-def document_delete(request, doc_type: str, doc_id: str):
+# def document_post(request, docType: str, *args, **kwargs):
+    # DocumentFormSet = formset_factory(DocumentForm, extra=0, max_num=1)
+    # AuthorFormSet = formset_factory(AuthorForm, extra=0, max_num=1)
+    # # going to add via api
+    # document_formset = DocumentFormSet(
+    # request.POST, request.FILES, prefix='doc')
+    # author_formset = AuthorFormSet(
+    # request.POST, request.FILES, prefix='author')
+    # if document_formset.is_valid() and author_formset.is_valid():
+    # # do something with the formset.cleaned_data
+    # pass
+
+    # svapi = SvApi(request)
+    # # converts from a Django QueryDict to python Dict
+    # data_dict = dict(request.POST)
+
+    # # flat data to nested dict
+    # data_dict = flat_to_nested_dict(data_dict)
+
+    # # post the data
+    # response = svapi.add('document', data=data_dict)
+    # if response.status_code != 200:
+    # print("ERROR response status code", response.status_code)
+    # return HttpResponseRedirect(
+    # reverse(
+    # 'document_list', args=[docType]))
+
+
+def document_delete(request, docType: str, docID: str):
     svapi = SvApi(request)
     params = {
-        'ID': doc_id,
+        'docID': docID,
     }
     response = svapi.delete('document', params=params)
     if response.status_code != 200:
         print("ERROR response status code", response.status_code)
     return HttpResponseRedirect(
         reverse(
-            'document_list', args=[doc_type]))
+            'document_list', args=[docType]))
 
 
 def get_document(request, *args, **kwargs) -> str:
     """Endpoint for requsts to return a json representation of a document. Uses
-    the document endpoint as: /document?ID=<the_document_id>."""
+    the document endpoint as: / document?ID = <the_document_id > ."""
 
     qv = request.GET.dict()  # dict of request.url query values
     if request.method != 'GET':
@@ -391,10 +578,11 @@ def get_document(request, *args, **kwargs) -> str:
 def get_select_choices(request, *args, **kwargs) -> List[Tuple[str, str]]:
     """Endpoint for requsts to return certain select choice lists. Uses
     /search endpoint and needs docType and sortby.
-    /search?docType=article_category&sortby=lexi:ASC. The SvApi.makeChoices
+    /search?docType = articleCategory & sortby = docLexi: ASC. The SvApi.makeChoices
     method needs the choiceID and choiceHuman parameters."""
 
     qv = request.GET.dict()  # dict of request.url query values
+    # print("## qv", qv)
     select_ids = qv.get('selectedIDs', [])
     remove_id = qv.get('removeID', [])
     if request.method != 'GET':
@@ -402,17 +590,19 @@ def get_select_choices(request, *args, **kwargs) -> List[Tuple[str, str]]:
     svapi = SvApi(request)
     params = {
         'docType': qv.get('docType', ''),
-        'sortby': qv.get('sortby', ''),
+        'sortby': qv.get('sortBy', ''),
     }
+    # print("## params", params)
     results, err = svapi.getMany('search', params=params)
+    print("## results", results)
+    print("## err", err)
     if err == 'no data':
         return JsonResponse(results, safe=False)
-    if isinstance(results, list):
-        results = {}
     raw_choices = svapi.makeChoices(
-        results.get('Data', []),
+        results,
         qv.get('choiceID', ''),
         qv.get('choiceHuman', ''))
+    print("## raw choices ######################", raw_choices)
     # select2 expects results in a very specific format
     # https://select2.org/data-sources/formats
     select2 = {}
@@ -426,11 +616,33 @@ def get_select_choices(request, *args, **kwargs) -> List[Tuple[str, str]]:
         if i in select_ids:
             choice['selected'] = True
         choices.append(choice)
-    pagination = results.get('Pagination', {})
+
+    choices.insert(0, '')
+    # pagination = results.get('Pagination', {})
+    pagination = {}
     pagination['more'] = pagination.get('hasNext', False)
     select2['results'] = choices
     select2['pagination'] = pagination
     return JsonResponse(select2, safe=False)
+
+
+def select2_tag_post(request, *args, **kwargs):
+    print("## kwargs", kwargs)
+    svapi = SvApi(request)
+    # converts from a Django QueryDict to python Dict
+    data_dict = dict(request.POST)
+    data_dict = flat_to_nested_dict(data_dict)
+    data = {}
+    data['document'] = {}
+    for k, v in data_dict.items():
+        data['document'][k] = v
+    # post the data
+    response = svapi.add('document', data=data)
+    print("## response", response)
+    return JsonResponse({
+        "status": "success",
+        "data": {"id": "thisisID", "text": "thisisTEXT"}},
+        safe=False)
 
 
 class SetNew(MetaData, TemplateView):
@@ -443,7 +655,7 @@ class SetNew(MetaData, TemplateView):
 
 
 class SetList(MetaData, ListView):
-    template_name = 'cmsapp/set_list.html'
+    template_name = 'cmsapp/list_set.html'
     paginate_by = 10
 
     def setup(self, request, *args, **kwargs):
@@ -451,10 +663,6 @@ class SetList(MetaData, ListView):
         self.svapi = SvApi(request)
         params = {'setName': f"{self.setName}"}
         results, err = self.svapi.getMany('set', params=params)
-        # if err == 'No data returned.':
-        # print("ERROR", err)
-        # add_default_doc_types(request)
-
         title = self.setName.replace('_', ' ').title()
         self.title = f'{title} List'
         self.object_list = results
@@ -475,3 +683,89 @@ class SetList(MetaData, ListView):
         ]
         context['docs'] = {'link': '#'}
         return context
+
+
+# class FormView(FormView):
+
+    # # form_class = DocumentForm
+    # template_name = 'cmsapp/forms/attribute.html'
+
+    # def setup(self, request, *args, **kwargs):
+        # self.action = kwargs.get('action', '')
+        # self.collection = kwargs.get('collection', '')
+        # self.docID = kwargs.get('docID', '')
+        # return super().setup(request, *args, **kwargs)
+
+    # def get_initial(self):
+        # if self.action != 'edit':
+        # # provide 'new' data
+
+        # return {
+        # 'collection': self.collection,
+        # 'docID': generate(size=16),
+        # 'docCreatedAt': datetime.now(),
+        # 'docUpdatedAt': datetime.now()
+        # }
+
+        # err = ''
+        # self.svapi = SvApi(self.request)
+        # initial, err = self.svapi.getOne('document', params={
+        # 'docID': self.docID,
+        # })
+        # if err != '':
+        # print("## err", err)
+        # return {}
+        # self.initial = initial
+        # return self.initial
+
+    # def get_context_data(self, **kwargs):
+        # context = super().get_context_data(**kwargs)
+        # context['obj'] = self.initial
+        # return context
+
+
+# class DocumentEdit(FormView):
+
+    # def setup(self, request, *args, **kwargs):
+        # self.action = kwargs.get('action', '')
+        # self.collection = kwargs.get('collection', '')
+        # self.docID = kwargs.get('docID', '')
+        # return super().setup(request, *args, **kwargs)
+
+    # def get_form_class(self):
+        # if self.collection == 'author':
+        # return AuthorForm
+        # if self.collection == 'website':
+        # return WebsiteForm
+        # return ArticleForm  # <-- default form class
+
+    # def get_template_names(self):
+        # if self.collection == 'article':
+        # return 'cmsapp/edit_article.html'
+        # if self.collection == 'author':
+        # return 'cmsapp/edit_author.html'
+        # if self.collection == 'techdoc':
+        # return 'cmsapp/edit_tech_doc.html'
+        # if self.collection == 'website':
+        # return 'cmsapp/edit_website.html'
+        # return 'cmsapp/edit_base.html'  # error to default
+
+    # def get_context_data(self, **kwargs):
+        # context = super().get_context_data(**kwargs)
+        # context['server'] = settings.SERVER
+        # context['collection'] = self.collection
+        # context['action'] = self.action
+        # context['docID'] = self.docID
+        # page_title = f'{self.action} {self.collection}'.title()
+        # context['page_title'] = page_title
+        # # documentation
+        # context['docs'] = {'link': '#'}
+        # # breadcrumbs
+        # rev_name, rev_namespace, rev_args = breadcrum_processor(
+        # self.collection)
+        # context['breadcrumbs'] = [
+        # {'name': 'dashboard', 'namespace': 'dashboard', 'args': ''},
+        # {'name': rev_name, 'namespace': rev_namespace, 'args': rev_args},
+        # {'name': page_title.lower(), 'namespace': '', 'args': ''}
+
+        # return context

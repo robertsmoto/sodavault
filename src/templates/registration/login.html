@@ -1,5 +1,9 @@
 {% extends "common/base.html" %}
-{% load crispy_forms_tags %}
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+
 {% comment %}
 **registration/login.html**
 
@@ -27,6 +31,7 @@ template context variables:
     request.META['SERVER_NAME']. For more on sites, see The
     "sites" framework.
 {% endcomment %}
+
 {% block content %}
 <div  class="card mt-3" style="max-width: 20rem;">
     <h5 class="card-header bg-light ">Login</h5>
@@ -47,7 +52,7 @@ template context variables:
 
         <form method="post" action="{% url 'login' %}">
         {% csrf_token %}
-        {{ form|crispy }}
+        {% bootstrap_form form %}
 
 
         <input class="mt-2" type="submit" value="login">

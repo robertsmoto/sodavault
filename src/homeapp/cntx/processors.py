@@ -16,9 +16,9 @@ def navigation(request):
     svapi = SvApi(request=request, headers=headers)
     # tech docs
     tech_docs, err = svapi.getMany('search', params={
-        'docType': 'tech_doc',
+        'docType': 'techdoc',
         'website': 'sodavault.com:rev',
-        'sortby': 'lexi:ASC',
+        'sortby': 'docLexi:ASC',
     })
     forest = []
     if err == '':
@@ -30,15 +30,15 @@ def navigation(request):
     td_list = []
     for td in new_list:
         d = {}
-        d['ID'] = td['ID']
+        d['docID'] = td['docID']
         d['title'] = td['title']
         d['docType'] = td['docType']
         td_list.append(d)
 
     # pages
     pages, err = svapi.getMany('search', params={
-        'docType': 'pages',
-        'sortby': 'lexi:ASC',
+        'docType': 'page',
+        'sortby': 'docLexi:ASC',
     })
     if err == '':
         forest = processors.parent_child_list(pages.get('Data', []))
@@ -51,7 +51,7 @@ def navigation(request):
     page_list = []
     for page in new_list:
         d = {}
-        d['ID'] = page['ID']
+        d['docID'] = page['docID']
         d['title'] = page['title']
         d['docType'] = page['docType']
         page_list.append(d)
@@ -61,4 +61,5 @@ def navigation(request):
     main['nav_docs'] = td_list
     # pages
     main['nav_pages'] = page_list
+    print("### main", main, type(main))
     return main

@@ -54,8 +54,8 @@ class SVDocView(MetaData, DetailView):
     template_name = "homeapp/page_detail.html"
 
     def setup(self, request, *args, **kwargs):
-        self.doc_type = kwargs.get('doc_type', '')
-        self.doc_ID = kwargs.get('doc_id', '')
+        self.docType = kwargs.get('docType', '')
+        self.docID = kwargs.get('docID', '')
         headers = {
             'Aid': CONF.get('svapi', {}).get('aid', ''),
             'Auth': CONF.get('svapi', {}).get('auth', ''),
@@ -63,7 +63,7 @@ class SVDocView(MetaData, DetailView):
             'Content-Type': 'application/json'
         }
         self.svapi = SvApi(request=request, headers=headers)
-        params = {'ID': self.doc_ID}
+        params = {'ID': self.docID}
         result, err = self.svapi.getOne('document', params=params)
         self.obj = result
         return super().setup(request, *args, **kwargs)

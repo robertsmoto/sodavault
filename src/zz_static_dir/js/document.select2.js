@@ -1,17 +1,17 @@
 select2_choices(function (data) {
   // handle response data here
-  $("#parentID").select2({
-    placeholder: "choose ...",
+  $("#id_parentID").select2({
+    theme: 'bootstrap-5',
     width: "100%",
     data: data.results,
   });
   },{ 
       url: "/cms/get/select/choices", 
-      docType: docType, 
-      sortBy: "lexi:ASC", 
+      collection: DOC.collection, 
+      sortBy: "docLexi:ASC", 
       choiceID: "ID", 
       choiceHuman: "title", 
-      removeID: obj.ID, 
-      selectedIDs: obj.parentID
+      removeID: DOC.ID, 
+      selectedIDs: DOC.docParentID
     }
   );

@@ -22,17 +22,17 @@ $('#add-ingredient').click(function() {
   // update the id and name of the cloned row
   $row.attr('id', 'recipe-ingredient-' + index);
   $row.find('.recipe-ingredient-name').attr(
-      'id', 'recipe-ingredient-' + index + '-name').attr(
-          'name', 'recipe-ingredient-' + index + '-name');
+      'id', 'id_recipe_ingredient_' + index + '_name').attr(
+          'name', 'recipe_ingredient_' + index + '_name');
   $row.find('.recipe-ingredient-quantity').attr(
-      'id', 'recipe-ingredient-' + index + '-quantity').attr(
-          'name', 'recipe-ingredient-' + index + '-quantity');
+      'id', 'recipe_ingredient_' + index + '_quantity').attr(
+          'name', 'recipe_ingredient_' + index + '_quantity');
   $row.find('.recipe-ingredient-unit').attr(
-      'id', 'recipe-ingredient-' + index + '-unit').attr(
-          'name', 'recipe-ingredient-' + index + '-unit');
-  $row.find('.recipe-ingredient-notes').attr(
-      'id', 'recipe-ingredient-' + index + '-notes').attr(
-          'name', 'recipe-ingredient-' + index + '-notes');
+      'id', 'recipe_ingredient_' + index + '_unit').attr(
+          'name', 'recipe_ingredient_' + index + '_unit');
+  $row.find('.recipe-ingredient-note').attr(
+      'id', 'recipe_ingredient_' + index + '_note').attr(
+          'name', 'recipe_ingredient_' + index + '_notes');
   $row.find('.delete-link a').removeClass("d-none").addClass("d-inline");
 
   // append the cloned row to the container
@@ -51,29 +51,29 @@ $(document).on('click', '.delete-link a', function(e){
 if(action === "edit") {
   // add existing ingredients
   // Populate the first row with existing data
-  $('#recipe-ingredient-0-name').val(ingredientData['0'].name);
-  $('#recipe-ingredient-0-quantity').val(ingredientData['0'].quantity);
-  $('#recipe-ingredient-0-unit').val(ingredientData['0'].unit);
-  $('#recipe-ingredient-0-notes').val(ingredientData['0'].notes);
+  $('#id_recipe_ingredient_0_name').val(ingredientData['0'].name);
+  $('#id_recipe_ingredient_0_quantity').val(ingredientData['0'].quantity);
+  $('#id_recipe_ingredient_0_unit').val(ingredientData['0'].unit);
+  $('#id_recipe_ingredient_0_note').val(ingredientData['0'].note);
   // add remaining ingredients to additional rows
   $.each(ingredientData, function(i, ingredient) {
     if (i==0) {
       return;
     };
     var $row = $('#recipe-ingredient-0').clone();
-    $row.attr('id', 'recipe-ingredient-' + i);
+    $row.attr('id', 'id_recipe_ingredient_' + i);
     $row.find('.recipe-ingredient-name').attr(
-      'id', 'recipe-ingredient-' + i + '-name').attr(
-        'name', 'recipe-ingredient-' + i + '-name').val(ingredient.name);
+      'id', 'id_recipe_ingredient_' + i + '_name').attr(
+        'name', 'recipe_ingredient_' + i + '_name').val(ingredient.name);
     $row.find('.recipe-ingredient-quantity').attr(
-      'id', 'recipe-ingredient-' + i + '-quantity').attr(
-        'name', 'recipe-ingredient-' + i + '-quantity').val(ingredient.quantity);
+      'id', 'id_recipe_ingredient_' + i + '_quantity').attr(
+        'name', 'recipe_ingredient_' + i + '_quantity').val(ingredient.quantity);
     $row.find('.recipe-ingredient-unit').attr(
-      'id', 'recipe-ingredient-' + i + '-unit').attr(
-        'name', 'recipe-ingredient-' + i + '-unit').val(ingredient.unit);
-    $row.find('.recipe-ingredient-notes').attr(
-      'id', 'recipe-ingredient-' + i + '-notes').attr(
-        'name', 'recipe-ingredient-' + i + '-notes').val(ingredient.notes);
+      'id', 'id_recipe_ingredient_' + i + '_unit').attr(
+        'name', 'recipe_ingredient_' + i + '_unit').val(ingredient.unit);
+    $row.find('.recipe-ingredient-note').attr(
+      'id', 'id_recipe_ingredient_' + i + '_note').attr(
+        'name', 'recipe_ingredient_' + i + '_note').val(ingredient.notes);
     $row.find('.delete-link a').removeClass("d-none").addClass("d-inline");
     $container.append($row);
     });

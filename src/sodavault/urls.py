@@ -16,10 +16,12 @@ Including another URLconf
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 from django.urls import include, path
 from django_registration.backends.one_step.views import RegistrationView
-# from homeapp.mixins.navigation import Navigation
+from django_editorjs_fields.views import ImageByUrl, LinkToolView
+from cmsapp.views import S3ImageUploadView
 import debug_toolbar
 
 
@@ -49,11 +51,9 @@ admin.site.index_title = 'Control Panel'
 admin.site.site_title = 'SODAVault Admin'
 
 urlpatterns = [
-    path('ckeditor/', include('ckeditor_uploader.urls')),
     path('', include('homeapp.urls')),
     path('cms/', include('cmsapp.urls')),
     path('admin/', admin.site.urls),
-    # path('_nested_admin/', include('nested_admin.urls')),
     path('__debug__/', include(debug_toolbar.urls)),
     path('accounts/', include('django.contrib.auth.urls')),
     path('accounts/', include('django_registration.backends.one_step.urls')),
@@ -69,6 +69,25 @@ urlpatterns = [
         'accounts/register/',
         CustomRegistrationView.as_view(success_url='/dashboard/'),
         name='django-registration-register'),
+]
+
+
+urlpatterns += [
+    path(
+        'image_upload/',
+        login_required(S3ImageUploadView.as_view()),
+        name='editorjs_image_upload',
+    ),
+    path(
+        'image_by_url/',
+        ImageByUrl.as_view(),
+        name='editorjs_image_by_url',
+    ),
+    path(
+        'linktool/',
+        login_required(LinkToolView.as_view()),
+        name='editorjs_linktool',
+    ),
 ]
 
 

@@ -4,20 +4,15 @@
 <head>
 {% include "common/0020h_viewport_encoding.html" %}
 <link rel="icon" type="image/x-icon" href="{% static 'homeapp/favicon.ico' %}">
+<link href="{% static 'bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
+<script src="{% static 'js/htmx.min.js' %}" defer></script>
 {% if metadata %}{% include "common/0030h_metadata.html" %}{% endif %}
 {% block metadata %}{% endblock %}
-<link 
-  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css"
-  rel="stylesheet" 
-  integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD"
-  crossorigin="anonymous">
-<link href="{% static '/bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-{% comment %}
-<link href="{% static 'css/fontawesome/css/all.css' %}" rel="stylesheet">
-<link href="{% static 'css/fontawesome/css/solid.min.css' %}" rel="stylesheet">
-{% endcomment %}
 {% block css_links %}{% endblock %}
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=Open+Sans:wght@800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Courier+Prime&family=Open+Sans:wght@800&family=Roboto+Mono&display=swap');
 h1 {
   font-family: 'Open Sans', sans-serif;
   font-weight: 800;}
@@ -49,6 +44,11 @@ p code {
 {% block header %}{% endblock %}
 </head>
 <body>
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+{% bootstrap_messages %}
+{% block topscripts %}{% endblock %}
 {% include "common/0110b_navigation.html" %}
 <div class='container' style="margin-top: 30px;">
 {% include "common/0150b_breadcrumbs.html" %}
@@ -70,14 +70,6 @@ p code {
 </div>
 <script 
   src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-<script 
-  src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" 
-  integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3" 
-  crossorigin="anonymous"></script>
-<script 
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" 
-  integrity="sha384-mQ93GR66B00ZXjt0YO5KlohRA5SY2XofN4zfuZxLkoj1gXtW8ANNCe9d5Y3eG5eD" 
-  crossorigin="anonymous"></script>
-{% block script %}{% endblock %}
+{% block bottomscripts %}{% endblock %}
 </body>
 </html>

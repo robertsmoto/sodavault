@@ -11,33 +11,32 @@ function generateNanoid(size) {
 };
 
 function lexiInput(elementID) {
-  eid = "#"+elementID
-  $(eid).on("input", function() {
-    var docType = $("#docType").val();
-    var name = $(eid).val();
-    var lexi = docType.substring(0, 3) + "_" + docType.substring(
-        docType.indexOf("_") + 1, 
-        docType.indexOf("_") + 4) + "_" + name.toLowerCase().replace(/ /g, "_");
+  $(elementID).on("input", function() {
+    var collection = $("#id_type").val();
+    var eidVal = $(elementID).val();
+    var lexi = collection.substring(0, 3) + "_" + collection.substring(
+        collection.indexOf("_") + 1, 
+        collection.indexOf("_") + 4) + "_" + eidVal.toLowerCase().replace(/ /g, "_");
     lexi = lexi.replace(/[^a-zA-Z0-9_]/g, "");
-    $("#lexi").val(lexi);
+    $("#id_lexi").val(lexi);
   });
 };
 
-function select2_choices(callback, args) {
-  $.ajax({
-    async: true,
-    dataType: "json",
-    url: args.url,
-    data: { 
-        docType: args.docType,
-        sortBy: args.sortBy,
-        choiceID: args.choiceID,
-        choiceHuman: args.choiceHuman,
-        removeID: args.removeID,
-        selectedIDs: args.selectedIDs
-      },
-    success: function (response) {
-        callback(response);
-    }
-  });
-};
+//function select2_choices(callback, args) {
+  //$.ajax({
+    //async: true,
+    //dataType: "json",
+    //url: args.url,
+    //data: { 
+        //collection: args.collection,
+        //sortBy: args.sortBy,
+        //choiceID: args.choiceID,
+        //choiceHuman: args.choiceHuman,
+        //removeID: args.removeID,
+        //selectedIDs: args.selectedIDs
+      //},
+    //success: function (response) {
+        //callback(response);
+    //}
+  //});
+//};

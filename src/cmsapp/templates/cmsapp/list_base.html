@@ -1,0 +1,62 @@
+{% extends 'common/base.html' %}
+{% block content %}
+<table class="table table-hover">
+  <thead>
+    <tr scope="row">
+      <th scope="col">
+        <a href="
+           {% if docType %}
+             {% url 'manage_document' docType 'create' %}
+           {% else %}
+             #
+           {% endif %}
+           "
+          style="font-size:1.2rem;">
+          <i class="bi bi-plus-square-fill" style="color:green;"></i>
+        </a>
+      </th>
+      <th scope="col">docTitle</th>
+      <th scope="col">docCreatedAt</th>
+      <th scope="col">docID</th>
+      {% block tablehead %}{% endblock %}
+      <th scope="col"></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+      <tr scope="row">
+        <td scope="col">
+          <a href="
+             {% if docType %}
+               {% url 'manage_document' docType obj.document.ID %}"
+             {% else %}
+               #
+             {% endif %}
+            style="font-size:1.2rem;">
+            <i class="bi bi-pencil-square" style="color:green"></i>
+          </a>
+        </td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.indent|safe}}{{obj.document.title|striptags}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.document.createdAt|striptags}}</td>
+        <td 
+          class="align-middle" 
+          scope="col">{{obj.document.ID}}</td>
+        {% block tablecells %}{% endblock %}
+        <td>
+          <a href="{% url 'document_delete' docType obj.document.ID %}"
+            style="font-size:1.2rem;">
+            <i class="bi bi-trash3-fill" style="color:red"></i>
+          </a>
+        </td>
+      </tr>
+    {% empty %}
+    <p>## Please add a document.</p>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'cmsapp/pagination.html' %}
+{% endblock %}

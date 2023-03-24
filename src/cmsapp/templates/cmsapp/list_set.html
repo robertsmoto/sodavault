@@ -1,0 +1,101 @@
+{% extends 'common/base.html' %}
+{% block content %}
+
+<div class='row mt-3 justify-content-evenly row-cols-1 row-cols-md-4'>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button'
+      style="width:200px"
+      href="{% url 'set_delete_all_members' %}">Delete</a>
+      <p class='ml-3'>Delete all collections and index.</p>
+  </div>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button' 
+      style="width:200px"
+      href="{% url 'add_collections' %}">Add Collections</a>
+      <p class='ml-3'>Adds the SODAvault collections to a redis sorted set.</p>
+  </div>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button'
+      style="width:200px"
+      href="{% url 'modify_index' 'reindex' %}">Re-Index</a>
+      <p class='ml-3'>Drops current index. Creates index with base schema.</p>
+  </div>
+  <div class='col'>
+    <a 
+      class='btn btn-light'
+      role='button'
+      style="width:200px"
+      href="{% url 'modify_index' 'append' %}">Append Index</a>
+      <p class='ml-3'>Appends collections to the index schema.</p>
+  </div>
+</div>
+
+<div class='row'>
+  <div class='col'>
+    <p>Think about how to handle Collections and Indexes. Should they be automatically created and indexed for each account when the account is created?</p>
+  </div>
+</div>
+
+<table class="table table-hover mt-3">
+  <thead>
+    <tr class="d-flex">
+      <th class="col-1">
+        <a 
+          href="#" 
+          data-bs-toggle="modal" 
+          data-bs-target="#setAddMemberModal"
+          style="font-size:1.2rem;">
+          <i class="bi bi-plus-square-fill" style="color:green;"></i>
+        </a>
+      </th>
+      <th scope="col">Collections</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for obj in object_list %}
+    <tr class="d-flex">
+        <td class="col-1">
+          <a 
+            href="#" id="dlink" 
+            data-obj="{{obj}}" 
+            data-url="{% url 'set_delete_member' setName obj %}" 
+            data-bs-toggle="modal" 
+            data-bs-target="#setDeleteMemberModal"
+            style="font-size:1.2rem;">
+            <i class="bi bi-trash3-fill" style="color:red"></i>
+          </a>
+        </td>
+        <td scope="col">{{obj}}</td>
+      </tr>
+    {% empty %}
+    <p>## Please add a {{setName}} (set member).</p>
+    {% endfor %}
+  </tbody>
+</table>
+{% include 'cmsapp/pagination.html' %}
+{% include 'cmsapp/modals/set_member.html' %}
+{% include 'cmsapp/modals/set_member_del.html' %}
+{% endblock %}
+{% block script %}
+<script type="text/javascript">
+$('#setDeleteMemberModal').on('show.bs.modal', function (event) {
+    var button = $(event.relatedTarget) // Button that triggered the modal
+    var url = button.data('url') // Extract info from data-* attributes
+    var obj = button.data('obj')
+    // Update the modal's content.     
+    var modal = $(this) 
+    var title = 'Delete ' + obj
+    modal.find('.modal-title').html(title)
+    var warning = 'Warning! You are about to delete "' + obj + '".'
+    modal.find('.alert').html(warning)
+    // form action
+    $('#setDelete').attr('action', url);
+})
+</script>
+{% endblock %}

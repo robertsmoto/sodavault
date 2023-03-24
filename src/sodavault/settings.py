@@ -3,6 +3,7 @@ from pathlib import Path
 import json
 import os
 import yaml
+from django.urls import reverse_lazy
 
 """Switch beween servers using:
     $ SERVER=development python manage.py runserver """
@@ -36,6 +37,7 @@ with open(os.path.join(CONFIG_DIR, 'settings.yaml'), "r") as stream:
         print(exc)
 
 CONF = {**ini_dict, **set_dict}
+
 # ################################################
 pretty = json.dumps(CONF, indent=2)
 print("CONF", pretty)
@@ -82,16 +84,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third party packages
-    'ckeditor',
-    'ckeditor_uploader',
-    'crispy_forms',
-    'crispy_bootstrap5',
+    # 'ckeditor',
+    # 'ckeditor_uploader',
+    # 'crispy_bootstrap5',
     'debug_toolbar',
-    # 'django_hosts',
+    'django_bootstrap5',
+    'django_editorjs_fields',
+    'django_htmx',
     'django_registration',
-    # 'imagekit',
     'storages',
+    # 'widget_tweaks',
 
+    # apps
     'cmsapp',
     'homeapp',
 ]
@@ -108,13 +112,14 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'sodavault.urls'
 
-# django_hosts settings
-ROOT_HOSTCONF = 'sodavault.hosts'
-DEFAULT_HOST = 'default-host'
+# # django_hosts settings
+# ROOT_HOSTCONF = 'sodavault.hosts'
+# DEFAULT_HOST = 'default-host'
 
 TEMPLATES = [
     {
@@ -178,11 +183,11 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 RPASS = CONF.get('redis', {}).get('pass', '')
 RHOST = CONF.get('redis', {}).get('host', '')
 RPORT = CONF.get('redis', {}).get('port', '')
-RURI = f'redis://:{RPASS}@{RHOST}:{RPORT}/3'
+DEFAULT_LOCATION = f'redis://:{RPASS}@{RHOST}:{RPORT}/3'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': RURI,
+        'LOCATION': DEFAULT_LOCATION,
         'TIMEOUT': 60 * 60 * 6,  # <-- 6 hours
     },
 }
@@ -199,7 +204,7 @@ GRAPHENE = {'SCHEMA': 'graphqlapp.schema.schema', }
 
 # STORAGE
 STATICFILES_DIRS = CONF.get('dirs', {}).get('staticfiles_dirs', '').split(',')
-STATIC_URL = CONF.get('dirs', {}).get('static_url', '')
+MEDIA_ROOT = CONF.get('dirs', {}).get('media_root', '')
 MEDIA_URL = CONF.get('dirs', {}).get('media_url', '')
 
 if CONF.get('aws', {}).get('use_spaces', False):
@@ -208,26 +213,25 @@ if CONF.get('aws', {}).get('use_spaces', False):
     AWS_STORAGE_BUCKET_NAME = CONF.get(
         'aws', {}).get(
         'storage_bucket_name', '')
-    AWS_S3_CUSTOM_DOMAIN = CONF.get('aws', {}).get('custom_domain', '')
-    AWS_S3_REGION_NAME = CONF.get('aws', {}).get('s3_region_name', '')
-    AWS_S3_ENDPOINT_URL = CONF.get('aws', {}).get('s3_endpoint_url', '')
     AWS_S3_OBJECT_PARAMETERS = {
         'CacheControl': 'max-age=86400',
         'ACL': 'public-read',
     }
+    AWS_S3_REGION_NAME = CONF.get('aws', {}).get('region_name', '')
+    AWS_S3_ENDPOINT_URL = CONF.get('aws', {}).get('endpoint_url', '')
+    AWS_S3_CUSTOM_DOMAIN = CONF.get('aws', {}).get('custom_domain', '')
+    AWS_DEFAULT_ACL = 'public-read'
+    # AWS_S3_ADDRESSING_STYLE = 'path'
 
-    STATICFILES_STORAGE = 'sodavault.custom_storage.StaticStorage'
-    DEFAULT_FILE_STORAGE = 'sodavault.custom_storage.MediaStorage'
+    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'
+    AWS_LOCATION = 'static'
+    STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_LOCATION}/"
+    EDITORJS_STORAGE_BACKEND = 'sodavault.custom_storage.S3MediaStorage'
+
 else:
+    STATIC_URL = CONF.get('dirs', {}).get('static_url', '')
     STATIC_ROOT = CONF.get('dirs', {}).get('static_root', '')
-    MEDIA_ROOT = CONF.get('dirs', {}).get('media_root', '')
-
-if DEBUG:
-    STATIC_URL = CONF.get('dirs', {}).get('static_url_debug', '')
-    STATIC_ROOT = CONF.get('dirs', {}).get('static_root_debug', '')
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-    MEDIA_URL = CONF.get('dirs', {}).get('media_url_debug', '')
-    MEDIA_ROOT = CONF.get('dirs', {}).get('media_root_debug', '')
+    # EDITORJS_STORAGE_BACKEND = 'storages.backends.s3boto3.S3Boto3Storage'
 
 # EMAIL
 SERVER_EMAIL = CONF.get('email', {}).get('server_email', '')
@@ -247,78 +251,63 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ACCOUNT_ACTIVATION_DAYS = 7  # One-week activation window
 LOGIN_REDIRECT_URL = '/cms/dashboard/'
 
-# ck editor
-"""
-The django-ckeditor documentation is not complete on this issue,
-so I am documenting it here.
-In order for the ckeditor to render correctly in development environment
-(DEBUG=True) all the static files must be available in the
-/env/lib/site-packages/ directory. In this project case it is:
-~/dev/envs/sodavault/lib/python3.8/site-packages/ckeditor/static/ckeditor/
-Specifically the plugin:wordcount and the skin:moonocolor must be installed
-in the corresponding directories /static and /plugins. After these packages
-are installed, the ckeditor will render correctly in the
-development environment.
-"""
+# editor_js settings
+EDITORJS_IMAGE_UPLOAD_PATH = ''  # path set in cmsapp.views.S3ImageUploadView
+EDITORJS_EMBED_HOSTNAME_ALLOWED = (
+    'player.vimeo.com',
+    'www.youtube.com',
+    'coub.com',
+    'vine.co',
+    'imgur.com',
+    'gfycat.com',
+    'player.twitch.tv',
+    'player.twitch.tv',
+    'music.yandex.ru',
+    'codepen.io',
+    'www.instagram.com',
+    'twitframe.com',
+    'assets.pinterest.com',
+    'www.facebook.com',
+    'www.aparat.com'
+)
 
-CKEDITOR_UPLOAD_PATH = "ckeditor_uploads/"
-CKEDITOR_RESTRICT_BY_USER = True
-CKEDITOR_BROWSE_SHOW_DIRS = True
-AWS_QUERYSTRING_AUTH = False
-# the wordcount pluging os.getenv is in the ckeditor/os.getenv.js file
-CKEDITOR_CONFIGS = {
-    'default': {
-        'width': '100%',
-        'skin': 'moonocolor',
-        'toolbar': 'Basic',
+EDITORJS_VERSION = 'latest'
+
+EDITORJS_DEFAULT_CONFIG_TOOLS = {
+    'Image': {
+        'class': 'ImageTool',
+        'inlineToolbar': True,
+        "config": {
+            "endpoints": {
+                "byFile": reverse_lazy('editorjs_image_upload'),
+                "byUrl": reverse_lazy('editorjs_image_by_url')
+            }
+        },
     },
-    'sv': {
-        'width': 'auto',
-        'height': 'auto',
-        'autogrow_bottomSpace': 250,
-        'uiColor': '#d9d9d9',
-        'skin': 'moonocolor',
-        'disableNativeSpellChecker': 'false',
-        'toolbar': 'Custom',
-        'toolbar_Custom': [
-            ['Source'],
-            # ['Format'],
-            ['Format', 'Font', 'FontSize', 'Styles'],
-            # ['Styles'],
-            ['Bold', 'Italic', 'Underline', 'Strike', 'Subscript',
-                'Superscript', '-', 'RemoveFormat'],
-            ['Link', 'Unlink', 'Anchor'],
-            ['CodeSnippet'],
-            ['Image', 'Table', 'HorizontalRule', 'SpecialChar',
-                'PageBreak', 'Iframe', 'UploadImage'],
-            ['NumberedList', 'BulletedList', '-', 'Outdent', 'Indent',
-                '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft',
-                'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-',
-                'BidiLtr', 'BidiRtl', 'Language'],
-            ['Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-',
-                'Undo', 'Redo']
-        ],
-        'codeSnippet_theme': 'github',
-        'tabSpaces': 4,
-        'removePlugins': ','.join(['stylesheetparser, exportpdf']),
-        'extraPlugins': ','.join([
-            'uploadimage',  # the upload image feature
-            'div',
-            'autolink',
-            'autoembed',
-            'autogrow',
-            'codesnippet',
-            'embedsemantic',
-            'widget',
-            'lineutils',
-            'clipboard',
-            'dialog',
-            'dialogui',
-            'elementspath',
-            'wordcount'
-        ]),
-        'contentsCss': os.path.join(
-            STATIC_URL,
-            'ckeditor/ckeditor/contents_custom.css'),
+    'Header': {
+        'class': 'Header',
+        'config': {
+            'placeholder': 'Enter a header',
+            'levels': [1, 2, 3, 4],
+            'defaultLevel': 1,
+        },
     },
+    'Checklist': {'class': 'Checklist', 'inlineToolbar': True},
+    'List': {'class': 'List', 'inlineToolbar': True},
+    'Quote': {'class': 'Quote', 'inlineToolbar': True},
+    'Raw': {'class': 'RawTool'},
+    'Code': {'class': 'CodeTool'},
+    'Embed': {'class': 'Embed'},
+    'InlineCode': {'class': 'InlineCode'},
+    'Delimiter': {'class': 'Delimiter'},
+    'Warning': {'class': 'Warning', 'inlineToolbar': True},
+    'LinkTool': {
+        'class': 'LinkTool',
+        'config': {
+            # Backend endpoint for url data fetching
+            'endpoint': reverse_lazy('editorjs_linktool'),
+        }
+    },
+    'Marker': {'class': 'Marker', 'inlineToolbar': True},
+    'Table': {'class': 'Table', 'inlineToolbar': True},
 }

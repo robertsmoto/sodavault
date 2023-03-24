@@ -1,0 +1,909 @@
+{% extends 'cmsapp/edit_base.html' %}
+{% load static %}
+{% block section_buttons %}
+<a 
+  class="btn btn-light"
+  data-bs-toggle="collapse" 
+  href="#attributeFields" 
+  role="button">Attributes</a>
+
+<div class="dropdown d-inline-block">
+  <button 
+    class="btn btn-light dropdown-toggle" 
+    type="button" data-bs-toggle="dropdown" 
+    aria-expanded="false">
+    Additional Data</button>
+  <ul class="dropdown-menu">
+    <li>
+      <a 
+        class="dropdown-item"
+        data-bs-toggle="collapse" 
+        href="#recipeFields" 
+        >Recipe</a>
+    </li>
+    <li>
+      <a 
+        class="dropdown-item"
+        data-bs-toggle="collapse" 
+        href="#bookFields" 
+        >Book Review</a>
+    </li>
+    <li>
+      <a 
+        class="dropdown-item"
+        data-bs-toggle="collapse" 
+        href="#businessFields" 
+        >Local Business Review</a>
+    </li>
+    <li>
+      <a 
+        class="dropdown-item"
+        data-bs-toggle="collapse" 
+        href="#ratingFields" 
+        >Rating</a>
+    </li>
+    <li>
+      <a 
+        class="dropdown-item"
+        data-bs-toggle="collapse" 
+        href="#endorsementFields" 
+        >Endorsement</a>
+    </li>
+  </ul>
+</div>
+{% endblock %}
+
+{% block form_action %}{% url 'document_post' docType %}{% endblock %} 
+{% block form_method %}POST{% endblock %} 
+{% block form_id %}articleForm{% endblock %}
+
+{% block form_sections %}
+<!-- begin attribute section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" 
+  id="attributeFields">
+  <div 
+    id="attributeBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Attributes
+  </div>
+
+  <!-- begin article fields -->
+  {% with form_article as article %}
+  {{ article.media }}
+  <div class="row">
+
+    <div class="col-12 mt-2">
+        {{ article.headline.errors }}
+        {{ article.headline.label_tag }}
+        {{ article.headline }}
+        <p 
+          id="headlineHelp" 
+          class="form-text">{{ article.headline.help_text|safe }}</p>
+    </div>
+    <div class="col-12 mt-2">
+        {{ article.subHeadline.errors }}
+        {{ article.subHeadline.label_tag }}
+        {{ article.subHeadline }}
+        <p 
+          id="subHeadlineHelp" 
+          class="form-text">{{ article.SubHeadline.help_text|safe }}</p>
+    </div>
+    {% with form_collections as coll %}
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.author.errors }}
+        {{ coll.author.label_tag }}
+        {{ coll.author }}
+        <div 
+          id="authorHelp" 
+          class="form-text">{{ coll.author.help_text|safe }}</div>
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.website.errors }}
+        {{ coll.website.label_tag }}
+        {{ coll.website }}
+        <div 
+          id="websiteHelp" 
+          class="form-text">{{ coll.website.help_text|safe }}</div>
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.articleStatus.errors }}
+        {{ coll.articleStatus.label_tag }}
+        {{ coll.articleStatus }}
+        <div 
+          id="articleStatusHelp" 
+          class="form-text">{{ coll.articleStatus.help_text|safe }}</div>
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.articleHighlight.errors }}
+        {{ coll.articleHighlight.label_tag }}
+        {{ coll.articleHighlight }}
+        <div 
+          id="articleHighlightHelp" 
+          class="form-text">{{ coll.articleHighlight.help_text|safe }}</div>
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.articleCategory.errors }}
+        {{ coll.articleCategory.label_tag }}
+        {{ coll.articleCategory }}
+        <div 
+          id="articleCategoryHelp" 
+          class="form-text">{{ coll.articleCategory.help_text|safe }}</div>
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.articleTag.errors }}
+        {{ coll.articleTag.label_tag }}
+        {{ coll.articleTag }}
+        <div 
+          id="articleTagHelp" 
+          class="form-text">{{ coll.articleTag.help_text|safe }}</div>
+    </div>
+    <div class="col-12 col-md-3 mt-2">
+        {{ coll.articleKeyword.errors }}
+        {{ coll.articleKeyword.label_tag }}
+        {{ coll.articleKeyword }}
+        <div 
+          id="articleKeywordHelp" 
+          class="form-text">{{ coll.articleKeyword.help_text|safe }}</div>
+    </div>
+    {% endwith %}
+
+  </div>
+
+  <!-- editor tabs -->
+  <nav>
+    <div class="nav nav-tabs mt-3" id="nav-tab" role="tablist">
+      <button 
+        class="nav-link active" 
+        id="nav-body-tab" 
+        data-bs-toggle="tab" 
+        data-bs-target="#nav-editBody" 
+        type="button" 
+        role="tab" 
+        aria-controls="nav-editBody" 
+        aria-selected="true">Body</button>
+      <button 
+        class="nav-link" 
+        id="nav-excerpt-tab" 
+        data-bs-toggle="tab" 
+        data-bs-target="#nav-editExcerpt" 
+        type="button" 
+        role="tab" 
+        aria-controls="nav-editExcerpt" 
+        aria-selected="false">Excerpt</button>
+      <button 
+        class="nav-link" 
+        id="nav-footer-tab" 
+        data-bs-toggle="tab" 
+        data-bs-target="#nav-editFooter" 
+        type="button" 
+        role="tab" 
+        aria-controls="nav-editFooter" 
+        aria-selected="false">Footer</button>
+    </div>
+  </nav>
+
+  <!-- begin edit fields -->
+  <div class="tab-content" id="nav-tabContent">
+
+    <div 
+      class="tab-pane fade show active" 
+      id="nav-editBody" 
+      role="tabpanel" 
+      aria-labelledby="nav-editBody-tab">
+        {{ article.body.errors }}
+        {{ article.body }}
+        <p 
+          id="bodyHelp" 
+          class="form-text">{{ article.body.help_text|safe }}</p>
+    </div>
+    <div 
+      class="tab-pane fade" 
+      id="nav-editExcerpt" 
+      role="tabpanel" 
+      aria-labelledby="nav-editExcerpt-tab">
+        {{ article.excerpt.errors }}
+        {{ article.excerpt }}
+        <p 
+          id="excerptHelp" 
+          class="form-text">{{ article.excerpt.help_text|safe }}</p>
+    </div>
+    <div 
+      class="tab-pane fade" 
+      id="nav-editFooter" 
+      role="tabpanel" 
+      aria-labelledby="nav-editFooter-tab">
+        {{ article.footer.errors }}
+        {{ article.footer }}
+        <p 
+          id="footerHelp" 
+          class="form-text">{{ article.footer.help_text|safe }}</p>
+    </div>
+
+  {% endwith %}
+  </div>
+</div>
+
+<!-- begin recipe section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" 
+  id="recipeFields">
+  <div 
+    id="recipeBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Recipe
+  </div>
+  <!-- begin recipe fields -->
+  {% with form_recipe as recipe %}
+  <div class="row">
+    <div class="col">
+      {{ form.recipeName.errors }}
+      {{ form.recipeName.label_tag }}
+      {{ form.recipeName }}
+      <p 
+        id="recipeNameHelp" 
+        class="form-text">{{ form.recipeName.help_text|safe }}</p>
+    </div>
+  </div>
+
+  <!-- select row -->
+  <div class="row row-cols-1 row-cols-lg-3 gx-3 gx-lg-3">
+
+    <!-- yield -->
+    <div class="col mt-3">
+      <div class="bg-light mt-3 p-2 h-100 border rounded">
+        <h5>Yields</h5>
+        <div class="col mt-2">
+          {{ form.recipeYieldQuantity.errors }}
+          {{ form.recipeYieldQuantity }}
+        </div>
+        <div class="col mt-2">
+          {{ form.recipeYieldDescription.errors }}
+          {{ form.recipeYieldDescription }}
+        </div>
+        <div class="col mt-2">
+          {{ form.recipeYieldNote.errors }}
+          {{ form.recipeYieldNote }}
+        </div>
+      </div>
+    </div>
+
+    <!-- prep time -->
+    <div class="col mt-3">
+      <div class="bg-light mt-3 p-2 h-100 border rounded">
+        <h5>Prep Time</h5>
+        <div class="col mt-2">
+          {{ form.recipePrepTimeHours.errors }}
+          {{ form.recipePrepTimeHours }}
+        </div>
+        <div class="col mt-2">
+          {{ form.recipePrepTimeMinutes.errors }}
+          {{ form.recipePrepTimeMinutes }}
+        </div>
+      </div>
+    </div>
+
+    <!-- cook time -->
+    <div class="col mt-3">
+      <div class="bg-light mt-3 p-2 h-100 border rounded">
+        <h5>Cooking Time</h5>
+        <div class="col mt-2">
+          {{ form.recipeCookTimeHours.errors }}
+          {{ form.recipeCookTimeHours }}
+        </div>
+        <div class="col mt-2">
+          {{ form.recipeCookTimeMinutes.errors }}
+          {{ form.recipeCookTimeMinutes }}
+        </div>
+      </div>
+    </div>
+
+  </div>
+  {% endwith %}
+  <!-- end select row -->
+
+  <!-- select row -->
+  {% with form_collections as coll %}
+  <div class="row mt-3 pt-3">
+
+    <div class="col-lg-3">
+      {{ coll.recipeCookingMethod.errors }}
+      {{ coll.recipeCookingMethod.label_tag }}
+      {{ coll.recipeCookingMethod }}
+    </div>
+
+    <div class="col-lg-3">
+      {{ coll.recipeCuisine.errors }}
+      {{ coll.recipeCuisine.label_tag }}
+      {{ coll.recipeCuisine }}
+    </div>
+
+    <div class="col-lg-3">
+      {{ coll.recipeCategory.errors }}
+      {{ coll.recipeCategory.label_tag }}
+      {{ coll.recipeCategory }}
+    </div>
+
+    <div class="col-lg-3">
+      {{ coll.recipeSuitableForDiet.errors }}
+      {{ coll.recipeSuitableForDiet.label_tag }}
+      {{ coll.recipeSuitableForDiet }}
+    </div>
+
+  </div>
+  {% endwith %}
+  <!-- end select row -->
+
+  <!-- ingredients and nutrition -->
+  <div class="row mt-3 gx-3" id="ingredient-row">
+    {{ form.ingredients }}
+    {% include 'cmsapp/partials/ingredient.html' %}
+
+
+    <!-- nutrition -->
+    <div class="col-12 col-lg-4">
+      <div class="bg-light mt-3 p-2 border rounded">
+        <h5>Nutrition</h5>
+        <div class="col">
+          {{ form.nutritionServingSize.errors }}
+          {{ form.nutritionServingSize.label_tag }}
+          {{ form.nutritionServingSize }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionCalories.errors }}
+          {{ form.nutritionCalories.label_tag }}
+          {{ form.nutritionCalories }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionFatContent.errors }}
+          {{ form.nutritionFatContent.label_tag }}
+          {{ form.nutritionFatContent }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionSaturatedFat.errors }}
+          {{ form.nutritionSaturatedFat.label_tag }}
+          {{ form.nutritionSaturatedFat }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionUnsaturatedFat.errors }}
+          {{ form.nutritionUnsaturatedFat.label_tag }}
+          {{ form.nutritionUnsaturatedFat }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionTransFat.errors }}
+          {{ form.nutritionTransFat.label_tag }}
+          {{ form.nutritionTransFat }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionCholesterolContent.errors }}
+          {{ form.nutritionCholesterolContent.label_tag }}
+          {{ form.nutritionCholesterolContent }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionSodiumContent.errors }}
+          {{ form.nutritionSodiumContent.label_tag }}
+          {{ form.nutritionSodiumContent }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionCarbohydrateContent.errors }}
+          {{ form.nutritionCarbohydrateContent.label_tag }}
+          {{ form.nutritionCarbohydrateContent }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionFiberContent.errors }}
+          {{ form.nutritionFiberContent.label_tag }}
+          {{ form.nutritionFiberContent }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionSugarContent.errors }}
+          {{ form.nutritionSugarContent.label_tag }}
+          {{ form.nutritionSugarContent }}
+        </div>
+        <div class="col mt-2">
+          {{ form.nutritionProteinContent.errors }}
+          {{ form.nutritionProteinContent.label_tag }}
+          {{ form.nutritionProteinContent }}
+        </div>
+      </div>
+    </div>
+    <!-- end recipe -->
+  </div>
+</div>
+<!-- end recipe section -->
+
+<!-- begin book section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" id="bookFields">
+  <div 
+    id="bookBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Book Review
+  </div>
+
+  <!-- begin book fields -->
+  <div class="row row-cols-1">
+    <div class="col mt-2">
+      {{ form.book_title.errors }}
+      {{ form.book_title.label_tag }}
+      {{ form.book_title }}
+    </div>
+    <div class="col mt-2">
+      {{ form.book_isbn.errors }}
+      {{ form.book_isbn.label_tag }}
+      {{ form.book_isbn }}
+    </div>
+    <div class="col mt-2">
+      {{ form.book_author.errors }}
+      {{ form.book_author.label_tag }}
+      {{ form.book_author }}
+    </div>
+    <div class="col mt-2">
+      {{ form.book_authorUrl.errors }}
+      {{ form.book_authorUrl.label_tag }}
+      {{ form.book_authorUrl }}
+    </div>
+    <div class="col mt-2">
+      {{ form.book_language.errors }}
+      {{ form.book_language.label_tag }}
+      {{ form.book_language }}
+    </div>
+    <div class="col mt-2">
+      {{ form.book_negativeNotes.errors }}
+      {{ form.book_negativeNotes.label_tag }}
+      {{ form.book_negativeNotes }}
+    </div>
+    <div class="col mt-2">
+      {{ form.book_positiveNotes.errors }}
+      {{ form.book_positiveNotes.label_tag }}
+      {{ form.book_positiveNotes }}
+    </div>
+
+  </div>
+  <!-- end book fields -->
+
+</div>
+<!-- end book section -->
+
+<!-- begin business section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" id="businessFields">
+  <div 
+    id="businessBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Business Review
+  </div>
+
+  <!-- begin business fields -->
+  <div class="row row-cols-1">
+    <div class="col mt-2">
+      {{ form.business_type.errors }}
+      {{ form.business_type.label_tag }}
+      {{ form.business_type }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_name.errors }}
+      {{ form.business_name.label_tag }}
+      {{ form.business_name }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_address_street.errors }}
+      {{ form.business_address_street.label_tag }}
+      {{ form.business_address_street }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_address_city.errors }}
+      {{ form.business_address_city.label_tag }}
+      {{ form.business_address_city }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_address_state.errors }}
+      {{ form.business_address_state.label_tag }}
+      {{ form.business_address_state }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_address_zipCode.errors }}
+      {{ form.business_address_zipCode.label_tag }}
+      {{ form.business_address_zipCode }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_address_country.errors }}
+      {{ form.business_address_country.label_tag }}
+      {{ form.business_address_country }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_phone.errors }}
+      {{ form.business_phone.label_tag }}
+      {{ form.business_phone }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_website.errors }}
+      {{ form.business_website.label_tag }}
+      {{ form.business_website }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_mapLink.errors }}
+      {{ form.business_mapLink.label }}
+      {{ form.business_mapLink }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_latitude.errors }}
+      {{ form.business_latitude.label_tag }}
+      {{ form.business_latitude }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_longitude.errors }}
+      {{ form.business_longitude.label_tag }}
+      {{ form.business_longitude }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_negativeNotes.errors }}
+      {{ form.business_negativeNotes.label_tag }}
+      {{ form.business_negativeNotes }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_positiveNotes.errors }}
+      {{ form.business_positiveNotes.label_tag }}
+      {{ form.business_positiveNotes }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_restaurant_menu.errors }}
+      {{ form.business_restaurant_menu.label_tag }}
+      {{ form.business_restaurant_menu }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_restaurant_type.errors }}
+      {{ form.business_restaurant_type.label_tag }}
+      {{ form.business_restaurant_type }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_restaurant_cuisine.errors }}
+      {{ form.business_restaurant_cuisine.label_tag }}
+      {{ form.business_restaurant_cuisine }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_restaurant_acceptsReservations.errors }}
+      {{ form.business_restaurant_acceptsReservations.label_tag }}
+      {{ form.business_restaurant_acceptsReservations }}
+    </div>
+    <div class="col mt-2">
+      {{ form.business_restaurant_cost.errors }}
+      {{ form.business_restaurant_cost.label_tag }}
+      {{ form.business_restaurant_cost }}
+    </div>
+
+  </div>
+  <!-- end business fields -->
+
+</div>
+<!-- end busiess section -->
+
+<!-- begin rating section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" id="ratingFields">
+  <div 
+    id="ratingBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Rating
+  </div>
+
+  <!-- begin rating fields -->
+  <div class="row row-cols-1">
+    <div class="col mt-2">
+      {{ form.rating_value.errors }}
+      {{ form.rating_value.label_tag }}
+      {{ form.rating_value }}
+    </div>
+  </div>
+  <!-- end rating fields -->
+
+</div>
+<!-- end rating section -->
+
+<!-- begin endorsement section -->
+<div 
+  class="row collapse multi-collapse b-3 m-3" id="endorsementFields">
+  <div 
+    id="endorsementBanner" 
+    class="col-12 p-2 alert alert-light rounded border">Endorsement
+  </div>
+
+  <!-- begin endorsement fields -->
+  <div class="row row-cols-1">
+    <div class="col mt-2">
+      {{ form.endorsement_ratingValue.errors }}
+      {{ form.endorsement_ratingValue.label_tag }}
+      {{ form.endorsement_ratingValue }}
+    </div>
+    <div class="col mt-2">
+      {{ form.endorsement_ratingExplanation.errors }}
+      {{ form.endorsement_ratingExplanation.label_tag }}
+      {{ form.endorsement_ratingExplanation }}
+    </div>
+
+
+  </div>
+  <!-- end endorsement fields -->
+
+</div>
+<!-- end endorsement section -->
+{% endblock %}
+
+
+{% block btn_color %}primary{% endblock %}
+{% block btn_value %}Submit{% endblock %}
+{% block cancel_url %}#{% endblock %}
+
+
+{% block bottomscripts %}
+{{ block.super }}
+{{ form_collections.initial|json_script:"collection-data" }}
+<script>
+const COL = JSON.parse(document.getElementById('collection-data').textContent);
+console.log(COL)
+console.log(COL.author)
+console.log(COL.website)
+</script>
+
+<script>
+
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_author").select2({
+    data: data.results,
+    placeholder: 'choose ...',
+    theme: 'bootstrap-5',
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "author", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.author
+    }
+  );
+
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_website").select2({
+    data: data.results,
+    placeholder: 'choose ...',
+    theme: 'bootstrap-5',
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "website", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.website
+    }
+  );
+
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_articleCategory").select2({
+    tags: true,
+    tokenSeparators: [',', ' '],
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "articleCategory", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.articleCategory,
+    }
+  );
+
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_articleTag").select2({
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+    tags: true,
+    tokenSeparators: [','],
+    createTag: function (params) {
+        var term = $.trim(params.term);
+
+        if (term === '') {
+          return null;
+        }
+
+        return {
+          id: generateNanoid(16),
+          text: term,
+          newTag: true // add additional parameters
+        }
+      },
+    insertTag: function (data, tag) {
+      // Insert the tag at the end of the list
+      data.push(tag);
+    }
+  }).on('select2:selecting', function (e) {
+    var element = $(this);
+    var newData = e.params.args.data
+    if (newData.newTag === true) {
+      // Add the new tag to the database
+      $.ajax({
+        async: true,
+        dataType: "json",
+        url: '/cms/select2/tag/post',
+        method: 'POST',
+        data: {
+          type: 'articleTag',
+          ID: newData.id,
+          title: newData.text,
+          lexi: 'art_tag_' + e.params.args.data.text,
+          description: null,
+          createdAt: null,
+          updatedAt: null,
+          schemaVersion: null,
+          csrfmiddlewaretoken: '{{ csrf_token }}'
+        },
+        success: function (response) {
+          if (response.status === 'success') {
+            console.log(response.data)
+            var newTag = response.data;
+            console.log("im here ...");
+            element.append(
+                '<option value="' + newData.id + '">' + newData.text + '</option>'
+              );
+          } else {
+            // If the tag could not be added to the database, show an error message
+            alert('Error adding tag');
+          }
+        },
+        error: function () {
+          alert('Error adding tag');
+        }
+      });
+      // Prevent the tag from being added to the list of options
+      e.preventDefault();
+    }
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "articleTag", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.articleTag,
+    }
+  );
+
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_articleKeyword").select2({
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+    tags: true,
+    tokenSeparators: [',', ' '],
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "articleKeyword", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.articleCategory,
+    }
+  );
+
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_recipeCookingMethod").select2({
+    tags: true,
+    tokenSeparators: [',', ' '],
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "recipeCookingMethod", 
+      sortBy: "docLexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.recipeCookingMethod,
+    }
+  );
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_recipeCuisine").select2({
+    {% comment %}tags: true,{% endcomment %}
+    {% comment %}tokenSeparators: [',', ' ']{% endcomment %}
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "recipeCuisine", 
+      sortBy: "lexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.recipeCuisine,
+    }
+  );
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_recipeCategory").select2({
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "recipeCategory", 
+      sortBy: "lexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.recipeCategory,
+    }
+  );
+select2_choices(function (data) {
+  // handle response data here
+  $("#id_recipeSuitableForDiet").select2({
+    theme: 'bootstrap-5',
+    data: data.results,
+    placeholder: "choose ...",
+    width: "100%",
+  });
+  },{ 
+      url: "/cms/get/select/choices", 
+      docType: "recipeSuitableForDiet", 
+      sortBy: "lexi:ASC", 
+      choiceID: "ID", 
+      choiceHuman: "title", 
+      removeID: "", 
+      selectedIDs: COL.recipeSuitableForDiet,
+    }
+  );
+
+
+
+$( document ).ready(function() {
+  $('div[data-editorjs-holder]').css('max-width', 'none');
+  $('div[data-editorjs-holder]').css('display', 'block');
+  $("#attributeFields").collapse("show");
+  $("#editFields").collapse("show");
+  $("#recipeFields").collapse("show");
+  $('a.btn-light[href="#attributeFields"]').hover(function(){
+      $('#attributeBanner').toggleClass('alert-dark').toggleClass('alert-light');
+  });
+  $('a.btn-light[href="#editFields"]').hover(function(){
+      $('#editBanner').toggleClass('alert-dark').toggleClass('alert-light');
+  });
+  $('a.dropdown-item[href="#recipeFields"]').hover(function(){
+      $('#recipeBanner').toggleClass('alert-dark').toggleClass('alert-light');
+  });
+  $('a.dropdown-item[href="#bookFields"]').hover(function(){
+      $('#bookBanner').toggleClass('alert-dark').toggleClass('alert-light');
+  });
+  $('a.dropdown-item[href="#businessFields"]').hover(function(){
+      $('#businessBanner').toggleClass('alert-dark').toggleClass('alert-light');
+  });
+  $('a.dropdown-item[href="#endorsementFields"]').hover(function(){
+      $('#endorsementBanner').toggleClass('alert-dark').toggleClass('alert-light');
+  });
+});
+
+</script>
+{% endblock %}
