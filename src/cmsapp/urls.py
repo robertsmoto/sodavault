@@ -32,11 +32,6 @@ urlpatterns = [
         login_required(views.document_delete),
         name='document_delete'
     ),
-    path(
-        'select2/tag/post',
-        login_required(views.select2_tag_post),
-        name='select2_tag_post'
-    ),
     # indexing, action = 'reindex' or 'add'
     path(
         'index/<action>',
@@ -68,15 +63,19 @@ urlpatterns = [
         login_required(views.set_delete_all),
         name='set_delete_all_members'
     ),
-    # ajax request endpoints
     path(
-        'get/select/choices',
-        login_required(views.get_select_choices),
-        name='get_select_choices'
+        'select2',
+        login_required(views.get_select2_choices),
+        name='select2_choices'
     ),
     path(
-        'get/document',
-        login_required(views.get_document),
-        name='get_document'
+        'htmx-form-swap/<prefix>',
+        login_required(views.HtmxFormSwap.as_view()),
+        name='htmx-form-swap'
     ),
+    # path(
+    # 'htmx-form-trigger/<prefix>',
+    # login_required(views.HtmxFormTrigger.as_view()),
+    # name='htmx-form-trigger'
+    # ),
 ]

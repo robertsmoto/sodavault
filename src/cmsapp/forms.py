@@ -1,21 +1,14 @@
-from django import forms
-from django_editorjs_fields import EditorJsWidget
+from django.db.models import TextChoices
 from datetime import datetime
+from django import forms
 from django.forms import ValidationError
-
-
-class MaxChoiceLengthValidator:
-    def __init__(self, max_length):
-        self.max_length = max_length
-
-    def __call__(self, value):
-        print("######## value", value)
-        if len(value) > 0 and len(value[0]) > self.max_length:
-            raise ValidationError(
-                'Selected choice must be %(max_length)s characters or less.',
-                params={'max_length': self.max_length},
-            )
-        return value
+from django_editorjs_fields import EditorJsWidget
+from django_select2.forms import (
+    Select2Widget,
+    Select2TagWidget,
+    Select2MultipleWidget,
+    HeavySelect2Widget
+)
 
 
 class DocumentForm(forms.Form):
@@ -41,10 +34,13 @@ class DocumentForm(forms.Form):
         required=True,
         help_text=""
     )
-    parentID = forms.CharField(
-        widget=forms.Select(attrs={
-            'class': 'form-control',
-        }),
+    parentID = forms.ChoiceField(
+        widget=Select2Widget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose one ...',
+            },
+        ),
         label='parentID:',
         help_text="",
         required=False,
@@ -176,6 +172,16 @@ class WebsiteForm(forms.Form):
 
 
 class IngredientForm(forms.Form):
+    ID = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            # 'readonly': True
+        }),
+        label='ID:',
+        max_length=16,
+        required=False,
+        help_text=""
+    )
     name = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -385,15 +391,15 @@ class RecipeForm(forms.Form):
     )
     # prep time
     prepTimeHours = forms.ChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'form-select',
-        }),
+        widget=Select2Widget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose hours ...',
+            }),
         label='PrepTimeHours:',
         help_text="",
         required=False,
         choices=[
-            ('', 'choose hours ...'),
-            ('0', '0 hours'),
             ('1', '1 hours'),
             ('2', '2 hours'),
             ('3', '3 hours'),
@@ -420,15 +426,15 @@ class RecipeForm(forms.Form):
         ]
     )
     prepTimeMinutes = forms.ChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'form-select',
-        }),
+        widget=Select2Widget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose minutes ...',
+            }),
         label='PrepTimeMinutes:',
         help_text="",
         required=False,
         choices=[
-            ('', 'choose minutes ...'),
-            ('0', '0 minutes'),
             ('5', '5 minutes'),
             ('10', '10 minutes'),
             ('15', '15 minutes'),
@@ -444,15 +450,15 @@ class RecipeForm(forms.Form):
     )
     # cook time
     cookTimeHours = forms.ChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'form-select',
-        }),
+        widget=Select2Widget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose hours ...',
+            }),
         label='CookTimeHours:',
         help_text="",
         required=False,
         choices=[
-            ('', 'choose hours ...'),
-            ('0', '0 hours'),
             ('1', '1 hours'),
             ('2', '2 hours'),
             ('3', '3 hours'),
@@ -479,15 +485,16 @@ class RecipeForm(forms.Form):
         ]
     )
     cookTimeMinutes = forms.ChoiceField(
-        widget=forms.Select(attrs={
-            'class': 'form-select',
-        }),
+        widget=Select2Widget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose minutes ...',
+            }),
         label='CookTimeMinutes:',
         help_text="",
         required=False,
         choices=[
             ('', 'choose minutes ...'),
-            ('0', '0 minutes'),
             ('5', '5 minutes'),
             ('10', '10 minutes'),
             ('15', '15 minutes'),
@@ -735,12 +742,13 @@ class LocalBusinessReview(forms.Form):
     business_restaurant_cost = forms.ChoiceField(
         widget=forms.Select(attrs={
             'class': 'form-select',
+            'data-placeholder': 'choose ...',
         }),
         label='business_restaurant_cost:',
         help_text="",
         required=False,
         choices=[
-            ('', 'choose ...'),
+            # ('', 'choose ...'),
             ('1', '1'),
             ('2', '2'),
             ('3', '3')
@@ -807,6 +815,86 @@ class Endorsement(forms.Form):
     )
 
 
+class ImageForm(forms.Form):
+    image = forms.ImageField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        label='image:',
+        required=False,
+    )
+    position = forms.IntegerField(
+        widget=forms.NumberInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        label='position:',
+        required=False,
+    )
+    is_featured = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'form-check form-switch'
+            }
+        ),
+        label='isFeatured:',
+        required=False,
+    )
+    process = forms.BooleanField(
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'form-check form-switch'
+            }
+        ),
+        label='process:',
+        required=False,
+    )
+    caption = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        }),
+        label='caption:',
+        max_length=200,
+        required=False,
+        help_text="",
+    )
+    title = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        }),
+        label='title:',
+        max_length=200,
+        required=False,
+        help_text="",
+    )
+    alt = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+        }),
+        label='alt:',
+        max_length=200,
+        required=False,
+        help_text="",
+    )
+
+
+class FileForm(forms.Form):
+    file = forms.FileField(
+        widget=forms.ClearableFileInput(
+            attrs={
+                'class': 'form-control'
+            }
+        ),
+        max_length=200,
+        allow_empty_file=False,
+        label='file:',
+        required=False,
+    )
+
+
 class ArticleForm(forms.Form):
     # attributes
     headline = forms.CharField(
@@ -842,7 +930,9 @@ class ArticleForm(forms.Form):
         label='excerpt:',
     )
     footer = forms.CharField(
-        widget=EditorJsWidget(config={}),
+        widget=EditorJsWidget(config={
+            'minHeight': 100
+        }),
         required=False,
         label='footer:',
     )
@@ -850,10 +940,13 @@ class ArticleForm(forms.Form):
 
 class AuthorCollectionForm(forms.Form):
 
-    author = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    author = forms.MultipleChoiceField(
+        widget=Select2MultipleWidget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose ...',
+                'allowClear': True,
+            }),
         label='author:',
         help_text="",
         required=False,
@@ -862,10 +955,12 @@ class AuthorCollectionForm(forms.Form):
 
 class WebsiteCollectionForm(forms.Form):
 
-    website = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    website = forms.MultipleChoiceField(
+        widget=Select2MultipleWidget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose ...',
+            }),
         label='website:',
         help_text="",
         required=False,
@@ -874,103 +969,118 @@ class WebsiteCollectionForm(forms.Form):
 
 class RecipeCollectionForm(forms.Form):
 
-    recipeCookingMethod = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    recipeCookingMethod = forms.MultipleChoiceField(
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose ...',
+            }),
         label='recipeCookingMethod:',
         help_text="",
         required=False,
     )
-    recipeCuisine = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    recipeCuisine = forms.MultipleChoiceField(
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose ...',
+            }),
         label='recipeCuisine:',
         help_text="",
         required=False,
     )
-    recipeCategory = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    recipeCategory = forms.MultipleChoiceField(
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose ...',
+            }),
         label='recipeCategory:',
         help_text="",
         required=False,
     )
-    recipeSuitableForDiet = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    recipeSuitableForDiet = forms.MultipleChoiceField(
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                'data-placeholder': 'Choose ...',
+            }),
         label='recipeSuitableForDiet:',
         help_text="",
         required=False,
     )
 
 
-class ArticleCollectionForm(AuthorCollectionForm, WebsiteCollectionForm,
-                            RecipeCollectionForm):
+class ArticleCollectionForm(
+        AuthorCollectionForm,
+        WebsiteCollectionForm,
+        RecipeCollectionForm):
 
-    # articleCollections
-    articleCategory = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    articleCategory = forms.MultipleChoiceField(
+
+        # widget=Select2Widget(
+        # attrs={
+        # 'class': 'form-select',
+        # 'data-placeholder': 'Choose one ...',
+        # },
+        # ),
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                # 'placeholder': 'Choose ...',
+            }),
         label='articleCategories:',
         help_text="",
         required=False,
     )
-    articleKeyword = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    articleKeyword = forms.MultipleChoiceField(
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                # 'placeholder': 'Choose ...',
+            }),
         label='articleKeywords:',
         help_text="",
         required=False,
     )
-    articleTag = forms.CharField(
-        widget=forms.SelectMultiple(attrs={
-            'class': 'form-control',
-        }),
+    articleTag = forms.MultipleChoiceField(
+        widget=Select2TagWidget(
+            attrs={
+                'class': 'form-select',
+                # 'data-placeholder': 'Choose ...',
+            }),
         label='articleTags:',
         help_text="",
         required=False,
     )
-
-    articleStatus = forms.CharField(
-        widget=forms.Select(
+    articleStatus = forms.ChoiceField(
+        widget=Select2Widget(
             attrs={
                 'class': 'form-select',
-            },
-            choices=[
-                ('draft', 'Draft'),
-                ('review', 'Review'),
-                ('published', 'Published'),
-            ]
-
-        ),
+                'data-placeholder': 'Choose ...',
+            }),
+        choices=[
+            ('draft', 'Draft'),
+            ('review', 'Review'),
+            ('published', 'Published'),
+        ],
         label='articleStatus:',
         help_text="",
         required=False,
     )
-    articleHighlight = forms.CharField(
-        widget=forms.Select(
+    articleHighlight = forms.ChoiceField(
+        widget=Select2Widget(
             attrs={
                 'class': 'form-select',
-            },
-            choices=[
-                ('', 'choose ...'),
-                ('featured', 'isFeatured'),
-                ('sticky', 'isSticky'),
-                ('promoted', 'isPromoted'),
-            ]
-        ),
+                'data-placeholder': 'Choose ...',
+            }),
+        choices=[
+            ('', 'choose ...'),
+            ('featured', 'isFeatured'),
+            ('sticky', 'isSticky'),
+            ('promoted', 'isPromoted'),
+        ],
         label='articleHighlight:',
         help_text="",
         required=False,
-        # choices=[
-        # ('featured', 'isFeatured'),
-        # ('sticky', 'isSticky'),
-        # ('promoted', 'isPromoted'),
-        # ]
     )

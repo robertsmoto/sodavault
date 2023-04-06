@@ -5,7 +5,6 @@
 {% include "common/0020h_viewport_encoding.html" %}
 <link rel="icon" type="image/x-icon" href="{% static 'homeapp/favicon.ico' %}">
 <link href="{% static 'bootstrap-icons/bootstrap-icons.css' %}" rel="stylesheet">
-<script src="{% static 'js/htmx.min.js' %}" defer></script>
 {% if metadata %}{% include "common/0030h_metadata.html" %}{% endif %}
 {% block metadata %}{% endblock %}
 {% block css_links %}{% endblock %}
@@ -68,8 +67,13 @@ p code {
 </div>
 {% include "common/0210b_footer.html" %}
 </div>
-<script 
-  src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script> 
+<script src="{% static 'js/htmx.min.js' %}" defer></script>
+<script>
+  document.body.addEventListener('htmx:configRequest', (event) => {
+    event.detail.headers['X-CSRFToken'] = '{{ csrf_token }}';
+  })
+</script>
 {% block bottomscripts %}{% endblock %}
 </body>
 </html>

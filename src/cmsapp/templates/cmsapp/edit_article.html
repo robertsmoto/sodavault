@@ -1,5 +1,6 @@
 {% extends 'cmsapp/edit_base.html' %}
 {% load static %}
+
 {% block section_buttons %}
 <a 
   class="btn btn-light"
@@ -58,6 +59,7 @@
 {% block form_id %}articleForm{% endblock %}
 
 {% block form_sections %}
+
 <!-- begin attribute section -->
 <div 
   class="row collapse multi-collapse b-3 m-3" 
@@ -69,7 +71,6 @@
 
   <!-- begin article fields -->
   {% with form_article as article %}
-  {{ article.media }}
   <div class="row">
 
     <div class="col-12 mt-2">
@@ -88,6 +89,80 @@
           id="subHeadlineHelp" 
           class="form-text">{{ article.SubHeadline.help_text|safe }}</p>
     </div>
+    {% endwith %}
+
+    <!-- image -->
+    <div class="row mt-3 gx-3" id="image-row">
+      <div class="col-12">
+
+        <!-- images -->
+        <div class="bg-light mt-3 p-2 border rounded image-container">
+          <!-- replace here -->
+          {% comment %}<h5 class="d-inline">Images</h5>{% endcomment %}
+          <div class="row image-row mt-2" id="image-form">
+            <div class="col-12 col-md-7">
+              <strong>image</strong>
+            </div>
+            <div class="col-12 col-md-2">
+              <strong>position</strong>
+            </div>
+            <div class="col-12 col-md-1">
+              <strong>featured</strong>
+            </div>
+            <div class="col-12 col-md-1">
+              <strong>process</strong>
+            </div>
+            <div class="col-12 col-md-1"></div>
+            <div class="col-12 col-md-1 align-center delete-link">
+            </div>
+          </div>
+
+          <!-- image form partials -->
+          {% for img in form_image.initial %}
+          {% endfor %}
+          <div class="row image-row mt-2" id="image-forms">
+          </div>
+          
+        </div>
+
+        <button 
+           type="button" 
+           class="btn mt-2" 
+           hx-get="{% url 'htmx-form-swap' 'image' %}"
+           hx-target="#image-forms"
+           hx-swap="beforeend"
+          >
+          <i class="bi bi-plus-square-fill" style="color:green;"></i>
+          &nbsp;add image
+        </button>
+
+        {% if debug %}
+        <p class='mt-3'>images</p>
+        <pre>{{ form_images.initial|pprint }}</pre>
+        {% endif %}
+
+      </div>
+    </div>
+
+    <!-- file -->
+    <div class="row mt-3 gx-3" id="file-row">
+      {% with form_file as file %}
+      <div class="col-12">
+        <div class="bg-light mt-3 p-2 border rounded">
+          <h5>File</h5>
+          <div class="col mb-2">
+            {{ file.file.errors }}
+            {{ file.file }}
+          </div>
+        </div>
+        {% if debug %}
+        <p class='mt-3'>file</p>
+        <pre>{{ file.initial|pprint }}</pre>
+        {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+
     {% with form_collections as coll %}
     <div class="col-12 col-md-3 mt-2">
         {{ coll.author.errors }}
@@ -145,6 +220,10 @@
           id="articleKeywordHelp" 
           class="form-text">{{ coll.articleKeyword.help_text|safe }}</div>
     </div>
+    {% if debug %}
+    <p class='mt-3'>collections</p>
+    <pre>{{ coll.initial|pprint }}</pre>
+    {% endif %}
     {% endwith %}
 
   </div>
@@ -183,10 +262,10 @@
   </nav>
 
   <!-- begin edit fields -->
+  {% with form_article as article %}
   <div class="tab-content" id="nav-tabContent">
-
     <div 
-      class="tab-pane fade show active" 
+      class="tab-pane fade show active mt-3" 
       id="nav-editBody" 
       role="tabpanel" 
       aria-labelledby="nav-editBody-tab">
@@ -197,7 +276,7 @@
           class="form-text">{{ article.body.help_text|safe }}</p>
     </div>
     <div 
-      class="tab-pane fade" 
+      class="tab-pane fade mt-3" 
       id="nav-editExcerpt" 
       role="tabpanel" 
       aria-labelledby="nav-editExcerpt-tab">
@@ -208,7 +287,7 @@
           class="form-text">{{ article.excerpt.help_text|safe }}</p>
     </div>
     <div 
-      class="tab-pane fade" 
+      class="tab-pane fade mt-3" 
       id="nav-editFooter" 
       role="tabpanel" 
       aria-labelledby="nav-editFooter-tab">
@@ -219,6 +298,10 @@
           class="form-text">{{ article.footer.help_text|safe }}</p>
     </div>
 
+  {% if debug %}
+  <p class='mt-3'>article</p>
+  <pre>{{ article.initial|pprint }}</pre>
+  {% endif %}
   {% endwith %}
   </div>
 </div>
@@ -235,12 +318,12 @@
   {% with form_recipe as recipe %}
   <div class="row">
     <div class="col">
-      {{ form.recipeName.errors }}
-      {{ form.recipeName.label_tag }}
-      {{ form.recipeName }}
+      {{ recipe.name.errors }}
+      {{ recipe.name.label_tag }}
+      {{ recipe.name }}
       <p 
         id="recipeNameHelp" 
-        class="form-text">{{ form.recipeName.help_text|safe }}</p>
+        class="recipe-text">{{ recipe.name.help_text|safe }}</p>
     </div>
   </div>
 
@@ -252,16 +335,16 @@
       <div class="bg-light mt-3 p-2 h-100 border rounded">
         <h5>Yields</h5>
         <div class="col mt-2">
-          {{ form.recipeYieldQuantity.errors }}
-          {{ form.recipeYieldQuantity }}
+          {{ recipe.yieldQuantity.errors }}
+          {{ recipe.yieldQuantity }}
         </div>
         <div class="col mt-2">
-          {{ form.recipeYieldDescription.errors }}
-          {{ form.recipeYieldDescription }}
+          {{ recipe.yieldDescription.errors }}
+          {{ recipe.yieldDescription }}
         </div>
         <div class="col mt-2">
-          {{ form.recipeYieldNote.errors }}
-          {{ form.recipeYieldNote }}
+          {{ recipe.yieldNote.errors }}
+          {{ recipe.yieldNote }}
         </div>
       </div>
     </div>
@@ -271,12 +354,12 @@
       <div class="bg-light mt-3 p-2 h-100 border rounded">
         <h5>Prep Time</h5>
         <div class="col mt-2">
-          {{ form.recipePrepTimeHours.errors }}
-          {{ form.recipePrepTimeHours }}
+          {{ recipe.prepTimeHours.errors }}
+          {{ recipe.prepTimeHours }}
         </div>
         <div class="col mt-2">
-          {{ form.recipePrepTimeMinutes.errors }}
-          {{ form.recipePrepTimeMinutes }}
+          {{ recipe.prepTimeMinutes.errors }}
+          {{ recipe.prepTimeMinutes }}
         </div>
       </div>
     </div>
@@ -286,17 +369,20 @@
       <div class="bg-light mt-3 p-2 h-100 border rounded">
         <h5>Cooking Time</h5>
         <div class="col mt-2">
-          {{ form.recipeCookTimeHours.errors }}
-          {{ form.recipeCookTimeHours }}
+          {{ recipe.cookTimeHours.errors }}
+          {{ recipe.cookTimeHours }}
         </div>
         <div class="col mt-2">
-          {{ form.recipeCookTimeMinutes.errors }}
-          {{ form.recipeCookTimeMinutes }}
+          {{ recipe.cookTimeMinutes.errors }}
+          {{ recipe.cookTimeMinutes }}
         </div>
       </div>
     </div>
-
   </div>
+  {% if debug %}
+  <p class='mt-3'>recipe</p>
+  <pre>{{ recipe.initial|pprint }}</pre>
+  {% endif %}
   {% endwith %}
   <!-- end select row -->
 
@@ -334,75 +420,145 @@
 
   <!-- ingredients and nutrition -->
   <div class="row mt-3 gx-3" id="ingredient-row">
-    {{ form.ingredients }}
-    {% include 'cmsapp/partials/ingredient.html' %}
+
+    <!-- ingredients -->
+    <div class="col-12 col-lg-8">
+      <div class="bg-light mt-3 p-2 border rounded ingredient-container">
+
+        <h5 class="d-inline">Ingredients</h5>
+
+        <div class="row ingredient-row mt-2" id="ingredient-header">
+          <div class="col-12 col-md-4 mt-2">
+            <strong>name</strong>
+          </div>
+          <div class="col-12 col-md-2 mt-2">
+            <strong>quantity</strong>
+          </div>
+          <div class="col-12 col-md-2 mt-2">
+            <strong>unit</strong>
+          </div>
+          <div class="col-12 col-md-3 mt-2">
+            <strong>note</strong>
+          </div>
+          <div class="col-12 col-md-1 align-center delete-link mt-2">
+            <strong>del</strong>
+          </div>
+        </div>
+
+        <div class="row ingredient-row mt-2" id="ingredient-rows"></div>
+
+        {% for data in form_ingredient.initial %}
+        <p 
+          class="d-none" 
+          hx-get="{% url 'htmx-form-swap' 'ingredient' %}"
+          hx-trigger="load"
+          hx-target="#ingredient-rows"
+          hx-swap="beforeend"
+          hx-sync="#ingredient-rows:queue all" 
+          hx-vals='{
+            "name":"{{data.name}}", 
+            "quantity":{{data.quantity}},
+            "unit":"{{data.unit}}",
+            "note":"{{data.note}}"}'
+          >
+          ingredient trigger
+        </p>
+        {% endfor %}
+
+      </div>
+
+        <button 
+          type="button" 
+          class="btn mt-2" 
+          hx-get="{% url 'htmx-form-swap' 'ingredient' %}"
+          hx-swap="beforeend"
+          hx-target="#ingredient-rows"
+          >
+          <i class="bi bi-plus-square-fill" style="color:green;"></i>
+          &nbsp;add ingredient
+        </button>
+
+      {% if debug %}
+      <p class='mt-3'>ingredient</p>
+      <pre>
+      {{ form_ingredient.initial|pprint }}
+      </pre>
+      {% endif %}
+
+    </div>
 
 
     <!-- nutrition -->
+    {% with form_nutrition as nutrition %}
     <div class="col-12 col-lg-4">
       <div class="bg-light mt-3 p-2 border rounded">
         <h5>Nutrition</h5>
         <div class="col">
-          {{ form.nutritionServingSize.errors }}
-          {{ form.nutritionServingSize.label_tag }}
-          {{ form.nutritionServingSize }}
+          {{ nutrition.servingSize.errors }}
+          {{ nutrition.servingSize.label_tag }}
+          {{ nutrition.servingSize }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionCalories.errors }}
-          {{ form.nutritionCalories.label_tag }}
-          {{ form.nutritionCalories }}
+          {{ nutrition.calories.errors }}
+          {{ nutrition.calories.label_tag }}
+          {{ nutrition.calories }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionFatContent.errors }}
-          {{ form.nutritionFatContent.label_tag }}
-          {{ form.nutritionFatContent }}
+          {{ nutrition.fatContent.errors }}
+          {{ nutrition.fatContent.label_tag }}
+          {{ nutrition.fatContent }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionSaturatedFat.errors }}
-          {{ form.nutritionSaturatedFat.label_tag }}
-          {{ form.nutritionSaturatedFat }}
+          {{ nutrition.saturatedFat.errors }}
+          {{ nutrition.saturatedFat.label_tag }}
+          {{ nutrition.saturatedFat }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionUnsaturatedFat.errors }}
-          {{ form.nutritionUnsaturatedFat.label_tag }}
-          {{ form.nutritionUnsaturatedFat }}
+          {{ nutrition.unsaturatedFat.errors }}
+          {{ nutrition.unsaturatedFat.label_tag }}
+          {{ nutrition.unsaturatedFat }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionTransFat.errors }}
-          {{ form.nutritionTransFat.label_tag }}
-          {{ form.nutritionTransFat }}
+          {{ nutrition.transFat.errors }}
+          {{ nutrition.transFat.label_tag }}
+          {{ nutrition.transFat }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionCholesterolContent.errors }}
-          {{ form.nutritionCholesterolContent.label_tag }}
-          {{ form.nutritionCholesterolContent }}
+          {{ nutrition.cholesterolContent.errors }}
+          {{ nutrition.cholesterolContent.label_tag }}
+          {{ nutrition.cholesterolContent }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionSodiumContent.errors }}
-          {{ form.nutritionSodiumContent.label_tag }}
-          {{ form.nutritionSodiumContent }}
+          {{ nutrition.sodiumContent.errors }}
+          {{ nutrition.sodiumContent.label_tag }}
+          {{ nutrition.sodiumContent }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionCarbohydrateContent.errors }}
-          {{ form.nutritionCarbohydrateContent.label_tag }}
-          {{ form.nutritionCarbohydrateContent }}
+          {{ nutrition.carbohydrateContent.errors }}
+          {{ nutrition.carbohydrateContent.label_tag }}
+          {{ nutrition.carbohydrateContent }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionFiberContent.errors }}
-          {{ form.nutritionFiberContent.label_tag }}
-          {{ form.nutritionFiberContent }}
+          {{ nutrition.fiberContent.errors }}
+          {{ nutrition.fiberContent.label_tag }}
+          {{ nutrition.fiberContent }}
         </div>
         <div class="col mt-2">
-          {{ form.nutritionSugarContent.errors }}
-          {{ form.nutritionSugarContent.label_tag }}
-          {{ form.nutritionSugarContent }}
+          {{ nutrition.sugarContent.errors }}
+          {{ nutrition.sugarContent.label_tag }}
+          {{ nutrition.sugarContent }}
         </div>
-        <div class="col mt-2">
-          {{ form.nutritionProteinContent.errors }}
-          {{ form.nutritionProteinContent.label_tag }}
-          {{ form.nutritionProteinContent }}
+        <div class="col my-2">
+          {{ nutrition.proteinContent.errors }}
+          {{ nutrition.proteinContent.label_tag }}
+          {{ nutrition.proteinContent }}
         </div>
       </div>
+    {% if debug %}
+    <p class='mt-3'>nutrition</p>
+    <pre>{{ nutrition.initial|pprint }}</pre>
+    {% endif %}
+    {% endwith %}
     </div>
     <!-- end recipe -->
   </div>
@@ -623,265 +779,15 @@
 <!-- end endorsement section -->
 {% endblock %}
 
-
 {% block btn_color %}primary{% endblock %}
 {% block btn_value %}Submit{% endblock %}
 {% block cancel_url %}#{% endblock %}
 
-
 {% block bottomscripts %}
 {{ block.super }}
-{{ form_collections.initial|json_script:"collection-data" }}
+{{ form_article.media.js }}
 <script>
-const COL = JSON.parse(document.getElementById('collection-data').textContent);
-console.log(COL)
-console.log(COL.author)
-console.log(COL.website)
-</script>
-
-<script>
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_author").select2({
-    data: data.results,
-    placeholder: 'choose ...',
-    theme: 'bootstrap-5',
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "author", 
-      sortBy: "docLexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.author
-    }
-  );
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_website").select2({
-    data: data.results,
-    placeholder: 'choose ...',
-    theme: 'bootstrap-5',
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "website", 
-      sortBy: "docLexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.website
-    }
-  );
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_articleCategory").select2({
-    tags: true,
-    tokenSeparators: [',', ' '],
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "articleCategory", 
-      sortBy: "docLexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.articleCategory,
-    }
-  );
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_articleTag").select2({
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-    tags: true,
-    tokenSeparators: [','],
-    createTag: function (params) {
-        var term = $.trim(params.term);
-
-        if (term === '') {
-          return null;
-        }
-
-        return {
-          id: generateNanoid(16),
-          text: term,
-          newTag: true // add additional parameters
-        }
-      },
-    insertTag: function (data, tag) {
-      // Insert the tag at the end of the list
-      data.push(tag);
-    }
-  }).on('select2:selecting', function (e) {
-    var element = $(this);
-    var newData = e.params.args.data
-    if (newData.newTag === true) {
-      // Add the new tag to the database
-      $.ajax({
-        async: true,
-        dataType: "json",
-        url: '/cms/select2/tag/post',
-        method: 'POST',
-        data: {
-          type: 'articleTag',
-          ID: newData.id,
-          title: newData.text,
-          lexi: 'art_tag_' + e.params.args.data.text,
-          description: null,
-          createdAt: null,
-          updatedAt: null,
-          schemaVersion: null,
-          csrfmiddlewaretoken: '{{ csrf_token }}'
-        },
-        success: function (response) {
-          if (response.status === 'success') {
-            console.log(response.data)
-            var newTag = response.data;
-            console.log("im here ...");
-            element.append(
-                '<option value="' + newData.id + '">' + newData.text + '</option>'
-              );
-          } else {
-            // If the tag could not be added to the database, show an error message
-            alert('Error adding tag');
-          }
-        },
-        error: function () {
-          alert('Error adding tag');
-        }
-      });
-      // Prevent the tag from being added to the list of options
-      e.preventDefault();
-    }
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "articleTag", 
-      sortBy: "docLexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.articleTag,
-    }
-  );
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_articleKeyword").select2({
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-    tags: true,
-    tokenSeparators: [',', ' '],
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "articleKeyword", 
-      sortBy: "docLexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.articleCategory,
-    }
-  );
-
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_recipeCookingMethod").select2({
-    tags: true,
-    tokenSeparators: [',', ' '],
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "recipeCookingMethod", 
-      sortBy: "docLexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.recipeCookingMethod,
-    }
-  );
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_recipeCuisine").select2({
-    {% comment %}tags: true,{% endcomment %}
-    {% comment %}tokenSeparators: [',', ' ']{% endcomment %}
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "recipeCuisine", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.recipeCuisine,
-    }
-  );
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_recipeCategory").select2({
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "recipeCategory", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.recipeCategory,
-    }
-  );
-select2_choices(function (data) {
-  // handle response data here
-  $("#id_recipeSuitableForDiet").select2({
-    theme: 'bootstrap-5',
-    data: data.results,
-    placeholder: "choose ...",
-    width: "100%",
-  });
-  },{ 
-      url: "/cms/get/select/choices", 
-      docType: "recipeSuitableForDiet", 
-      sortBy: "lexi:ASC", 
-      choiceID: "ID", 
-      choiceHuman: "title", 
-      removeID: "", 
-      selectedIDs: COL.recipeSuitableForDiet,
-    }
-  );
-
-
-
 $( document ).ready(function() {
-  $('div[data-editorjs-holder]').css('max-width', 'none');
-  $('div[data-editorjs-holder]').css('display', 'block');
   $("#attributeFields").collapse("show");
   $("#editFields").collapse("show");
   $("#recipeFields").collapse("show");
@@ -904,6 +810,6 @@ $( document ).ready(function() {
       $('#endorsementBanner').toggleClass('alert-dark').toggleClass('alert-light');
   });
 });
-
 </script>
+
 {% endblock %}

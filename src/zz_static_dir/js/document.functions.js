@@ -21,22 +21,3 @@ function lexiInput(elementID) {
     $("#id_lexi").val(lexi);
   });
 };
-
-//function select2_choices(callback, args) {
-  //$.ajax({
-    //async: true,
-    //dataType: "json",
-    //url: args.url,
-    //data: { 
-        //collection: args.collection,
-        //sortBy: args.sortBy,
-        //choiceID: args.choiceID,
-        //choiceHuman: args.choiceHuman,
-        //removeID: args.removeID,
-        //selectedIDs: args.selectedIDs
-      //},
-    //success: function (response) {
-        //callback(response);
-    //}
-  //});
-//};

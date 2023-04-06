@@ -61,5 +61,4 @@ def navigation(request):
     main['nav_docs'] = td_list
     # pages
     main['nav_pages'] = page_list
-    print("### main", main, type(main))
     return main

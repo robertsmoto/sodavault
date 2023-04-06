@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block form_sections %}
-{% with form_author as form %}
+{% with form_author as auth %}
 <!-- begin attribute section -->
 <div 
   class="row collapse multi-collapse b-3 m-3" 
@@ -23,42 +23,43 @@
   <div class="row row-cols-1 row-cols-lg-4">
 
     <div class="col mt-2">
-        {{ form.firstName.errors }}
-        {{ form.firstName.label_tag }}
-        {{ form.firstName }}
+        {{ auth.firstName.errors }}
+        {{ auth.firstName.label_tag }}
+        {{ auth.firstName }}
         <p 
           id="firstNameHelp" 
-          class="form-text">{{ form.firstName.help_text|safe }}</p>
+          class="auth-text">{{ auth.firstName.help_text|safe }}</p>
     </div>
     <div class="col mt-2">
-        {{ form.lastName.errors }}
-        {{ form.lastName.label_tag }}
-        {{ form.lastName }}
+        {{ auth.lastName.errors }}
+        {{ auth.lastName.label_tag }}
+        {{ auth.lastName }}
         <p 
           id="lastNameHelp" 
-          class="form-text">{{ form.lastName.help_text|safe }}</p>
+          class="auth-text">{{ auth.lastName.help_text|safe }}</p>
     </div>
     <div class="col mt-2">
-        {{ form.penName.errors}}
-        {{ form.penName.label_tag}}
-        {{ form.penName }}
+        {{ auth.penName.errors}}
+        {{ auth.penName.label_tag}}
+        {{ auth.penName }}
         <p 
           id="penNameHelp" 
-          class="form-text">{{ form.penName.help_text|safe }}</p>
+          class="auth-text">{{ auth.penName.help_text|safe }}</p>
     </div>
 
     <div class="col mt-2">
-        {{ form.role.errors }}
-        {{ form.role.label_tag }}
-        {{ form.role }}
-        <div 
-          id="roleIDHelp"
-          
-        <div 
-          class="valid-feedback">Looks good!</div>
+        {{ auth.role.errors }}
+        {{ auth.role.label_tag }}
+        {{ auth.role }}
+        <p 
+          id="roleIDHelp" 
+          class="auth-text">{{ auth.role.help_text|safe }}</p>
     </div>
-
   </div>
+  {% if debug %}
+  <p class='mt-3'>author</p>
+  <pre>{{ auth.initial|pprint }}</pre>
+  {% endif %}
 </div>
 {% endwith %}
 {% endblock %}
@@ -69,7 +70,6 @@
 {% block bottomscripts %}
 {{ block.super }}
 <script>
-console.log(DOC)
 $( document ).ready(function() {
   $("#attributeFields").collapse("show");
   $('a.btn-light[href="#attributeFields"]').hover(function(){

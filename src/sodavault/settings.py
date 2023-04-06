@@ -40,7 +40,7 @@ CONF = {**ini_dict, **set_dict}
 
 # ################################################
 pretty = json.dumps(CONF, indent=2)
-print("CONF", pretty)
+# print("CONF", pretty)
 # ################################################
 
 # ENVIRONMENT
@@ -84,24 +84,20 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # third party packages
-    # 'ckeditor',
-    # 'ckeditor_uploader',
-    # 'crispy_bootstrap5',
     'debug_toolbar',
     'django_bootstrap5',
     'django_editorjs_fields',
-    'django_htmx',
     'django_registration',
+    'django_select2',
     'storages',
-    # 'widget_tweaks',
 
     # apps
     'cmsapp',
     'homeapp',
 ]
 
-CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
-CRISPY_TEMPLATE_PACK = "bootstrap5"
+# CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+# CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
@@ -112,7 +108,6 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django_htmx.middleware.HtmxMiddleware',
 ]
 
 ROOT_URLCONF = 'sodavault.urls'
@@ -183,14 +178,23 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 RPASS = CONF.get('redis', {}).get('pass', '')
 RHOST = CONF.get('redis', {}).get('host', '')
 RPORT = CONF.get('redis', {}).get('port', '')
-DEFAULT_LOCATION = f'redis://:{RPASS}@{RHOST}:{RPORT}/3'
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
-        'LOCATION': DEFAULT_LOCATION,
+        'LOCATION': f'redis://:{RPASS}@{RHOST}:{RPORT}/3',
         'TIMEOUT': 60 * 60 * 6,  # <-- 6 hours
     },
+    "select2": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        'LOCATION': f'redis://:{RPASS}@{RHOST}:{RPORT}/4',
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
 }
+
+SELECT2_CACHE_BACKEND = "select2"
+SELECT2_THEME = 'bootstrap-5'
 
 # TIMEZONE, LANGUAGE, ENCODING
 # https://docs.djangoproject.com/en/3.2/topics/i18n/

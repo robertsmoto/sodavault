@@ -10,7 +10,7 @@
 {% endblock %}
 
 {% block form_sections %}
-{% with form_website as form %}
+{% with form_website as web %}
 <!-- begin attribute section -->
 <div 
   class="row collapse multi-collapse b-3 m-3" 
@@ -24,23 +24,27 @@
   <div class="row row-cols-1 row-cols-lg-2">
 
     <div class="col mt-2">
-        {{ form.websiteDomain.errors }}
-        {{ form.websiteDomain.label_tag }}
-        {{ form.websiteDomain }}
+        {{ web.websiteDomain.errors }}
+        {{ web.websiteDomain.label_tag }}
+        {{ web.websiteDomain }}
         <p 
           id="websiteDomainHelp" 
-          class="form-text">{{ form.websiteDomain.help_text|safe }}</p>
+          class="web-text">{{ web.websiteDomain.help_text|safe }}</p>
     </div>
     <div class="col mt-2">
-        {{ form.websiteUrl.errors }}
-        {{ form.websiteUrl.label_tag }}
-        {{ form.websiteUrl }}
+        {{ web.websiteUrl.errors }}
+        {{ web.websiteUrl.label_tag }}
+        {{ web.websiteUrl }}
         <p 
           id="websiteUrlHelp" 
-          class="form-text">{{ form.websiteUrl.help_text|safe }}</p>
+          class="web-text">{{ web.websiteUrl.help_text|safe }}</p>
     </div>
 
   </div>
+  {% if debug %}
+  <p class='mt-3'>website</p>
+  <pre>{{ web.initial|pprint }}</pre>
+  {% endif %}
 </div>
 {% endwith %}
 {% endblock %}

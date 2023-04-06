@@ -1,0 +1,30 @@
+<!-- ingredient form -->
+<div class="row ingredient-row draggable">
+<div class="col-12 col-md-4 mt-2">
+  {{ form_ingredient.name.errors }}
+  {{ form_ingredient.name }}
+</div>
+<div class="col-12 col-md-2 mt-2">
+  {{ form_ingredient.quantity.errors }}
+  {{ form_ingredient.quantity }}
+</div>
+<div class="col-12 col-md-2 mt-2">
+  {{ form_ingredient.unit.errors }}
+  {{ form_ingredient.unit }}
+</div>
+<div class="col-12 col-md-3 mt-2">
+  {{ form_ingredient.note.errors }}
+  {{ form_ingredient.note }}
+</div>
+<div class="col-12 col-md-1 align-center delete-link mt-2">
+  <button 
+    type="button" 
+    class="btn"
+    hx-get="{% url 'htmx-form-swap' 'delete' %}"
+    hx-target="closest div.row.ingredient-row"
+    hx-swap="outerHTML"
+    >
+  <i class="bi bi-trash3-fill" style="color: red;"></i>
+  </button>
+</div>
+</div>
