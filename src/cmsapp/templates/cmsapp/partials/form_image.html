@@ -1,21 +1,52 @@
-<div class="col-12 col-md-7 mt-2">
-  {{ form_image.image.errors }}
-  {{ form_image.image }}
-</div>
-<div class="col-12 col-md-2 mt-2">
-  {{ form_image.position.errors }}
-  {{ form_image.position }}
-</div>
-<div class="col-12 col-md-1 mt-2">
-  {{ form_image.is_featured.errors }}
-  {{ form_image.is_featured }}
-</div>
-<div class="col-12 col-md-1 mt-2">
-  {{ form_image.process.errors }}
-  {{ form_image.process }}
-</div>
-<div class="col-12 col-md-1 align-center delete-link mt-2">
-  <button type="button" class="btn">
-  <i class="bi bi-trash3-fill" style="color: red;"></i>
-  </button>
-</div>
+<tr scope="row" class="add-image-row">
+  <td colspan="5" scope="col">
+    <div class='row'>
+      <div class="cols-1 mt-2 input-group">
+        {{ form_image.image.errors }}
+        {{ form_image.image }}
+      </div>
+      <div class="cols-1 mt-2">
+        {{ form_image.title.errors }}
+        {{ form_image.title }}
+      </div>
+      <div class="cols-1 mt-2">
+        {{ form_image.alt.errors }}
+        {{ form_image.alt }}
+      </div>
+      <div class="cols-1 mt-2">
+        {{ form_image.caption.errors }}
+        {{ form_image.caption }}
+      </div>
+    </div>
+
+    <div class='row'>
+      <div class='col d-flex'>
+        <button
+          type="button" 
+          class="btn btn-success mt-3" 
+          id="image-save-button"
+          {% if obj.document.ID %}
+          hx-post="{% url 'htmx-manage-partial' masterID obj.document.ID 'image' %}"
+          {% else %}
+          hx-post="{% url 'htmx-manage-partial' masterID 'create' 'image' %}"
+          {% endif %}
+          hx-encoding="multipart/form-data"
+          hx-trigger="click"
+          hx-target="closest .add-image-row"
+          hx-swap="outerHTML"
+          >Save Image</button>
+        &nbsp;
+        <button 
+          type="button" 
+          id="image-cancel-button"
+          class="btn btn-light mt-3" 
+          href="#">Cancel</button>
+      </div>
+    </div>
+
+  </td>
+</tr>
+
+
+
+

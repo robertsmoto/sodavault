@@ -1,0 +1,28 @@
+<tr class="gallery-row" scope="row">
+  <td scope="col">
+    <a href="
+       {% if docType %}
+         {% url 'manage_document' docType obj.document.ID %}"
+       {% else %}
+         #
+       {% endif %}
+      style="font-size:1.2rem;">
+      <i class="bi bi-pencil-square" style="color:green"></i>
+    </a>
+  </td>
+  <td 
+    class="align-middle" 
+    scope="col">{{obj.title}}</td>
+  <td 
+    class="align-middle" 
+    scope="col">{{obj.caption}}</td>
+  <td 
+    class="align-middle" 
+    scope="col">{{obj.thumb.url}}</td>
+  <td>
+    <a href="{% url 'document_delete' docType obj.document.ID %}"
+      style="font-size:1.2rem;">
+      <i class="bi bi-trash3-fill" style="color:red"></i>
+    </a>
+  </td>
+</tr>

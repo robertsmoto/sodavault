@@ -17,7 +17,7 @@ urlpatterns = [
     # edit forms
     path(
         'manage/<docType>/<docID>',
-        login_required(views.ManageDocument.as_view()),
+        login_required(views.manage_document),
         name='manage_document'
     ),
 
@@ -69,10 +69,20 @@ urlpatterns = [
         name='select2_choices'
     ),
     path(
-        'htmx-form-swap/<prefix>',
+        'htmx/form/swap/<prefix>',
         login_required(views.HtmxFormSwap.as_view()),
         name='htmx-form-swap'
     ),
+    path(
+        'htmx/manage/partial/<masterID>/<docID>/<docType>',
+        login_required(views.htmx_manage_partial),
+        name='htmx-manage-partial'
+    ),
+    # path(
+    # 'htmx/delete/partial/<docID>/<prefix>',
+    # login_required(views.HtmxDeletePartial.as_view()),
+    # name='htmx-delete-partial'
+    # ),
     # path(
     # 'htmx-form-trigger/<prefix>',
     # login_required(views.HtmxFormTrigger.as_view()),

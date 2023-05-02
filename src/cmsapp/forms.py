@@ -1,18 +1,57 @@
-from django.db.models import TextChoices
-from datetime import datetime
-from django import forms
-from django.forms import ValidationError
-from django_editorjs_fields import EditorJsWidget
+# from django.db.models import TextChoice
+# from svapi_py.api import SvApi
+# from django.forms import ValidationError
+from cmsapp.constants import (
+    GENALPHA,
+)
+from nanoid import generate
 from django_select2.forms import (
     Select2Widget,
     Select2TagWidget,
     Select2MultipleWidget,
-    HeavySelect2Widget
 )
+from django_editorjs_fields import EditorJsWidget
+from django import forms
+from datetime import datetime
+
+
+def get_choices(svapi, docType: str, docID: str):
+    params = {'qs': f'@docType:{{{docType}}}'}
+    results, err = svapi.getMany('search', params=params)
+    choices = svapi.makeChoices(results, docID)
+    return choices
+
+
+def get_collection_data(svapi, ids: list = None):
+    results = []
+    if len(ids) < 1:
+        return results
+    params = {}
+    ids_str = " | ".join(ids)
+    params['qs'] = f"@docID:{{{ids_str}}}"
+    results, err = svapi.getMany('search', params=params)
+    return results
 
 
 class DocumentForm(forms.Form):
-    template_name = 'cmsapp/edit_author.html'
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+        self.fields['parentID'].choices = get_choices(
+            self.svapi, self.docType, self.docID)
 
     type = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -32,18 +71,20 @@ class DocumentForm(forms.Form):
         label='*ID:',
         max_length=16,
         required=True,
-        help_text=""
+        help_text="",
     )
     parentID = forms.ChoiceField(
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose one ...',
             },
         ),
         label='parentID:',
         help_text="",
         required=False,
+        choices=(),
     )
     title = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -108,6 +149,22 @@ class DocumentForm(forms.Form):
 
 
 class AuthorForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     firstName = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -153,6 +210,22 @@ class AuthorForm(forms.Form):
 
 
 class WebsiteForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     websiteDomain = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -172,11 +245,28 @@ class WebsiteForm(forms.Form):
 
 
 class IngredientForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     ID = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
             # 'readonly': True
         }),
+        initial=generate(GENALPHA, 16),
         label='ID:',
         max_length=16,
         required=False,
@@ -187,9 +277,9 @@ class IngredientForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'Name',
         }),
-        label='Name:',
+        label='*name:',
         help_text="",
-        required=False,
+        required=True,
         max_length=50,
     )
     quantity = forms.IntegerField(
@@ -197,7 +287,7 @@ class IngredientForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'Qnty',
         }),
-        label='Quantity:',
+        label='quantity:',
         help_text="",
         required=False,
         min_value=0,
@@ -207,7 +297,7 @@ class IngredientForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'Unit',
         }),
-        label='Unit:',
+        label='unit:',
         help_text="",
         required=False,
         max_length=20,
@@ -217,15 +307,48 @@ class IngredientForm(forms.Form):
             'class': 'form-control',
             'placeholder': 'Note',
         }),
-        label='Note:',
+        label='note:',
         help_text="",
         required=False,
         max_length=50,
     )
 
 
+class IngredientCollectionForm(IngredientForm):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+
 class NutritionForm(forms.Form):
-    # nutrition
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     servingSize = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -349,6 +472,22 @@ class NutritionForm(forms.Form):
 
 
 class RecipeForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     name = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -394,6 +533,7 @@ class RecipeForm(forms.Form):
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose hours ...',
             }),
         label='PrepTimeHours:',
@@ -429,6 +569,7 @@ class RecipeForm(forms.Form):
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose minutes ...',
             }),
         label='PrepTimeMinutes:',
@@ -453,6 +594,7 @@ class RecipeForm(forms.Form):
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose hours ...',
             }),
         label='CookTimeHours:',
@@ -488,6 +630,7 @@ class RecipeForm(forms.Form):
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose minutes ...',
             }),
         label='CookTimeMinutes:',
@@ -511,6 +654,22 @@ class RecipeForm(forms.Form):
 
 
 class BookReview(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     book_title = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -577,6 +736,21 @@ class BookReview(forms.Form):
 
 
 class LocalBusinessReview(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
 
     business_type = forms.CharField(
         widget=forms.TextInput(attrs={
@@ -761,6 +935,22 @@ class MovieReview(forms.Form):
 
 
 class Rating(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     rating_value = forms.ChoiceField(
         widget=forms.Select(attrs={
             'class': 'form-select',
@@ -784,6 +974,22 @@ class Rating(forms.Form):
 
 
 class Endorsement(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     endorsement_ratingValue = forms.ChoiceField(
         widget=forms.Select(attrs={
             'class': 'form-select',
@@ -816,6 +1022,22 @@ class Endorsement(forms.Form):
 
 
 class ImageForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     image = forms.ImageField(
         widget=forms.ClearableFileInput(
             attrs={
@@ -825,45 +1047,10 @@ class ImageForm(forms.Form):
         label='image:',
         required=False,
     )
-    position = forms.IntegerField(
-        widget=forms.NumberInput(
-            attrs={
-                'class': 'form-control'
-            }
-        ),
-        label='position:',
-        required=False,
-    )
-    is_featured = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'form-check form-switch'
-            }
-        ),
-        label='isFeatured:',
-        required=False,
-    )
-    process = forms.BooleanField(
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'form-check form-switch'
-            }
-        ),
-        label='process:',
-        required=False,
-    )
-    caption = forms.CharField(
-        widget=forms.TextInput(attrs={
-            'class': 'form-control',
-        }),
-        label='caption:',
-        max_length=200,
-        required=False,
-        help_text="",
-    )
     title = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
+            'placeholder': 'title'
         }),
         label='title:',
         max_length=200,
@@ -873,15 +1060,89 @@ class ImageForm(forms.Form):
     alt = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
+            'placeholder': 'alt text'
         }),
         label='alt:',
         max_length=200,
         required=False,
         help_text="",
     )
+    caption = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'caption'
+        }),
+        label='caption:',
+        max_length=200,
+        required=False,
+        help_text="",
+    )
+
+
+class ImageCollectionForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+    image = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            # 'readonly': True
+        }),
+        label='*ID:',
+        max_length=16,
+        required=True,
+        help_text="",
+    )
+
+    # isFeatured = forms.BooleanField(
+    # widget=forms.CheckboxInput(attrs={
+    # 'class': 'form-control',
+    # }),
+    # label='featured:',
+    # required=False,
+    # help_text="",
+    # )
+    # position = forms.IntegerField(
+    # widget=forms.NumberInput(attrs={
+    # 'class': 'form-control',
+    # # 'readonly': True
+    # }),
+    # label='position:',
+    # required=True,
+    # help_text="",
+    # )
 
 
 class FileForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     file = forms.FileField(
         widget=forms.ClearableFileInput(
             attrs={
@@ -895,8 +1156,52 @@ class FileForm(forms.Form):
     )
 
 
+class FileCollectionForm(FileForm):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+    file = forms.CharField(
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            # 'readonly': True
+        }),
+        label='*ID:',
+        max_length=16,
+        required=False,
+        help_text="",
+    )
+
+
 class ArticleForm(forms.Form):
-    # attributes
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
     headline = forms.CharField(
         widget=forms.TextInput(attrs={
             'class': 'form-control',
@@ -940,6 +1245,24 @@ class ArticleForm(forms.Form):
 
 class AuthorCollectionForm(forms.Form):
 
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+        self.fields['author'].choices = get_choices(
+            self.svapi, 'author', self.docID)
+
     author = forms.MultipleChoiceField(
         widget=Select2MultipleWidget(
             attrs={
@@ -955,11 +1278,30 @@ class AuthorCollectionForm(forms.Form):
 
 class WebsiteCollectionForm(forms.Form):
 
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+        self.fields['website'].choices = get_choices(
+            self.svapi, 'website', self.docID)
+
     website = forms.MultipleChoiceField(
         widget=Select2MultipleWidget(
             attrs={
                 'class': 'form-select',
                 'data-placeholder': 'Choose ...',
+                'allowClear': True,
             }),
         label='website:',
         help_text="",
@@ -968,6 +1310,30 @@ class WebsiteCollectionForm(forms.Form):
 
 
 class RecipeCollectionForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+        self.fields['recipeCookingMethod'].choices = get_choices(
+            self.svapi, 'recipeCookingMethod', self.docID)
+        self.fields['recipeCuisine'].choices = get_choices(
+            self.svapi, 'recipeCuisine', self.docID)
+        self.fields['recipeCategory'].choices = get_choices(
+            self.svapi, 'recipeCategory', self.docID)
+        self.fields['recipeSuitableForDiet'].choices = get_choices(
+            self.svapi, 'recipeSuitableForDiet', self.docID)
 
     recipeCookingMethod = forms.MultipleChoiceField(
         widget=Select2TagWidget(
@@ -1011,24 +1377,37 @@ class RecipeCollectionForm(forms.Form):
     )
 
 
-class ArticleCollectionForm(
-        AuthorCollectionForm,
-        WebsiteCollectionForm,
-        RecipeCollectionForm):
+class ArticleCollectionForm(forms.Form):
+
+    def __init__(self, *args, **kwargs):
+        svapi = None
+        if 'svapi' in kwargs:
+            svapi = kwargs.pop('svapi')
+        docType = ''
+        if 'docType' in kwargs:
+            docType = kwargs.pop('docType')
+        docID = ''
+        if 'docID' in kwargs:
+            docID = kwargs.pop('docID')
+        super().__init__(*args, **kwargs)
+        self.svapi = svapi
+        self.docType = docType
+        self.docID = docID
+
+        self.fields['articleCategory'].choices = get_choices(
+            self.svapi, 'articleCategory', self.docID)
+        self.fields['articleTag'].choices = get_choices(
+            self.svapi, 'articleTag', self.docID)
+        self.fields['articleKeyword'].choices = get_choices(
+            self.svapi, 'articleKeyword', self.docID)
 
     articleCategory = forms.MultipleChoiceField(
-
-        # widget=Select2Widget(
-        # attrs={
-        # 'class': 'form-select',
-        # 'data-placeholder': 'Choose one ...',
-        # },
-        # ),
         widget=Select2TagWidget(
             attrs={
                 'class': 'form-select',
-                # 'placeholder': 'Choose ...',
+                'placeholder': 'Choose ...',
             }),
+        choices=(),
         label='articleCategories:',
         help_text="",
         required=False,
@@ -1037,7 +1416,7 @@ class ArticleCollectionForm(
         widget=Select2TagWidget(
             attrs={
                 'class': 'form-select',
-                # 'placeholder': 'Choose ...',
+                'placeholder': 'Choose ...',
             }),
         label='articleKeywords:',
         help_text="",
@@ -1047,7 +1426,7 @@ class ArticleCollectionForm(
         widget=Select2TagWidget(
             attrs={
                 'class': 'form-select',
-                # 'data-placeholder': 'Choose ...',
+                'data-placeholder': 'Choose ...',
             }),
         label='articleTags:',
         help_text="",
@@ -1057,6 +1436,7 @@ class ArticleCollectionForm(
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose ...',
             }),
         choices=[
@@ -1072,6 +1452,7 @@ class ArticleCollectionForm(
         widget=Select2Widget(
             attrs={
                 'class': 'form-select',
+                'style': 'width:100%;',
                 'data-placeholder': 'Choose ...',
             }),
         choices=[
@@ -1084,3 +1465,59 @@ class ArticleCollectionForm(
         help_text="",
         required=False,
     )
+
+
+# forms by their prefix
+GET_FORMS_BY_PREFIX = {
+    'document': DocumentForm,
+    'article': ArticleForm,
+    'article_collection': ArticleCollectionForm,
+    'author': AuthorForm,
+    'author_collection': AuthorCollectionForm,
+    'bookReview': BookReview,
+    'endorsement': Endorsement,
+    'file': FileForm,
+    'file_collection': None,
+    'ingredient': IngredientForm,
+    'ingredient_collection': IngredientCollectionForm,
+    'image': ImageForm,
+    'image_collection': None,
+    'localBusiness': LocalBusinessReview,
+    'nutrition': NutritionForm,
+    'partial_document': DocumentForm,
+    'rating': Rating,
+    'recipe': RecipeForm,
+    'recipe_collection': RecipeCollectionForm,
+    'website': WebsiteForm,
+    'website_collection': WebsiteCollectionForm,
+}
+
+POST_FORMS_BY_PREFIX = {
+    'document': DocumentForm,
+    'article': ArticleForm,
+    'article_collection': ArticleCollectionForm,
+    'author': AuthorForm,
+    'author_collection': AuthorCollectionForm,
+    'bookReview': BookReview,
+    'endorsement': Endorsement,
+    'file': FileForm,
+    'file_collection': FileCollectionForm,
+    'ingredient': IngredientForm,
+    'ingredient_collection': IngredientCollectionForm,
+    'image': ImageForm,
+    'image_collection': ImageCollectionForm,
+    'localBusiness': LocalBusinessReview,
+    'nutrition': NutritionForm,
+    'partial_document': DocumentForm,
+    'rating': Rating,
+    'recipe': RecipeForm,
+    'recipe_collection': RecipeCollectionForm,
+    'website': WebsiteForm,
+    'website_collection': WebsiteCollectionForm,
+}
+
+
+PARTIAL_FORMS_BY_DOCTYPE = {
+    'file': FileForm,
+    'image': ImageForm,
+}

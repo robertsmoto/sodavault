@@ -1,0 +1,58 @@
+<div class="row image-row">
+  <!-- image-left-row begin -->
+  <div class='col-12 col-lg-8 image-left'>
+    <div class="cols-1 mt-2 input-group">
+      {{ form_image.image.errors }}
+      {{ form_image.image }}
+      <button 
+        class="btn btn-outline-secondary image-clear-button" 
+        type="button" 
+        >Clear</button>
+    </div>
+    <div class="cols-1 mt-2">
+      {{ form_image.title.errors }}
+      {{ form_image.title }}
+    </div>
+    <div class="cols-1 mt-2">
+      {{ form_image.alt.errors }}
+      {{ form_image.alt }}
+    </div>
+    <div class="cols-1 mt-2">
+      {{ form_image.caption.errors }}
+      {{ form_image.caption }}
+    </div>
+  </div>
+  <!-- left end -->
+
+  <!-- image-right begin -->
+  <div 
+    class='col-lg-4 d-flex flex-row-reverse image-right'>
+    <div 
+      class="d-flex mt-2 delete-link">
+      <button 
+        type="button" 
+        class="btn"
+        hx-get="{% url 'htmx-form-swap' 'image' %}"
+        hx-target="closest div.row.image-row"
+        hx-swap="outerHTML"
+        hx-vals='{
+        "image":"",
+        "title":"",
+        "alt":"",
+        "caption":""
+              }'
+        >
+      <i class="bi bi-trash3-fill" style="color: red;"></i>
+      </button>
+    </div>
+    <div class="d-flex m-2 p-2">
+      <img 
+        src="{{form_image.initial.sm.url}}" 
+        title="{{form_image.initial.title}}" 
+        alt="{{form_image.initial.alt}}" 
+        style="max-width:100%;height:100%;width:auto;display:block;"
+        >
+    </div>
+  </div>
+  <!-- right end -->
+</div>

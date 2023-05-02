@@ -34,24 +34,23 @@
     <div class='row'>
 
       {% with form_document as doc %}
-      <div class="col-12 col-md-4 mt-2">
+      <div class="col-12 mt-2">
           {{ doc.type.errors }}
           {{ doc.type.label_tag }}
           {{ doc.type }}
-          <p 
+          <div 
             id="docSetHelp" 
-            class="doc-text">{{ doc.type.help_text|safe }}</p>
+            class="doc-text">{{ doc.type.help_text|safe }}</div>
       </div>
-      <div class="col-12 col-md-4 mt-2">
+      <div class="col-12 col-md-6 mt-2">
           {{ doc.ID.errors }}
           {{ doc.ID.label_tag }}
           {{ doc.ID }}
-          <p 
+          <div 
             id="docIDHelp" 
-            class="doc-text">{{ doc.ID.help_text|safe }}</p>
+            class="doc-text">{{ doc.ID.help_text|safe }}</div>
       </div>
-
-      <div class="col-12 col-md-4 mt-2">
+      <div class="col col-md-6 mt-2">
           {{ doc.parentID.errors }}
           {{ doc.parentID.label_tag }}
           {{ doc.parentID }}
@@ -110,8 +109,10 @@
 
     </div>
   {% if debug %}
-  <p class='mt-3'>document</p>
-  <pre>{{ doc.initial|pprint }}</pre>
+    <pre class='mt-3'>
+      document<br>
+      {{ doc.initial|pprint }}
+    </pre>
   {% endif %}
   {% endwith %}
   </div>
@@ -140,7 +141,7 @@
 <script 
   type="text/javascript" src="{% static 'js/ui.base.js' %}"></script>
 <script>
-lexiInput("#id_title")
+lexiInput("document", "#id_document-title")
 $( document ).ready(function() {
   $("#docFields").collapse("show");
   });

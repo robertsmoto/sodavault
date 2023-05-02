@@ -1,20 +1,21 @@
 <!-- ingredient form -->
 <div class="row ingredient-row draggable">
 <div class="col-12 col-md-4 mt-2">
-  {{ form_ingredient.name.errors }}
-  {{ form_ingredient.name }}
+  {{ form_ingredients.name.errors }}
+  {{ form_ingredients.ID.as_hidden }}
+  {{ form_ingredients.name }}
 </div>
 <div class="col-12 col-md-2 mt-2">
-  {{ form_ingredient.quantity.errors }}
-  {{ form_ingredient.quantity }}
+  {{ form_ingredients.quantity.errors }}
+  {{ form_ingredients.quantity }}
 </div>
 <div class="col-12 col-md-2 mt-2">
-  {{ form_ingredient.unit.errors }}
-  {{ form_ingredient.unit }}
+  {{ form_ingredients.unit.errors }}
+  {{ form_ingredients.unit }}
 </div>
 <div class="col-12 col-md-3 mt-2">
-  {{ form_ingredient.note.errors }}
-  {{ form_ingredient.note }}
+  {{ form_ingredients.note.errors }}
+  {{ form_ingredients.note }}
 </div>
 <div class="col-12 col-md-1 align-center delete-link mt-2">
   <button 

@@ -10,14 +10,14 @@ function generateNanoid(size) {
   return nanoid;
 };
 
-function lexiInput(elementID) {
+function lexiInput(prefix, elementID) {
   $(elementID).on("input", function() {
-    var collection = $("#id_type").val();
+    var collection = $("#id_" + prefix + "-type").val();
     var eidVal = $(elementID).val();
     var lexi = collection.substring(0, 3) + "_" + collection.substring(
         collection.indexOf("_") + 1, 
         collection.indexOf("_") + 4) + "_" + eidVal.toLowerCase().replace(/ /g, "_");
     lexi = lexi.replace(/[^a-zA-Z0-9_]/g, "");
-    $("#id_lexi").val(lexi);
+    $("#id_" + prefix + "-lexi").val(lexi);
   });
 };

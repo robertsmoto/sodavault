@@ -4,6 +4,7 @@ import json
 import os
 import yaml
 from django.urls import reverse_lazy
+from urllib.parse import urlunparse
 
 """Switch beween servers using:
     $ SERVER=development python manage.py runserver """
@@ -178,22 +179,24 @@ SESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'
 RPASS = CONF.get('redis', {}).get('pass', '')
 RHOST = CONF.get('redis', {}).get('host', '')
 RPORT = CONF.get('redis', {}).get('port', '')
+RTIMEOUT = (60 * 60 * 6)  # <-- 6 hours
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.redis.RedisCache',
         'LOCATION': f'redis://:{RPASS}@{RHOST}:{RPORT}/3',
-        'TIMEOUT': 60 * 60 * 6,  # <-- 6 hours
+        'TIMEOUT': RTIMEOUT,
     },
-    "select2": {
-        "BACKEND": "django_redis.cache.RedisCache",
-        'LOCATION': f'redis://:{RPASS}@{RHOST}:{RPORT}/4',
-        "OPTIONS": {
-            "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        }
-    }
+    # "select2": {
+    # "BACKEND": "django_redis.cache.RedisCache",
+    # 'LOCATION': f'redis://:{RPASS}@{RHOST}:{RPORT}/4',
+    # 'TIMEOUT': RTIMEOUT,
+    # "OPTIONS": {
+    # "CLIENT_CLASS": "django_redis.client.DefaultClient",
+    # }
+    # },
 }
 
-SELECT2_CACHE_BACKEND = "select2"
+# SELECT2_CACHE_BACKEND = "select2"
 SELECT2_THEME = 'bootstrap-5'
 
 # TIMEZONE, LANGUAGE, ENCODING
@@ -231,6 +234,13 @@ if CONF.get('aws', {}).get('use_spaces', False):
     AWS_LOCATION = 'static'
     STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_LOCATION}/"
     EDITORJS_STORAGE_BACKEND = 'sodavault.custom_storage.S3MediaStorage'
+    MEDIA_URL = urlunparse([
+        'https',
+        CONF.get('aws', {}).get('custom_domain', ''),
+        CONF.get('dirs', {}).get('media_url', ''),
+        None,
+        None,
+        None])
 
 else:
     STATIC_URL = CONF.get('dirs', {}).get('static_url', '')
@@ -285,7 +295,8 @@ EDITORJS_DEFAULT_CONFIG_TOOLS = {
             "endpoints": {
                 "byFile": reverse_lazy('editorjs_image_upload'),
                 "byUrl": reverse_lazy('editorjs_image_by_url')
-            }
+            },
+            "additionalRequestData": {'ACL': 'public-read'}
         },
     },
     'Header': {

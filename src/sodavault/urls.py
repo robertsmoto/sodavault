@@ -71,6 +71,9 @@ urlpatterns = [
         name='django-registration-register'),
 ]
 
+urlpatterns += [
+    path("select2/", include("django_select2.urls")),
+]
 
 urlpatterns += [
     path(

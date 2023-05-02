@@ -91,62 +91,58 @@
     </div>
     {% endwith %}
 
-    <!-- image -->
-    <div class="row mt-3 gx-3" id="image-row">
+    <!-- image gallery -->
+    <div class="row mt-3 gx-3" id="galllery-row">
       <div class="col-12">
+        <div class="bg-light mt-3 p-2 border rounded gallery-container">
 
-        <!-- images -->
-        <div class="bg-light mt-3 p-2 border rounded image-container">
-          <!-- replace here -->
-          {% comment %}<h5 class="d-inline">Images</h5>{% endcomment %}
-          <div class="row image-row mt-2" id="image-form">
-            <div class="col-12 col-md-7">
-              <strong>image</strong>
-            </div>
-            <div class="col-12 col-md-2">
-              <strong>position</strong>
-            </div>
-            <div class="col-12 col-md-1">
-              <strong>featured</strong>
-            </div>
-            <div class="col-12 col-md-1">
-              <strong>process</strong>
-            </div>
-            <div class="col-12 col-md-1"></div>
-            <div class="col-12 col-md-1 align-center delete-link">
-            </div>
-          </div>
+          <h5 class="d-inline">Images (Image Gallery)</h5>
 
-          <!-- image form partials -->
-          {% for img in form_image.initial %}
-          {% endfor %}
-          <div class="row image-row mt-2" id="image-forms">
-          </div>
-          
+          <!-- gallery table -->
+          <table class="table table-hover" id="gallery-table">
+            <thead>
+              <tr scope="row">
+                <th scope="col"></th>
+                <th scope="col">Title</th>
+                <th scope="col">Caption</th>
+                <th scope="col">Image</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {{form_image_collection.initial}}
+              {{collections}}
+              {% for obj in image_collection %}
+              {% include 'cmsapp/partials/table_image.html' %}
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <button 
+            type="button" 
+            class="btn mt-2" 
+            hx-get="{% url 'htmx-manage-partial' docID 'create' 'image' %}"
+            hx-trigger="click"
+            hx-target="#gallery-table tbody"
+            hx-swap="beforeend"
+            >
+            <i class="bi bi-plus-square-fill" style="color:green;"></i>
+            &nbsp;add image
+          </button>
+
         </div>
-
-        <button 
-           type="button" 
-           class="btn mt-2" 
-           hx-get="{% url 'htmx-form-swap' 'image' %}"
-           hx-target="#image-forms"
-           hx-swap="beforeend"
-          >
-          <i class="bi bi-plus-square-fill" style="color:green;"></i>
-          &nbsp;add image
-        </button>
-
         {% if debug %}
-        <p class='mt-3'>images</p>
-        <pre>{{ form_images.initial|pprint }}</pre>
+        <pre class="mt-3">
+          images<br>
+          {{ form_images.initial|pprint }}
+        </pre>
         {% endif %}
-
       </div>
     </div>
 
     <!-- file -->
     <div class="row mt-3 gx-3" id="file-row">
-      {% with form_file as file %}
+      {% with form_file_collection as file %}
       <div class="col-12">
         <div class="bg-light mt-3 p-2 border rounded">
           <h5>File</h5>
@@ -156,77 +152,82 @@
           </div>
         </div>
         {% if debug %}
-        <p class='mt-3'>file</p>
-        <pre>{{ file.initial|pprint }}</pre>
+        <pre class="mt-3">
+          file<br>
+          {{ file.initial|pprint }}
+        </pre>
         {% endif %}
         {% endwith %}
       </div>
     </div>
 
-    {% with form_collections as coll %}
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.author.errors }}
-        {{ coll.author.label_tag }}
-        {{ coll.author }}
-        <div 
-          id="authorHelp" 
-          class="form-text">{{ coll.author.help_text|safe }}</div>
+    <div class="row">
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_author_collection.author.errors }}
+          {{ form_author_collection.author.label_tag }}
+          {{ form_author_collection.author }}
+          <div 
+            id="authorHelp" 
+            class="form-text">{{ form_author_collection.author.help_text|safe }}</div>
+      </div>
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_website_collection.website.errors }}
+          {{ form_website_collection.website.label_tag }}
+          {{ form_website_collection.website }}
+          <div 
+            id="websiteHelp" 
+            class="form-text">{{ form_website_collection.website.help_text|safe }}</div>
+      </div>
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_article_collection.articleStatus.errors }}
+          {{ form_article_collection.articleStatus.label_tag }}
+          {{ form_article_collection.articleStatus }}
+          <div 
+            id="articleStatusHelp" 
+            class="form-text">{{ form_article_collection.articleStatus.help_text|safe }}</div>
+      </div>
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_article_collection.articleHighlight.errors }}
+          {{ form_article_collection.articleHighlight.label_tag }}
+          {{ form_article_collection.articleHighlight }}
+          <div 
+            id="articleHighlightHelp" 
+            class="form-text">{{ form_article_collection.articleHighlight.help_text|safe }}</div>
+      </div>
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_article_collection.articleCategory.errors }}
+          {{ form_article_collection.articleCategory.label_tag }}
+          {{ form_article_collection.articleCategory }}
+          <div 
+            id="articleCategoryHelp" 
+            class="form-text">{{ form_article_collection.articleCategory.help_text|safe }}</div>
+      </div>
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_article_collection.articleTag.errors }}
+          {{ form_article_collection.articleTag.label_tag }}
+          {{ form_article_collection.articleTag }}
+          <div 
+            id="articleTagHelp" 
+            class="form-text">{{ form_article_collection.articleTag.help_text|safe }}</div>
+      </div>
+      <div class="col-12 col-lg-3 mt-2">
+          {{ form_article_collection.articleKeyword.errors }}
+          {{ form_article_collection.articleKeyword.label_tag }}
+          {{ form_article_collection.articleKeyword }}
+          <div 
+            id="articleKeywordHelp" 
+            class="form-text">{{ form_article_collection.articleKeyword.help_text|safe }}</div>
+      </div>
+      <div class="col-12">
+      {% if debug %}
+      <pre class="mt-3">
+        collections<br>
+        {% comment %}{{ coll.initial|pprint }}{% endcomment %}
+      </pre>
+      {% endif %}
+      </div>
     </div>
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.website.errors }}
-        {{ coll.website.label_tag }}
-        {{ coll.website }}
-        <div 
-          id="websiteHelp" 
-          class="form-text">{{ coll.website.help_text|safe }}</div>
-    </div>
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.articleStatus.errors }}
-        {{ coll.articleStatus.label_tag }}
-        {{ coll.articleStatus }}
-        <div 
-          id="articleStatusHelp" 
-          class="form-text">{{ coll.articleStatus.help_text|safe }}</div>
-    </div>
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.articleHighlight.errors }}
-        {{ coll.articleHighlight.label_tag }}
-        {{ coll.articleHighlight }}
-        <div 
-          id="articleHighlightHelp" 
-          class="form-text">{{ coll.articleHighlight.help_text|safe }}</div>
-    </div>
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.articleCategory.errors }}
-        {{ coll.articleCategory.label_tag }}
-        {{ coll.articleCategory }}
-        <div 
-          id="articleCategoryHelp" 
-          class="form-text">{{ coll.articleCategory.help_text|safe }}</div>
-    </div>
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.articleTag.errors }}
-        {{ coll.articleTag.label_tag }}
-        {{ coll.articleTag }}
-        <div 
-          id="articleTagHelp" 
-          class="form-text">{{ coll.articleTag.help_text|safe }}</div>
-    </div>
-    <div class="col-12 col-md-3 mt-2">
-        {{ coll.articleKeyword.errors }}
-        {{ coll.articleKeyword.label_tag }}
-        {{ coll.articleKeyword }}
-        <div 
-          id="articleKeywordHelp" 
-          class="form-text">{{ coll.articleKeyword.help_text|safe }}</div>
-    </div>
-    {% if debug %}
-    <p class='mt-3'>collections</p>
-    <pre>{{ coll.initial|pprint }}</pre>
-    {% endif %}
-    {% endwith %}
 
-  </div>
 
   <!-- editor tabs -->
   <nav>
@@ -297,14 +298,20 @@
           id="footerHelp" 
           class="form-text">{{ article.footer.help_text|safe }}</p>
     </div>
-
-  {% if debug %}
-  <p class='mt-3'>article</p>
-  <pre>{{ article.initial|pprint }}</pre>
-  {% endif %}
-  {% endwith %}
   </div>
 </div>
+
+  {% if debug %}
+  <div class='row'>
+    <div class='col-12'>
+    <pre class="mt-3">
+      article<br>
+      {{ article.initial|pprint }}
+    </pre>
+    {% endif %}
+    {% endwith %}
+    </div>
+  </div>
 
 <!-- begin recipe section -->
 <div 
@@ -379,15 +386,11 @@
       </div>
     </div>
   </div>
-  {% if debug %}
-  <p class='mt-3'>recipe</p>
-  <pre>{{ recipe.initial|pprint }}</pre>
-  {% endif %}
   {% endwith %}
   <!-- end select row -->
 
   <!-- select row -->
-  {% with form_collections as coll %}
+  {% with form_recipe_collection as coll %}
   <div class="row mt-3 pt-3">
 
     <div class="col-lg-3">
@@ -417,19 +420,26 @@
   </div>
   {% endwith %}
   <!-- end select row -->
-
+  {% if debug %}
+  {% with form_recipe as recipe %}
+  <pre class="mt-3">
+    recipe<br>
+    {{ recipe.initial|pprint }}
+  </pre>
+  {% endwith %}
+  {% endif %}
   <!-- ingredients and nutrition -->
-  <div class="row mt-3 gx-3" id="ingredient-row">
+  <div class="row mt-3 gx-3" id="ingredients-row">
 
     <!-- ingredients -->
     <div class="col-12 col-lg-8">
-      <div class="bg-light mt-3 p-2 border rounded ingredient-container">
+      <div class="bg-light mt-3 p-2 border rounded ingredients-container">
 
         <h5 class="d-inline">Ingredients</h5>
 
         <div class="row ingredient-row mt-2" id="ingredient-header">
           <div class="col-12 col-md-4 mt-2">
-            <strong>name</strong>
+            <strong>*name</strong>
           </div>
           <div class="col-12 col-md-2 mt-2">
             <strong>quantity</strong>
@@ -447,15 +457,16 @@
 
         <div class="row ingredient-row mt-2" id="ingredient-rows"></div>
 
-        {% for data in form_ingredient.initial %}
+        {% for data in form_ingredients.initial %}
         <p 
           class="d-none" 
-          hx-get="{% url 'htmx-form-swap' 'ingredient' %}"
+          hx-get="{% url 'htmx-form-swap' 'ingredients' %}"
           hx-trigger="load"
           hx-target="#ingredient-rows"
           hx-swap="beforeend"
           hx-sync="#ingredient-rows:queue all" 
           hx-vals='{
+            "ID":"{{data.ID}}", 
             "name":"{{data.name}}", 
             "quantity":{{data.quantity}},
             "unit":"{{data.unit}}",
@@ -465,12 +476,10 @@
         </p>
         {% endfor %}
 
-      </div>
-
         <button 
           type="button" 
           class="btn mt-2" 
-          hx-get="{% url 'htmx-form-swap' 'ingredient' %}"
+          hx-get="{% url 'htmx-form-swap' 'ingredients' %}"
           hx-swap="beforeend"
           hx-target="#ingredient-rows"
           >
@@ -478,10 +487,13 @@
           &nbsp;add ingredient
         </button>
 
+      </div>
+
+
       {% if debug %}
-      <p class='mt-3'>ingredient</p>
-      <pre>
-      {{ form_ingredient.initial|pprint }}
+      <pre class="mt-3">
+        ingredients<br>
+        {{ form_ingredients.initial|pprint }}
       </pre>
       {% endif %}
 
@@ -555,8 +567,10 @@
         </div>
       </div>
     {% if debug %}
-    <p class='mt-3'>nutrition</p>
-    <pre>{{ nutrition.initial|pprint }}</pre>
+    <pre class="mt-3">
+      nutrition<br>
+      {{ nutrition.initial|pprint }}
+    </pre>
     {% endif %}
     {% endwith %}
     </div>
@@ -777,6 +791,7 @@
 
 </div>
 <!-- end endorsement section -->
+
 {% endblock %}
 
 {% block btn_color %}primary{% endblock %}
@@ -787,7 +802,18 @@
 {{ block.super }}
 {{ form_article.media.js }}
 <script>
+lexiInput("article", "#id_article-title")
+$(document).on("click", "#image-cancel-button", function() {
+  $(this).closest(".add-image-row").remove();
+});
+{% comment %}$(document).on("click", "#image-save-button", function() {{% endcomment %}
+  {% comment %}$(this).closest(".add-image-row").remove();{% endcomment %}
+{% comment %}});{% endcomment %}
 $( document ).ready(function() {
+  // image clear button 
+  $(".image-clear-button").click(function() {
+    $(this).siblings("input").val("");
+  });
   $("#attributeFields").collapse("show");
   $("#editFields").collapse("show");
   $("#recipeFields").collapse("show");

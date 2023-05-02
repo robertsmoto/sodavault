@@ -1,0 +1,48 @@
+<tr class="gallery-table-row" scope="row">
+  
+
+  <td scope="col">
+    <input 
+      type="hidden" 
+      name="image_collection-image" 
+      value="{{obj.document.ID}}" 
+      class="form-control" 
+      maxlength="16" 
+      id="id_image_collection-image">
+    <button 
+      type="button" 
+      class="btn"
+      style="font-size:1.2rem;"
+      hx-get="{% url 'htmx-manage-partial' docID obj.document.ID obj.document.type %}"
+      hx-trigger="click"
+      hx-target="closest .gallery-table-row"
+      hx-swap="outerHTML"
+      >
+      <i class="bi bi-pencil-square" style="color:green"></i>
+    </button>
+  </td>
+  <td class="align-middle" scope="col">
+    {{obj.image.title}}
+  </td>
+  <td class="align-middle" scope="col">
+    {{obj.image.caption}}
+  </td>
+  <td class="align-middle" scope="col">
+    <img src="{{obj.image.thumb.url}}">
+  </td>
+  <td>
+    <button
+      type="button"
+      class="btn"
+      style="font-size:1.2rem;"
+      hx-delete="{% url 'htmx-manage-partial' docID obj.document.ID obj.document.type %}"
+      hx-trigger="click"
+      hx-target="closest .gallery-table-row"
+      hx-swap="delete"
+      hx-confirm="Permanently delete the Image?"
+      >
+
+      <i class="bi bi-trash3-fill" style="color:red"></i>
+    </a>
+  </td>
+</tr>

@@ -47,8 +47,12 @@
           scope="col">{{obj.document.ID}}</td>
         {% block tablecells %}{% endblock %}
         <td>
-          <a href="{% url 'document_delete' docType obj.document.ID %}"
-            style="font-size:1.2rem;">
+          <a 
+            type="button"
+            class="btn"
+            href="{% url 'document_delete' docType obj.document.ID %}"
+            style="font-size:1.2rem;"
+            hx-confirm="Permanenty delete document?">
             <i class="bi bi-trash3-fill" style="color:red"></i>
           </a>
         </td>
